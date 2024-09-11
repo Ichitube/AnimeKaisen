@@ -25,27 +25,28 @@ win_animation = "CgACAgQAAx0CfstymgACDfFmFCIV11emoqYRlGWGZRTtrA46oQACAwMAAtwWDVN
 lose_animation = "CgACAgQAAx0CfstymgACDfJmEvqMok4D9NPyOY0bevepOE4LpQAC9gIAAu-0jFK0picm9zwgKzQE"
 draw_animation = "CgACAgQAAx0CfstymgACDfFmFCIV11emoqYRlGWGZRTtrA46oQACAwMAAtwWDVNLf3iCB-QL9jQE"
 
+
 win_text = ("👑 Победа: 💀Соперник мертв"
-            "\n── •✧✧• ────────────"
+            "\n<blockquote expandable>── •✧✧• ────────────"
             "\n  + 100🀄️ xp, "
-            "\n  + 200💴 ¥")
+            "\n  + 200💴 ¥</blockquote>")
 lose_text = ("💀 Поражение"
-             "\n── •✧✧• ────────────"
+             "\n<blockquote expandable>── •✧✧• ────────────"
              "\n  + 55🀄️ xp, "
-             "\n  + 100💴 ¥")
+             "\n  + 100💴 ¥</blockquote>")
 draw_text = ("☠️ Ничья"
-             "\n── •✧✧• ────────────"
+             "\n<blockquote expandable>── •✧✧• ────────────"
              "\n  + 80🀄️ xp, "
-             "\n  + 150💴 ¥")
+             "\n  + 150💴 ¥</blockquote>")
 surrender_text = "🏴‍☠️ Поражение"
 surrender_r_text = ("👑 Победа: 🏴‍☠️Соперник сдался"
-                    "\n── •✧✧• ────────────"
+                    "\n<blockquote expandable>── •✧✧• ────────────"
                     "\n  + 100🀄️ xp, "
-                    "\n  + 200💴 ¥")
+                    "\n  + 200💴 ¥</blockquote>")
 time_out_text = ("👑 Победа: 🕘Время вышло"
-                 "\n── •✧✧• ────────────"
+                 "\n<blockquote expandable>── •✧✧• ────────────"
                  "\n  + 100🀄️ xp, "
-                 "\n  + 200💴 ¥")
+                 "\n  + 200💴 ¥</blockquote>")
 
 
 def account_text(character):
@@ -76,14 +77,23 @@ async def fill_profile(message: Message):
                 except Exception as e:
                     print(f"Не удалось переслать сообщение пользователю {user['_id']}: {e}")
 
-        await forward_post_to_all_users(channel_id=-1002042458477, message_id=23)
+        await forward_post_to_all_users(channel_id=-1002042458477, message_id=31)
     else:
         await message.answer("У вас нет прав на выполнение этой команды")
 
 
 @router.message(Command("rm"))
 async def fill_profile(message: Message):
-    await bot.send_message(message.chat.id, 'клавитура удалена', reply_markup=rm())
+    await bot.send_message(message.chat.id, '❖ ✖️ Кнопки удалены', reply_markup=rm())
+
+
+@router.message(Command("help"))
+async def fill_profile(message: Message):
+    await bot.send_message(message.chat.id, '❖ 📋 <a href="https://teletype.in/@dire_hazard/x1">Руководство</a>',
+                           reply_markup=inline_builder(
+                               ["☑️"],
+                               ["delete"], row_width=[1])
+                           )
 
 
 async def surrender_f(user_id, r, mes):
@@ -127,53 +137,72 @@ async def arena(callback: CallbackQuery | Message):
     rank = await profile.rerank(account['stats']['rank'])
     in_battle = await mongodb.in_battle()
     universe = account['universe']
-    character = account['character']
+    character = account['character'][account['universe']]
     exp = account['stats']['exp']
     wins = account['battle']['stats']['wins']
-    strength = character_photo.get_stats(universe, character, 'arena')['strength']
-    agility = character_photo.get_stats(universe, character, 'arena')['agility']
-    intelligence = character_photo.get_stats(universe, character, 'arena')['intelligence']
-    power = character_photo.get_stats(universe, character, 'arena')['power']
+    msg = "\n\nВы не можете участвовать так как ваша вселенная еще не добавлена"
+
+    buttons = ["⚔️ Битва", "⛓ Рабыня", "🏆 Рейтинг", "📜 Правила", "🔙 Назад"]
+    calls = ["search_opponent", "slave", "battle_rating", "battle_rules", "main_page"]
+
+    if account['universe'] not in ['Allstars', 'Allstars(old)']:
+        strength = character_photo.get_stats(universe, character, 'arena')['strength']
+        agility = character_photo.get_stats(universe, character, 'arena')['agility']
+        intelligence = character_photo.get_stats(universe, character, 'arena')['intelligence']
+        power = character_photo.get_stats(universe, character, 'arena')['power']
+
+        msg = (f"\n\n   ✊🏻 Сила: {strength}"
+               f"\n   👣 Ловкость: {agility}"
+               f"\n   🧠 Интелект: {intelligence}"
+               f"\n   ⚜️ Мощь: {power}")
+
+        buttons = ["⚔️ Битва", "🎴 Навыки", "⛓ Рабыня", "🏆 Рейтинг", "📜 Правила", "🔙 Назад"]
+        calls = ["search_opponent", Ability(action="ability", universe=universe, character=character, back='arena'),
+                 "slave", "battle_rating", "battle_rules", "main_page"]
 
     pattern = dict(
-        caption=f"❖  🏟️  <b>Арена</b>  ⚔️"
+        caption=f"❖  🏟️ <b>Арена</b>  ⚔️"
                 f"\n── •✧✧• ────────────"
                 f"\n❖🎴 <b>{character}</b>"
                 f"\n❖🎐 <b>{rank}</b>"
-                f"\n\n   ✊🏻 Сила: {strength}"
-                f"\n   👣 Ловкость: {agility}"
-                f"\n   🧠 Интелект: {intelligence}"
-                f"\n   ⚜️ Мощь: {power}"
+                f"{msg}"
                 f"\n\n 👑 {wins} Побед 👑 | 🀄️ {exp} XP"
                 f"\n── •✧✧• ────────────"
                 f"\n<i>🌊 В битве ⚔️ {in_battle} игроков</i> 🌊",
         parse_mode=ParseMode.HTML,
         reply_markup=inline_builder(
-            ["⚔️ Битва", "🎴 Навыки", "⛓ Рабыня", "🏆 Рейтинг", "📜 Правила", "🔙 Назад"],
-            ["search_opponent", Ability(action="ability", universe=universe, character=character, back='arena'),
-             "slave", "battle_rating", "battle_rules", "main_page"],
+            buttons,
+            calls,
             row_width=[1, 2, 2, 1])
     )
 
     if isinstance(callback, CallbackQuery):
         media = InputMediaPhoto(
-            media='AgACAgIAAx0CfstymgACBaJly1EK8HvqMmJjmPe7B4Uf4uiDHAACldcxG1pyWEqTZtRfQzuM-gEAAwIAA3kAAzQE'
+            media='AgACAgIAAx0CfstymgACGt1mw15fTEgmIIHqVhdpBhzEZVm-lAACnOwxG2zEGUqsfpo-_pkKnAEAAwIAA3kAAzUE'
         )
         await callback.message.edit_media(media)
         await callback.message.edit_caption(**pattern)
     else:
-        media = 'AgACAgIAAx0CfstymgACBaJly1EK8HvqMmJjmPe7B4Uf4uiDHAACldcxG1pyWEqTZtRfQzuM-gEAAwIAA3kAAzQE'
+        media = 'AgACAgIAAx0CfstymgACGt1mw15fTEgmIIHqVhdpBhzEZVm-lAACnOwxG2zEGUqsfpo-_pkKnAEAAwIAA3kAAzUE'
         await callback.answer_photo(media, **pattern)
 
 
 @router.message(ChatTypeFilter(chat_type=["private"]), Command("search"))
 @router.callback_query(F.data == "search_opponent")
 async def search_opponent(callback: CallbackQuery | Message):
-    if isinstance(callback, CallbackQuery):
-        await callback.message.delete()
     user_id = callback.from_user.id
     account = await mongodb.get_user(user_id)
     universe = account['universe']
+
+    if account['universe'] in ['Allstars', 'Allstars(old)']:
+        await callback.answer(
+            text="💢 Пока доступно в вашой вселеноой!",
+            show_alert=True
+        )
+        return
+
+    if isinstance(callback, CallbackQuery):
+        await callback.message.delete()
 
     if account["battle"]["battle"]["status"] == 0:
         rival = await mongodb.find_opponent()
@@ -190,7 +219,7 @@ async def search_opponent(callback: CallbackQuery | Message):
         else:
             ident = account["_id"]
             name = account["name"]
-            character = account['character']
+            character = account['character'][account['universe']]
             avatar = character_photo.get_stats(universe, character, 'avatar')
             avatar_type = character_photo.get_stats(universe, character, 'type')
             rarity = character_photo.get_stats(universe, character, 'rarity')
@@ -211,7 +240,7 @@ async def search_opponent(callback: CallbackQuery | Message):
             r_ident = rival["_id"]
             r_name = rival["name"]
             r_universe = rival['universe']
-            r_character = rival['character']
+            r_character = rival['character'][rival['universe']]
             r_avatar = character_photo.get_stats(r_universe, r_character, 'avatar')
             r_avatar_type = character_photo.get_stats(r_universe, r_character, 'type')
             r_rarity = character_photo.get_stats(r_universe, r_character, 'rarity')
@@ -372,7 +401,7 @@ async def battle(callback: CallbackQuery):
             await callback.answer("✖️ Недостаточно энергии 🪫", show_alert=True)
             return
 
-        await bot.edit_message_reply_markup(callback.from_user.id, callback.message.message_id)
+        await bot.edit_message_reply_markup(chat_id=callback.from_user.id, message_id=callback.message.message_id)
 
         battle_data[character.ident] = character
         battle_data[r_character.ident] = r_character

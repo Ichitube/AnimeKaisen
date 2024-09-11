@@ -31,7 +31,7 @@ def menu_button():
             KeyboardButton(text='🪪 〢 Профиль')
         ],
         [
-            KeyboardButton(text='🎴 Получить карту'),
+            KeyboardButton(text='🎴 Grab'),
             KeyboardButton(text='🥡 Инвентарь')
         ]
     ]
@@ -100,7 +100,7 @@ def reply_builder(
 def get_common():
     builder = InlineKeyboardBuilder()
     builder.add(InlineKeyboardButton(
-        text='🎴 Получить первую карту',
+        text='🎴 Схватить карту',
         callback_data="get_first_free")
     )
     return builder.as_markup()
@@ -145,6 +145,12 @@ def goto_bot() -> InlineKeyboardMarkup:
     return builder.as_markup()
 
 
+def channel_check() -> InlineKeyboardMarkup:
+    builder = InlineKeyboardBuilder()
+    builder.button(text='🔓 Разблокировать', url='https://t.me/multiverse_card')
+    return builder.as_markup()
+
+
 class Pagination(CallbackData, prefix="pagination"):
     action: str
     page: int
@@ -156,10 +162,11 @@ def pagination_keyboard(universe, character, page: int = 0):
         InlineKeyboardButton(text='⬅️', callback_data=Pagination(action="prev", page=page).pack()),
         InlineKeyboardButton(text='➡️', callback_data=Pagination(action="next", page=page).pack())
     )
-    builder.row(
-        InlineKeyboardButton(text='🎴 Навыки', callback_data=Ability(action="ability", universe=universe,
-                                                                    character=character, back='inventory').pack())
-    )
+    if universe not in ['Allstars', 'Allstars(old)']:
+        builder.row(
+            InlineKeyboardButton(text='🎴 Навыки', callback_data=Ability(action="ability", universe=universe,
+                                                                        character=character, back='inventory').pack())
+        )
     builder.row(
         InlineKeyboardButton(text='🪪 Установить', callback_data='change_character')
     )

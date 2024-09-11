@@ -2,7 +2,7 @@ import asyncio
 
 from aiogram import Router, F
 
-from aiogram.types import CallbackQuery, InputMediaAnimation
+from aiogram.types import CallbackQuery, InputMediaAnimation, InputMediaPhoto
 from aiogram.enums import ParseMode
 
 from keyboards.builders import inline_builder
@@ -27,14 +27,14 @@ async def dungeon(callback: CallbackQuery):
         power = user['campaign']['power']
         return power
 
-    nephritis_per_minute = account['campaign']['power'] // 7000 * account['campaign']['level']
-    gold_per_minute = account['campaign']['power'] // 500 * account['campaign']['level']
-    silver_per_minute = account['campaign']['power'] // 30 * account['campaign']['level']
+    nephritis_per_minute = account['campaign']['power'] // 10000 * account['campaign']['level']
+    gold_per_minute = account['campaign']['power'] // 2500 * account['campaign']['level']
+    silver_per_minute = account['campaign']['power'] // 500 * account['campaign']['level']
 
     async def increase_resources(uid, power):
-        nephritis = power // 7000
-        gold = power // 500
-        silver = power // 30
+        nephritis = power // 10000
+        gold = power // 2500
+        silver = power // 500
 
         await mongodb.update_value(uid, {'campaign.nephritis': nephritis})
         await mongodb.update_value(uid, {'campaign.gold': gold})
@@ -68,8 +68,8 @@ async def dungeon(callback: CallbackQuery):
             )
     )
 
-    media_id = "CgACAgIAAx0CfstymgACBcJlzMqX7Mtt96VNg0aD00EKQwGWLgAClTsAAnsmaEpgAq2WiSsm5TQE"
-    media = InputMediaAnimation(media=media_id)
+    media_id = "AgACAgIAAx0CfstymgACGttmw1rY8-Urz0Hyjku-8S34cRDuMgACk-ExG8b4GEr9GXvbgCanOgEAAwIAA3kAAzUE"
+    media = InputMediaPhoto(media=media_id)
     await callback.message.edit_media(media, inline_id)
     await callback.message.edit_caption(inline_id, **pattern)
 
@@ -83,8 +83,8 @@ async def sell_resources(callback: CallbackQuery):
     account = await mongodb.get_user(user_id)
 
     nephritis = account['campaign']['nephritis']
-    gold = account['campaign']['gold'] // 3
-    silver = account['campaign']['silver'] // 70
+    gold = account['campaign']['gold'] // 25
+    silver = account['campaign']['silver'] // 100
 
     await mongodb.update_user(user_id, {'account.money': account['account']['money'] + nephritis + gold + silver})
 
@@ -124,22 +124,10 @@ async def campaign_rank(callback: CallbackQuery):
 
 @router.callback_query(F.data == "campaign_rules")
 async def campaign_rules(callback: CallbackQuery):
-    await callback.message.edit_caption(
-        caption=f"❖  📋  <b>Правила Подземелье</b>"
-                f"\n── •✧✧• ────────────"
-                f"\n❖  ⛩️ В подземелье персонажи из ваших карт сражаются "
-                f"автоматически с монстрами и получают 💰 ресурсы. "
-                f"\n\n❖ 👾 Нужно убить босса, чтобы перейти в новый ⛩️ Этаж."
-                f"\n\n❖Чем выше ⛩️ этаж, тем больше 💰 ресурсы."
-                f"\n\n❖ ⚜️ Сила вашей команды зависит от общей силы ваших карт."
-                f"\n\n❖ 💰 Количество добычи зависит от ⚜️ Cилы карт и ⛩️ этажа."
-                f"\n\n❖ 💰 Ресурсы можно продать за 💴 ¥"
-                f"\n── •✧✧• ────────────",
-        parse_mode=ParseMode.HTML,
-        reply_markup=inline_builder(
-            ["🔙 Назад"],
-            ["dungeon"],
-            row_width=[2, 2]
-        )
-    )
+    await callback.message.answer(
+        f"❖ 📋 Правила Подземелье"
+        "\n── •✧✧• ────────────"
+        "\nhttps://teletype.in/@dire_hazard/x1#DZdC",
+        reply_markup=inline_builder(["☑️"], ["delete"], row_width=[1]))
+
     await callback.answer()

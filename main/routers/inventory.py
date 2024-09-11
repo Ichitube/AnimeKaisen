@@ -69,6 +69,7 @@ async def inventory(callback: CallbackQuery, state: FSMContext):
         await callback.answer("❖ ✖️ У вас нет карт данной редкости", show_alert=True)
         return
     await state.update_data(character=invent[0])
+    await state.update_data(universe=universe)
     avatar = character_photo.get_stats(universe, invent[0], 'avatar')
     avatar_type = character_photo.get_stats(universe, invent[0], 'type')
     if avatar_type == 'photo':
@@ -76,21 +77,24 @@ async def inventory(callback: CallbackQuery, state: FSMContext):
     else:
         photo = InputMediaAnimation(media=avatar)
     rarity = character_photo.get_stats(universe, invent[0], 'rarity')
-    strength = character_photo.get_stats(universe, invent[0], 'arena')['strength']
-    agility = character_photo.get_stats(universe, invent[0], 'arena')['agility']
-    intelligence = character_photo.get_stats(universe, invent[0], 'arena')['intelligence']
-    power = character_photo.get_stats(universe, invent[0], 'arena')['power']
+    msg = f"\n❖ ✨ Редкость: {rarity}"
+    if universe not in ['Allstars', 'Allstars(old)']:
+        strength = character_photo.get_stats(universe, invent[0], 'arena')['strength']
+        agility = character_photo.get_stats(universe, invent[0], 'arena')['agility']
+        intelligence = character_photo.get_stats(universe, invent[0], 'arena')['intelligence']
+        power = character_photo.get_stats(universe, invent[0], 'arena')['power']
+        msg = (f"\n❖ ✨ Редкость: {rarity}"
+               f"\n❖ 🗺 Вселенная: {universe}"
+               f"\n\n   ✊🏻 Сила: {strength}"
+               f"\n   👣 Ловкость: {agility}"
+               f"\n   🧠 Интелект: {intelligence}"
+               f"\n   ⚜️ Мощь: {power}")
     await callback.message.edit_media(photo, inline_id)
-    await callback.message.edit_caption(inline_id, f"🎴 {invent[0]}"
-                                                   f"\n ── •✧✧• ────────────"
-                                                   f"\n❖ ✨ Редкость: {rarity}"
-                                                   f"\n❖ 🗺 Вселенная: {universe}"
-                                                   f"\n\n   ✊🏻 Сила: {strength}"
-                                                   f"\n   👣 Ловкость: {agility}"
-                                                   f"\n   🧠 Интелект: {intelligence}"
-                                                   f"\n   ⚜️ Мощь: {power}"
-                                                   f"\n──❀*̥˚──◌──◌──❀*̥˚────"
-                                                   f"\n❖ 🔖 1 из {len(invent)}",
+    await callback.message.edit_caption(inline_id, caption=f"🎴 {invent[0]}"
+                                                           f"\n ── •✧✧• ────────────"
+                                                           f"{msg}"
+                                                           f"\n──❀*̥˚──◌──◌──❀*̥˚────"
+                                                           f"\n❖ 🔖 1 из {len(invent)}",
                                         reply_markup=builders.pagination_keyboard(universe, invent[0]))
 
 
@@ -115,23 +119,27 @@ async def inventory(callback: CallbackQuery, callback_data: builders.Pagination,
         else:
             photo = InputMediaAnimation(media=avatar)
         rarity = character_photo.get_stats(universe, invent[page_num], 'rarity')
-        strength = character_photo.get_stats(universe, invent[page_num], 'arena')['strength']
-        agility = character_photo.get_stats(universe, invent[page_num], 'arena')['agility']
-        intelligence = character_photo.get_stats(universe, invent[page_num], 'arena')['intelligence']
-        power = character_photo.get_stats(universe, invent[page_num], 'arena')['power']
+        msg = f"\n❖ ✨ Редкость: {rarity}"
+        if universe not in ['Allstars', 'Allstars(old)']:
+            strength = character_photo.get_stats(universe, invent[page_num], 'arena')['strength']
+            agility = character_photo.get_stats(universe, invent[page_num], 'arena')['agility']
+            intelligence = character_photo.get_stats(universe, invent[page_num], 'arena')['intelligence']
+            power = character_photo.get_stats(universe, invent[page_num], 'arena')['power']
+            msg = (f"\n❖ ✨ Редкость: {rarity}"
+                   f"\n❖ 🗺 Вселенная: {universe}"
+                   f"\n\n   ✊🏻 Сила: {strength}"
+                   f"\n   👣 Ловкость: {agility}"
+                   f"\n   🧠 Интелект: {intelligence}"
+                   f"\n   ⚜️ Мощь: {power}")
+
         await callback.message.edit_media(photo, inline_id)
         await callback.message.edit_caption(
             inline_id,
-            f"🎴 {invent[page_num]}"
-            f"\n ── •✧✧• ────────────"
-            f"\n❖ ✨ Редкость: {rarity}"
-            f"\n❖ 🗺 Вселенная: {universe}"
-            f"\n\n   ✊🏻 Сила: {strength}"
-            f"\n   👣 Ловкость: {agility}"
-            f"\n   🧠 Интелект: {intelligence}"
-            f"\n   ⚜️ Мощь: {power}"
-            f"\n──❀*̥˚──◌──◌──❀*̥˚────"
-            f"\n❖ 🔖 {page_num + 1} из {len(invent)}",
+            caption=f"🎴 {invent[page_num]}"
+                    f"\n ── •✧✧• ────────────"
+                    f"{msg}"
+                    f"\n──❀*̥˚──◌──◌──❀*̥˚────"
+                    f"\n❖ 🔖 {page_num + 1} из {len(invent)}",
             reply_markup=builders.pagination_keyboard(universe=universe, character=invent[page_num], page=page_num)
         )
     await callback.answer()
@@ -141,5 +149,5 @@ async def inventory(callback: CallbackQuery, callback_data: builders.Pagination,
 async def change_ch(callback: CallbackQuery, state: FSMContext):
     user_id = callback.from_user.id
     data = await state.get_data()
-    await mongodb.update_user(user_id, {'character': data.get('character')})
+    await mongodb.change_char(user_id, data.get('universe'), data.get('character'))
     await callback.answer("🎴 Вы успешно изменили персонажа", show_alert=True)

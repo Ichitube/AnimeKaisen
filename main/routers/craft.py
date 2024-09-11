@@ -43,8 +43,8 @@ async def craft_menu(callback: CallbackQuery):
             )
     )
 
-    media_id = "CgACAgIAAx0CfstymgACBMRlr8Vb3T5DyVkPXoV_MUnfSukjtwACpEMAAlw4gUmZk2SI3nXsMDQE"
-    media = InputMediaAnimation(media=media_id)
+    media_id = "AgACAgIAAx0CfstymgACGthmw1rLV0WxGrbzW3MkaOQIfIaRXwACkuExG8b4GEq8rJRTnK_PFQEAAwIAA3kAAzUE"
+    media = InputMediaPhoto(media=media_id)
     await callback.message.edit_media(media, inline_id)
     await callback.message.edit_caption(inline_id, **pattern)
 

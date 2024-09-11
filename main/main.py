@@ -5,7 +5,7 @@ from aiogram.enums import ParseMode
 from routers import registration, battle, gacha, banner, settings, navigation, main_menu, inventory, craft, slaves
 from data import character_photo
 from routers.tokio import tokio, dungeon, store, Pay, home
-from handlers import chat_commands
+from handlers import chat_commands, admins
 from chat_handlers import chat_battle
 from callbacks import callback
 from middlewares.AntiFloodMiddleWare import AntiFloodMiddleware, AntiFloodMiddlewareM
@@ -35,7 +35,8 @@ async def main():
         chat_commands.router,
         character_photo.router,
         slaves.router,
-        home.router
+        home.router,
+        admins.router
     )
 
     dp.callback_query.middleware(AntiFloodMiddleware())

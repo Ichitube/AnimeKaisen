@@ -29,14 +29,23 @@ async def fill_profile(message: Message,  state: FSMContext):
         await main_menu.main_menu(message)
     else:
         await state.set_state(Form.name)
-        await message.answer("❖ 💮 Добро пожаловать!"
-                             f"\n── •✧✧• ────────────"
-                             f"\n❖ 📜 Для начала нужно пройти регистрацию"
-                             "\n\n❖ 1. 🪪 Придумать никнейм"
-                             "\n❖ 2. 🗺 Выбрать вселенную"
-                             "\n❖ 3. 🎴 Получить первую карту"
-                             f"\n── •✧✧• ────────────")
-        await message.answer("❖ 🪪  Введи никнейм: ", reply_markup=profile(message.from_user.first_name))
+        await message.answer_animation(
+            animation="CgACAgIAAx0CfstymgACHXpm3-JUbweB3b06B_W3bAgiVWRycQACI1wAAvfAAAFLc8MF1Rvq7R02BA",
+            caption='❖ 💮 Добро пожаловать!'
+                    f'\n── •✧✧• ────────────'
+                    f'\n🎴Здесь вы будете собрать своих персонажей и 🗡 сражаться'
+                    f'\n<blockquote expandable>🔥 Соревнуйтесь, у кого круче карты'
+                    f'\n🃏 Собирайте колоду'
+                    f'\n⚔️ Сражайтесь на арене'
+                    f'\n🏆 Выиграйте платные призы'
+                    f'\n🃏 Обмениваетесь картами'
+                    f'\n🎫 Покупайте билетов'
+                    f'\n💠 Соберите ресурсы в подземелье'
+                    f'\n👾 Убейте боссов'
+                    f'\n🔮 Попытайте удачу в «Гаче»</blockquote>'
+                    f'\n── •✧✧• ────────────'
+                    '\n❖ 📜 Пройдите регистрацию')
+        await message.answer("❖ 🪪  Введите никнейм: ", reply_markup=profile(message.from_user.first_name))
         if referral_id and referral_id != user_id:
             await state.update_data(referral=referral_id)
         # Если пользователь уже существует и у него есть referral_id, проверьте, существует ли реферал
@@ -49,15 +58,18 @@ async def form_name(message: Message, state: FSMContext):
         await state.update_data(name=f"<a href='https://t.me/{message.from_user.username}'><b>{message.text}</b></a>")
         await state.set_state(Form.universe)
         media_id = "AgACAgIAAx0CfstymgACCxNl4ie8goZjHQ1rAV5rxcz2a9XLnQACBs8xG7-XGUsGHmby9061bgEAAwIAA3kAAzQE"
-        await message.answer(f"\n\n ❖ ⚙️ Чтобы бот работал корректно и динамично, включи автозагрузку фото "
+        await message.answer(f"\n\n ❖ ⚙️ Чтобы бот работал корректно и динамично, включите автозагрузку фото "
                              f"и видео в настройках телеграм и автовоспроизведение видео в настройках чата телеграм",
                              reply_markup=rm())
         pattern = dict(
-            caption="❖ 🗺 Выбирай вселенную"
+            caption="❖ 🗺 Выбирайте вселенную"
                     "\n── •✧✧• ────────────"
-                    "\n❖ 🌐 Вселенные постепенно будут добавляться и дополняться"
-                    "\n\n❖ 🔄 Всегда можно сменить вселенную в ⚙️ ️настройки",
-            reply_markup=inline_builder(['🗺 Bleach'], ['Bleach'])
+                    "\n❖ 🗺 Вселенные постепенно будут добавляться и дополняться"
+                    "\n<blockquote expandable>❕Внимание: Вселенные Allstars и Allstars(old) не имеет доступ к "
+                    "🏟 боевой арене!</blockquote>"
+                    "\n❖ 🔄 Всегда можно сменить вселенную в ⚙️ ️настройки",
+            reply_markup=inline_builder(['🗡 Bleach', '🍥 Naruto', '🌟 Allstars', '⭐️ Allstars(old)'],
+                                        ['Bleach', 'Naruto', 'Allstars', 'Allstars(old)'], row_width=1),
         )
         await message.answer_photo(media_id, **pattern)
     else:
@@ -66,14 +78,79 @@ async def form_name(message: Message, state: FSMContext):
 
 @router.callback_query(F.data.in_(['Bleach']))
 async def get_first_free(callback: CallbackQuery, state: FSMContext):
+    account = await mongodb.get_user(callback.from_user.id)
+    if account is not None and account['_id'] == callback.from_user.id:
+        character = account.get('character', {}).get('Bleach')
+        if character:
+            await mongodb.update_user(callback.from_user.id, {'universe': 'Bleach'})
+            await callback.answer("❖ 🗺 Вы успешно сменили вселенную", show_alert=True)
+            return
     await state.update_data(universe=callback.data)
     media = InputMediaAnimation(media="CgACAgIAAx0CfstymgACCxZl5FxQpuMBOz7tFM8BU88VOEvMXgACtjwAAkLSIEtSvf16OnsuwTQE")
     await callback.message.edit_media(media=media)
-    await callback.message.edit_caption(caption="❖ 🗺 Bleach"
+    await callback.message.edit_caption(caption="❖ 🗡 Bleach"
                                         "\n── •✧✧• ────────────"
-                                        "\n💮 События происходят на территории Японии, где проживает Ичиго Куросаки. "
-                                        "Парень с ранних лет отличается от сверстников, ведь он умеет общаться с призраками. "
-                                        "Однажды к нему в комнату залетает барышня, которую зовут Рукия Кучики. . .", reply_markup=get_common())
+                                        "\n<blockquote expandable>💮 В этой вселенной можно вовевать в 🏟 арене."
+                                        " Со временем будут доступны новые персонажи!</blockquote>",
+                                        reply_markup=get_common())
+
+
+@router.callback_query(F.data.in_(['Naruto']))
+async def get_first_free(callback: CallbackQuery, state: FSMContext):
+    account = await mongodb.get_user(callback.from_user.id)
+    if account is not None and account['_id'] == callback.from_user.id:
+        character = account.get('character', {}).get('Naruto')
+        if character:
+            await mongodb.update_user(callback.from_user.id, {'universe': 'Naruto'})
+            await callback.answer("❖ 🗺 Вы успешно сменили вселенную", show_alert=True)
+            return
+    await state.update_data(universe=callback.data)
+    media = InputMediaAnimation(media="CgACAgIAAxkBAAKu-2bfz0QjhL_TZCnL-Zha1vsprdVLAAKCUQACzJcBS3N7PqOXSE2qNgQ")
+    await callback.message.edit_media(media=media)
+    await callback.message.edit_caption(caption="❖ 🍥 Naruto"
+                                        "\n── •✧✧• ────────────"
+                                        "\n<blockquote expandable>💮 В этой вселенной можно вовевать в 🏟 арене."
+                                        " Со временем будут доступны новые персонажи!</blockquote>",
+                                        reply_markup=get_common())
+
+
+@router.callback_query(F.data.in_(['Allstars']))
+async def get_first_free(callback: CallbackQuery, state: FSMContext):
+    account = await mongodb.get_user(callback.from_user.id)
+    if account is not None and account['_id'] == callback.from_user.id:
+        character = account.get('character', {}).get('Allstars')
+        if character:
+            await mongodb.update_user(callback.from_user.id, {'universe': 'Allstars'})
+            await callback.answer("❖ 🗺 Вы успешно сменили вселенную", show_alert=True)
+            return
+    await state.update_data(universe=callback.data)
+    media = InputMediaAnimation(media="CgACAgIAAx0CfstymgACEnpmnUiYllQQPMNY7B3y44Okelr6UgACsVEAApQD6UhAS-MzjVWVxTUE")
+    await callback.message.edit_media(media=media)
+    await callback.message.edit_caption(caption="❖ 🗺 Allstars"
+                                        "\n── •✧✧• ────────────"
+                                        "\n<blockquote expandable>💮 В Этой Вселенной находиться популярные персонажи "
+                                                "из разных аниме но пока арена недоступна. Вы моежете просто собрать "
+                                                "персонажей</blockquote>", reply_markup=get_common())
+
+
+@router.callback_query(F.data.in_(['Allstars(old)']))
+async def get_first_free(callback: CallbackQuery, state: FSMContext):
+    account = await mongodb.get_user(callback.from_user.id)
+    if account is not None and account['_id'] == callback.from_user.id:
+        character = account.get('character', {}).get('Allstars(old)')
+        if character:
+            await mongodb.update_user(callback.from_user.id, {'universe': 'Allstars(old)'})
+            await callback.answer("❖ 🗺 Вы успешно сменили вселенную", show_alert=True)
+            return
+    await state.update_data(universe=callback.data)
+    media = InputMediaAnimation(media="CgACAgIAAx0CfstymgACEnpmnUiYllQQPMNY7B3y44Okelr6UgACsVEAApQD6UhAS-MzjVWVxTUE")
+    await callback.message.edit_media(media=media)
+    await callback.message.edit_caption(caption="❖ 🗺 Allstars(old)"
+                                        "\n── •✧✧• ────────────"
+                                        "\n<blockquote expandable>💮 Эта самая первая версия. В Этой Вселенной "
+                                                "находиться популярные персонажи из разных аниме но пока арена "
+                                                "недоступна. Вы моежете просто собрать "
+                                                "персонажей</blockquote>", reply_markup=get_common())
 
 
 @router.callback_query(F.data == "get_first_free")
@@ -82,20 +159,25 @@ async def get_first_free(callback: CallbackQuery, state: FSMContext):
     user_id = callback.from_user.id
     universe = data.get('universe')
     character, character_category, power = await first_summon(callback, universe)
-    await mongodb.input_user(user_id, data.get('name'), universe, character, power)
+    account = await mongodb.get_user(callback.from_user.id)
+    if account is not None and account['_id'] == callback.from_user.id:
+        await mongodb.update_user(callback.from_user.id, {'universe': universe, f'character.{universe}': character})
+    else:
+        await mongodb.input_user(user_id, data.get('name'), universe, character, power)
+
+        referral_id = data.get('referral')
+        # Если пользователь уже существует и у него есть referral_id, проверьте, существует ли реферал
+        referral = await mongodb.get_user(referral_id)
+        if referral:
+            # Если реферал существует и новый пользователь еще не в списке приглашенных
+            if user_id not in referral['account']['referrals']:
+                # Добавьте нового пользователя в список приглашенных
+                await mongodb.push_referral(referral_id, user_id)
+                # Получите обновленные данные реферала
+                updated_referral = await mongodb.get_user(referral_id)
+                # Проверьте, достигло ли количество приглашенных 3
+                if len(updated_referral['account']['referrals']) % 3 == 0:
+                    # Если достигло, увеличьте количество ключей на 1
+                    await mongodb.update_value(referral_id, {'inventory.items.tickets.keys': 1})
     await mongodb.push(universe, character_category, character, user_id)
-    referral_id = data.get('referral')
-    # Если пользователь уже существует и у него есть referral_id, проверьте, существует ли реферал
-    referral = await mongodb.get_user(referral_id)
-    if referral:
-        # Если реферал существует и новый пользователь еще не в списке приглашенных
-        if user_id not in referral['account']['referrals']:
-            # Добавьте нового пользователя в список приглашенных
-            await mongodb.push_referral(referral_id, user_id)
-            # Получите обновленные данные реферала
-            updated_referral = await mongodb.get_user(referral_id)
-            # Проверьте, достигло ли количество приглашенных 3
-            if len(updated_referral['account']['referrals']) % 3 == 0:
-                # Если достигло, увеличьте количество ключей на 1
-                await mongodb.update_value(referral_id, {'inventory.items.tickets.keys': 1})
     await state.clear()

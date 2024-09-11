@@ -1,3 +1,4 @@
+import re
 from contextlib import suppress
 from aiogram import Router, F
 from typing import Match
@@ -32,7 +33,7 @@ async def get_inventory(data):
     return invent[rarity]
 
 
-@router.message(F.text.lower().in_(['кто я', 'профиль']))
+@router.message(F.text.lower().in_(['моя карта', 'профиль']))
 async def main_chat(message: Message):
     user_id = message.from_user.id
     account = await mongodb.get_user(user_id)
@@ -40,7 +41,7 @@ async def main_chat(message: Message):
     if account is not None and account['_id'] == user_id:
 
         universe = account['universe']
-        character = account['character']
+        character = account['character'][account['universe']]
         avatar = character_photo.get_stats(universe, character, 'avatar')
         avatar_type = character_photo.get_stats(universe, character, 'type')
 
@@ -85,7 +86,7 @@ async def main_chat(message: Message):
                                        reply_markup=start_button())
 
 
-@router.message(F.text.lower().in_(['топ', 'стата']))
+@router.message(F.text.lower().in_(['битвы', 'рейтинг']))
 async def campaign_rank(message: Message):
     chat_id = message.chat.id
     rating = await mongodb.chat_rating(chat_id, '👑')
@@ -93,6 +94,151 @@ async def campaign_rank(message: Message):
     await message.answer(f"❖  🏆  <b>Сильнейшие игроки чата</b>"
                          f"\n── •✧✧• ────────────"
                          f"{rating}", disable_web_page_preview=True)
+
+
+@router.message(F.text.startswith('дать') | F.text.startswith('Дать')
+                | F.text.startswith('перевести') | F.text.startswith('Перевести'))
+async def give_money(message: Message):
+    user_id = message.from_user.id
+    friend_id = message.reply_to_message.from_user.id
+    account = await mongodb.get_user(user_id)
+    friend = await mongodb.get_user(friend_id)
+
+    # Извлекаем цифры из сообщения
+    text = message.text.lower()
+    numbers = re.findall(r'\d+', text)
+    if numbers:
+        amount = int(numbers[0])  # Первое найденное число
+        if user_id != friend_id:
+            if account is not None and account['_id'] == user_id:
+                if friend is not None and friend['_id'] == friend_id:
+                    if account['account']['money'] >= amount:
+                        await mongodb.update_user(user_id, {'account.money': account['account']['money'] - amount})
+                        await mongodb.update_user(friend_id, {'account.money': friend['account']['money'] + amount})
+                        await message.reply(f"❖ ✨ {account['name']} отправил {amount} 💴 ¥ пользователю {friend['name']}",
+                                            disable_web_page_preview=True)
+                    else:
+                        await message.reply(f"❖ ✖️ Недостаточно средст. \nБаланс: {account['account']['money']} 💴 ¥")
+                else:
+                    await message.reply("❖ ✖️ Пользователь не зарегистрирован")
+            else:
+                await message.reply("❖ ✖️ Ты не зарегистриров")
+        else:
+            await message.reply("❖ ✖️ Нельзя перевести деньги самому себе")
+    else:
+        await message.reply("❖ ✖️ Не указана сумму. Пожалуйста, укажите цифры после команды 'дать'")
+
+
+def is_character_in_inventory(character, inventory):
+    """
+    Рекурсивно проверяет, содержится ли персонаж в любом из списков внутри inventory, игнорируя регистр.
+    """
+    character_lower = character
+    for key, value in inventory.items():
+        if isinstance(value, dict):
+            if is_character_in_inventory(character, value):
+                return True
+        elif isinstance(value, list):
+            for item in value:
+                if item == character_lower:
+                    return True
+    return False
+
+
+@router.message(F.text.startswith('отдать') | F.text.startswith('Отдать'))
+async def give_character(message: Message):
+    user_id = message.from_user.id
+    if not message.reply_to_message:
+        await message.reply("❖ ✖️ Нужно ответить на сообщение пользователя, которому хотите отдать персонажа.")
+        return
+
+    friend_id = message.reply_to_message.from_user.id
+    account = await mongodb.get_user(user_id)
+    friend = await mongodb.get_user(friend_id)
+    universe = account.get('universe')
+
+    if not account:
+        await message.reply("❖ ✖️ Вы не зарегистрированы.")
+        return
+
+    if not friend:
+        await message.reply("❖ ✖️ Пользователь, которому вы хотите отдать персонажа, не зарегистрирован.")
+        return
+
+    text = message.text
+    match = re.search(r'отдать\s(.+)', text)
+    if not match:
+        await message.reply("❖ ✖️ Неверный формат команды. Пожалуйста, используйте 'отдать [персонаж]'.")
+        return
+
+    character = match.group(1).strip()
+
+    # Проверяем наличие персонажа в инвентаре пользователя
+    user_characters = account.get('inventory', {}).get('characters', {})
+
+    if not is_character_in_inventory(character, user_characters):
+        await message.reply("❖ ✖️ У вас нет такого персонажа, либо вы находитесь в другой вселенной.")
+        return
+
+    # Проверяем наличие персонажа у друга
+    friend_characters = friend.get('inventory', {}).get('characters', {})
+    if is_character_in_inventory(character, friend_characters):
+        await message.reply("❖ ✖️ У пользователя уже есть такой персонаж.")
+        return
+
+    # Проверяем, является ли персонаж основным
+    if character == account.get('character', {}).get(account.get('universe')):
+        await message.reply("❖ ✖️ Нельзя отдать своего основного персонажа.")
+        return
+
+    avatar = character_photo.get_stats(universe, character, 'avatar')
+    avatar_type = character_photo.get_stats(universe, character, 'type')
+    ch_universe = character_photo.get_stats(universe, character, 'universe')
+    rarity = character_photo.get_stats(universe, character, 'rarity')
+
+    if rarity == 'Обычная':
+        rarity = 'common'
+    elif rarity == 'Редкая':
+        rarity = 'rare'
+    elif rarity == 'Эпическая':
+        rarity = 'epic'
+    elif rarity == 'Легендарная':
+        rarity = 'legendary'
+    elif rarity == 'Мифическая':
+        rarity = 'mythical'
+    elif rarity == 'Божественная':
+        rarity = 'divine'
+
+    # Обновляем инвентари
+    await mongodb.push(universe, rarity, character, friend_id)
+    await mongodb.pull(universe, rarity, character, user_id)
+
+    # Отправляем сообщение с информацией о передаче персонажа
+    if avatar_type == 'photo':
+        await message.reply_photo(
+            avatar,
+            caption=f"❖ ✨ {account['name']} отправил персонажа {character} пользователю {friend['name']} на 🗺 вселенную {ch_universe}",
+            disable_web_page_preview=True
+        )
+    else:
+        await message.reply_animation(
+            avatar,
+            caption=f"❖ ✨ {account['name']} отправил персонажа {character} пользователю {friend['name']} на 🗺 вселенную {ch_universe}",
+            disable_web_page_preview=True
+        )
+
+
+@router.message(F.text.lower().in_(['баланс', 'б']))
+async def balance(message: Message):
+    user_id = message.from_user.id
+    account = await mongodb.get_user(user_id)
+
+    if account is not None and account['_id'] == user_id:
+        await message.answer(f"❖ 💴 Ваш баланс: {account['account']['money']} ¥")
+    else:
+        await message.answer("❖ ✖️ Ты не зарегистрирован", reply_markup=start_button())
+
+
 
 """
 @router.message((F.text == 'инвентарь') | (F.text == 'Инвентарь') | (F.text == 'карты')

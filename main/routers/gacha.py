@@ -8,7 +8,18 @@ from aiogram.enums import ParseMode
 from aiogram.types import InputMediaAnimation, InputMediaPhoto, Message
 
 from data import mongodb, character_photo
-from keyboards.builders import inline_builder, start_button, menu_button, success, Ability
+from keyboards.builders import inline_builder, start_button, menu_button, success, Ability, channel_check
+
+CHANNEL_LINK = "https://t.me/multiverse_card"
+
+
+async def check_user_subscription(user_id: int, bot):
+    member = await bot.get_chat_member(chat_id='@multiverse_card', user_id=user_id)
+
+    # Проверяем статус пользователя
+    if member.status in ["member", "administrator", "creator"]:
+        return True
+    return False
 
 router = Router()
 
@@ -16,10 +27,34 @@ characters = {
     'Bleach': {
         'divine': ['Toshiro Hitsuyaga 🌠', 'Ulquiorra Cifer 🌠', 'Urahara Kisuke🌠', 'Toshiro Hitsuyaga🌠', 'Aizen Sosuke🌠', 'Aizen Sosuke 🌠', 'Aizen Sosuke 🌠 ', 'Aizen Sosuke  🌠', 'Ichigo Kurosaki 🌠', 'Ichigo Kurosaki  🌠', 'Ichigo Kurosaki 🌠 ', 'Ichigo Kurosaki🌠 ', 'Ichigo Kurosaki🌠'],
         'mythical': ['Toshiro Hitsuyaga 🌌', 'Urahara Kisuke🌌', 'Urahara Kisuke 🌌', 'Urahara Kisuke 🌌 ', 'Urahara Kisuke  🌌', 'Ulquiorra Cifer 🌌', 'Ulquiorra Cifer🌌', 'Aizen Sosuke 🌌', 'Aizen Sosuke🌌', 'Aizen Sosuke 🌌 ', 'Ichigo Kurosaki 🌌', 'Ichigo Kurosaki  🌌', 'Ichigo Kurosaki 🌌 '],
-        'legendary': ['Ichigo Kurosaki 🌅'],
+        'legendary': ['Ichigo Kurosaki 🌅', 'Ulquiorra Cifer 🌅', 'Toshiro Hitsuyaga 🌅', 'Aizen Sosuke 🌅', 'Kurosaki Ichigo 🌅'],
         'epic': ['Toshiro Hitsuyaga 🎆', 'Toshiro Hitsuyaga🎆', 'Aizen Sosuke 🎆', 'Ichigo Kurosaki 🎆', 'Ichigo Kurosaki 🎆', 'Ichigo Kurosaki🎆'],
         'rare': ['Toshiro Hitsuyaga 🎇', 'Toshiro Hitsuyaga🎇', 'Urahara Kisuke 🎇', 'Ichigo Kurosaki 🎇', 'Ichigo Kurosaki🎇', 'Ichigo Kurosaki 🎇 '],
         'common': ['Toshiro Hitsuyaga 🌁', 'Ulquiorra Cifer 🌁', 'Ulquiorra Cifer🌁', 'Urahara Kisuke 🌁', 'Urahara Kisuke🌁', 'Aizen Sosuke 🌁', 'Aizen Sosuke🌁', 'Toshiro Hitsuyaga🌁', 'Toshiro Hitsuyaga 🌁 ', 'Toshiro Hitsuyaga  🌁', 'Ichigo Kurosaki 🌁', 'Ichigo Kurosaki🌁', 'Ichigo Kurosaki 🌁 ', 'Ichigo Kurosaki  🌁']
+    },
+    'Naruto': {
+        'divine': ['Naruto Uzumaki 🌠', 'Sasuke 🌠', 'Uchiha Sasuke◾️ 🌠', 'Uchiha◾️ 🌠', 'Sasuke Uchiha 🌠', 'Uzumaki Naruto 🌠', 'Naruto 🌠', 'Naruto Uzumaki◾️ 🌠', 'Naruto◾️ 🌠', 'Uchiha Sasuke 🌠'],
+        'mythical': ['Naruto Uzumaki 🌌', 'Sasuke Uchiha 🌌', 'Naruto▫️ 🌌', 'Sasuke 🌌', 'Uchiha Sasuke◾️ 🌌', 'Sasuke◾️ 🌌', 'Sasuke▫️ 🌌', 'Sasuke Uchiha◾️ 🌌', 'Uchiha Sasuke▫️ 🌌', 'Naruto 🌌', 'Uzumaki Naruto 🌌', 'Naruto Uzumaki◾️ 🌌', 'Uchiha Sasuke 🌌'],
+        'legendary': ['Naruto Uzumaki 🌅', 'Uchiha Sasuke 🌅'],
+        'epic': ['Naruto Uzumaki 🎆', 'Uchiha Sasuke 🎆'],
+        'rare': ['Naruto Uzumaki 🎇', 'Uchiha Sasuke◾️ 🎇', 'Sasuke◾️ 🎇', 'Uzumaki Naruto 🎇', 'Uchiha Sasuke 🎇', 'Sasuke Uchiha 🎇', 'Sasuke 🎇', 'Uchiha Sasuke 🎇'],
+        'common': ['Naruto Uzumaki 🌁', 'Sasuke Uchiha 🌁', 'Sasuke 🌁', 'Sasuke◾️ 🌁', 'Sasuke Uchiha◾️ 🌁', 'Naruto Uzumaki◾️ 🌁', 'Naruto 🌁', 'Uzumaki Naruto 🌁', 'Uchiha Sasuke 🌁', 'Uchiha Sasuke◾️ 🌁']
+    },
+    'Allstars': {
+        'divine': ['Sylpha 🌠', 'Hinata Shoyo 🌠', 'Suguru Geto 🌠', 'Neji Hyuga 🌠', 'Suzuya Juzo 🌠', 'Juzo 🌠', 'Juzo Suzuya 🌠', 'Inoske 🌠', 'Todoroki Touya 🌠', 'Mirai Niki 🌠', 'Mich Atsumu 🌠', 'Kurumi Tokisaki 🌠', 'Grimmjow 🌠', 'Zoro 🌠', 'Madara Uchiha 🌠', 'Blyu Lok 🌠', 'Mouchiro Tokito 🌠', 'Goku 🌠', 'Gojo Satoru 🌠', 'Ayanokoji  🌠', 'Nagi Seishiro 🌠', 'Anos Voldigoad 🌠', 'Inosuke 🌠', 'Dabi Mha 🌠', 'Sanemi Shinazigawa 🌠', 'Shanks 🌠', 'Lucifer 🌠', 'Sukuna 🌠', 'Muzan Kibutsiju 🌠', 'Yuta Okkotsu 🌠', 'Obito Uchiha 🌠', 'Will Serfort 🌠', 'Neito Monoma 🌠', 'Sae Itoshi 🌠', 'Choso 🌠', 'Ayanokoji 🌠', 'Polnareff 🌠', 'Jony 🌠', 'Rimuru Tempest 🌠', 'Sid Kageno 🌠', 'So Jin Wu 🌠', 'Zenitsu 🌠', 'Kaneki Ken 🌠', 'Shinobu Kocho 🌠', 'Kyouko Hori 🌠', 'Aliya 🌠', 'Hizuru Minakata 🌠', 'Shizuku 🌠', 'Yoruichi 🌠'],
+        'mythical': ['Guts 🌌', 'Gojo 🌌', 'L 🌌', 'Brodyaga 🌌', 'Akashi 🌌', 'Kaneki Ken 🌌', 'Tomura 🌌', 'Dazai 🌌', 'Soshiro 🌌', 'Kaneki 🌌', 'Arima Kishou 🌌', 'Guts  🌌', 'Yuta Okkotsu 🌌', 'Yato 🌌', 'Gyro 🌌', 'Sendju 🌌', 'Nakoshi 🌌', 'Zoro 🌌', 'Nagi 🌌', 'Kitano 🌌', 'Asta 🌌', 'Rimuru Tempest 🌌', 'Ryunosuke 🌌', 'Melodias 🌌', 'Naruto Uzumaki 🌌', 'Levi Ackerman 🌌', 'Arturia Pendragon 🌌', 'Marin Katigawa 🌌', 'Arturia 🌌', 'Kiga 🌌', 'Raphtalia 🌌', 'Shikimori 🌌', 'Mikasa 🌌', 'Albedo 🌌', 'Fubuki 🌌', 'Lane 🌌', 'Mey 🌌', 'Yoruichi Shihoin 🌌', 'Nezuko 🌌', 'Kugisaki Nobara 🌌', 'Kurumi Tokisaki 🌌'],
+        'legendary': ['F1 🌅', 'F2 🌅', 'F3 🌅', 'F4 🌅', 'F5 🌅', 'F6 🌅', 'F7 🌅', 'F8 🌅', 'F9 🌅', 'F10 🌅', 'F11 🌅', 'F12 🌅', 'F13 🌅', 'F14 🌅', 'F15 🌅', 'F16 🌅', 'F17 🌅', 'F18 🌅', 'F19 🌅', 'F20 🌅', 'F21 🌅', 'F22 🌅', 'F23 🌅', 'F24 🌅', 'F25 🌅', 'F26 🌅', 'F27 🌅', 'F28 🌅', 'F29 🌅', 'F30 🌅', 'F31 🌅', 'F32 🌅', 'F33 🌅'],
+        'epic': ['Todoroki Shoto 🎆', 'Yuta Okkotsu 🎆', 'Sven 🎆', 'Juggernaut 🎆', 'Void 🎆', 'Chaos Knight 🎆', 'Axe 🎆', 'Luffi 🎆', 'Zeus 🎆', 'Sukuna 🎆', 'Phantom Assassin 🎆', 'Visage 🎆', 'Storm Spirit 🎆', 'Kunkka 🎆', 'Shadow Fiend 🎆', 'Magnus 🎆', 'Tusk 🎆', 'Lo 🎆', 'Spectrum 🎆', 'Arc Warden 🎆', 'Marci 🎆', 'Lina 🎆', 'Drow Ranger 🎆', 'Keeper of Light 🎆'],
+        'rare': ['Shinobu Kocho 🎇', 'Miwa Kasumi 🎇', 'Muerta 🎇', 'Undying 🎇', 'Prophet 🎇', 'Razor 🎇', 'Wind Ranger 🎇', 'Luna 🎇', 'Spectre 🎇', 'Tinker 🎇', 'Bat Rider 🎇', 'Lifestealer 🎇', 'Giyu Tomioka 🎇', 'Musashi Miyamoto 🎇', 'TBlade 🎇', 'Faceless Void 🎇', 'Disruptor 🎇', 'Terrorblade 🎇'],
+        'common': ['Uchiha Sasuke 🌁', 'Naruto Uzumaki 🌁', 'Zenitsu 🌁', 'Shoto Todoroki 🌁', 'Lance Crown 🌁', 'Megumi Fushiguro 🌁', 'Levi Ackerman 🌁', 'Nanami Kento 🌁', 'Todoroki 🌁', 'Miyamoto Musashi 🌁', 'Toji Fushiguro 🌁', 'Feitan Portor 🌁', 'Kaneki Ken 🌁', 'Seidou Takizawa 🌁', 'Gojo Satoru 🌁', 'Gaara 🌁', '02 🌁', 'Power 🌁', 'Yoru 🌁', 'Kugisaki Nobara 🌁', 'Hinata Hyuga 🌁', 'Sakura Haruno 🌁', 'Maki Zenin 🌁']
+    },
+    'Allstars(old)': {
+        'divine': ['Arima Kishou 🌠', 'Uruma Shun 🌠', 'Gojo Satoru 🌠', 'Kaneki Ken 🌠', 'Gojo Satoru ▫️ ▫️ 🌠', 'Koji 🌠', 'Ulquiorra 🌠', 'Kurumi Tokisaki 🌠', 'Gabimaru 🌠', 'Renji 🌠', 'Grimmjow 🌠', 'Megumi Fushiguro 🌠', 'Geto Suguru ▫️ 🌠', 'Rangiku Matsumoto 🌠', 'Shutara Senjumaru 🌠', 'Gojo Satoru ▫️ ▫️ ▫️ 🌠', 'Gorgon 🌠', 'Urahara Kisuke 🌠', 'Rukia Kuchiki 🌠', 'Inoue Orihime 🌠', 'Soifon 🌠', 'Urahara Kisuke ▫️ 🌠', 'Yagami Light ▫️ 🌠', 'Sukuna 🌠', 'Aizen Sosuke 🌠', 'Yuta Okkotsu ▫️ 🌠', 'Yuta Okkotsu 🌠', 'Kakashi Hatake 🌠', 'Seishiro Nagi 🌠', 'Mitsuri Kanroji 🌠', 'Rengoku Kyojuro ▫️ 🌠', 'Temari Nara 🌠', 'Yagami Light 🌠', 'Tengen Uzui ▫️ 🌠', 'Itachi Uchiha 🌠', 'Geto Suguru 🌠', 'Rengoku Kyojuro 🌠', 'Yami Sukehiro 🌠', 'Choso Kamo 🌠', 'Gojo Satoru ▫️ 🌠', 'Uchiha Madara 🌠', 'Shinobu Kocho 🌠', 'Toji Fushiguro 🌠', 'Tengen Uzui 🌠', 'Toji Fushiguro ▫️ 🌠'],  # Самый редкий уровень
+        'mythical': ['L 🌌', 'Juuzou Suzuya 🌌', 'Shinobu Kocho 🌌', 'Manjiro Sano 🌌', 'Eren Yeager ▫️ 🌌', 'Furina 🌌', 'Kurumi Tokisaki 🌌', 'Zenitsu Agatsuma 🌌', 'Apex girl 🌌', 'Mugetsu 🌌', 'Ichigo Kurosaki 🌌', 'Hokushin Mei 🌌', 'Delta 🌌', 'Scaramouche 🌌', 'Blade 🌌', 'Knave 🌌', 'Kazuha 🌌', 'Kaveh 🌌', 'Zhongli 🌌', 'Rei Ayanami 🌌', 'Ayato Kamisato 🌌', 'Sukuna 🌌', 'Makima ▫️ ▫️ 🌌', 'Yuta Okkotsu 🌌', 'Levi Ackerman ▫️ 🌌', 'Jean Kirstein 🌌', 'Mikasa Ackerman 🌌', 'Yuta Okkotsu ▫️ 🌌', 'Uruma Shun 🌌', 'Tanjiro Kamado ▫️ 🌌', 'Gojo Satoru 🌌', 'Guts 🌌', 'Akashi Seijuro 🌌', 'Yagami Light ▫️ 🌌', 'Garou 🌌', 'Urahara Kisuke 🌌', 'Itachi Uchiha 🌌', 'Yuta Okkotsu ▫️ ▫️ 🌌', 'Yato Noragami 🌌', 'Kaneki Ken ▫️ 🌌', 'Hisoka Morow 🌌', 'Kaneki Ken ▫️ ▫️ 🌌', 'Todoroki Shoto 🌌', 'Yagami Light 🌌', 'Makima ▫️ 🌌', 'Arima Kishou 🌌', 'Uchiha Madara 🌌', 'Kaneki Ken 🌌', 'Genos 🌌', '2B 🌌', 'Kokushibo 🌌', 'Power 🌌', 'Touya Todoroki 🌌', 'Makima 🌌', 'Ken Ryuguji 🌌', 'Kakashi Hatake ▫️ 🌌', 'Kakashi Hatake ▫️ ▫️ 🌌', 'Aki Hayakawa 🌌', 'Tanjiro Kamado 🌌', 'Eren Yeager 🌌', 'Kakashi Hatake 🌌', 'Levi Ackerman 🌌', 'Nobara Kugisaki 🌌'],
+        'legendary': ['Artoria pendragon 🌅', 'Ichigo Kurosaki 🌅', 'Bell Cranel 🌅', 'Yuta Okkotsu 🌅', 'Roronoa Zoro 🌅', 'Todoroki Shoto 🌅', 'Giyu Tomioka 🌅', 'Zenitsu Agatsuma 🌅', 'Artoria pendragon ▫️ ▫️ ▫️ 🌅', 'Kurama 🌅', 'Monkey D. Luffy ▫️▫️ 🌅', 'Artoria pendragon ▫️ 🌅', 'Artoria pendragon ▫️ ▫️ 🌅', 'Monkey D. Luffy 🌅', 'Sukuna 🌅', 'Itachi Uchiha 🌅', 'Sasuke Uchiha 🌅', 'Naruto Uzumaki 🌅', 'Son Jin Woo 🌅', 'Son Jin Woo ▫️ 🌅', 'Sanji 🌅', 'Mikasa Ackerman 🌅', 'Garou 🌅', 'Shanks 🌅', 'Monkey D. Luffy ▫️ 🌅', 'Zenitsu 🌅', 'Goku 🌅', 'Orachimaru 🌅'],
+        'epic': ['Yuta Okkotsu 🎆', 'Ichigo Kurosaki 🎆', 'Yamamoto Genryuusai 🎆', 'Yuta Okkotsu ▫️ 🎆', 'Bakugo Katsuki 🎆', 'Isagi Yoichi 🎆', 'Phantom x ? 🎆', 'Ichigo x Legion 🎆', 'SF x ? 🎆', 'Kiper x ? 🎆', 'Aizen x Juggernaut 🎆', 'Zoldyck x Storm 🎆', 'Visage x ? 🎆', 'Tusk x ? 🎆', 'Yamamoto x Ember 🎆', 'Kunkka x ? 🎆', 'Sukuna x BloodSeeker 🎆', 'Zeus x ? 🎆'],
+        'rare': ['Toshiro Hitsugaya 🎇', 'Kaneki Ken 🎇', 'Hyakkimaru 🎇', 'Uruma Shun 🎇', 'Makima 🎇', 'Crystal Maiden 🎇', 'Gojo x Visage 🎇', 'Arima x Druid 🎇', 'Void x ? 🎇', 'Sukuna x Techies 🎇', 'Gin x Ancient 🎇', 'Sukuna x Morphling 🎇', 'Spectre 🎇', 'Benimaru x Razor 🎇', 'Genos x Axe 🎇', 'Takizawa x Knight 🎇'],
+        'common': ['Yuta Okkotsu 🌁', 'Seishiro Nagi 🌁', 'Kaneki Ken 🌁', 'Uchiha Madara 🌁', 'Manjiro Sano 🌁', 'Itoshi Rin 🌁', 'Benimaru Shinmon 🌁', 'Aki Hayakawa ▫️ 🌁', 'Izuku Midoriya 🌁', 'Deku 🌁', 'Sukuna 🌁', 'Eren Yeager 🌁', 'Aki Hayakawa 🌁', 'Juuzou Suzuya 🌁', 'Toji Fushiguro 🌁', 'Gojo Satoru 🌁', 'Makima 🌁', 'Unohana Retsu 🌁', 'Toshiro Hitsugaya 🌁', 'Arima Kishou 🌁', 'Hyakkimaru 🌁', 'Levi Ackerman 🌁'],
     }
 }
 
@@ -105,14 +140,6 @@ async def card_gacha(user_id, callback):
         button = "common_summon"
 
     character = random.choice(characters[universe][character_category])  # Выбираем случайного персонажа из списка
-    avatar = character_photo.get_stats(universe, character, 'avatar')
-    avatar_type = character_photo.get_stats(universe, character, 'type')
-    ch_universe = character_photo.get_stats(universe, character, 'universe')
-    rarity = character_photo.get_stats(universe, character, 'rarity')
-    strength = character_photo.get_stats(universe, character, 'arena')['strength']
-    agility = character_photo.get_stats(universe, character, 'arena')['agility']
-    intelligence = character_photo.get_stats(universe, character, 'arena')['intelligence']
-    power = character_photo.get_stats(universe, character, 'arena')['power']
 
     async def is_in_inventory():
         get_account = await mongodb.get_user(user_id)
@@ -123,6 +150,30 @@ async def card_gacha(user_id, callback):
                 return character in universe_characters.get(character_category, [])
         return False
 
+    fragments = 2
+    avatar = character_photo.get_stats(universe, character, 'avatar')
+    avatar_type = character_photo.get_stats(universe, character, 'type')
+    ch_universe = character_photo.get_stats(universe, character, 'universe')
+    rarity = character_photo.get_stats(universe, character, 'rarity')
+
+    if rarity == 'Обычная':
+        power = 142
+    elif rarity == 'Редкая':
+        power = 160
+    elif rarity == 'Эпическая':
+        power = 178
+    elif rarity == 'Легендарная':
+        power = 196
+    elif rarity == 'Мифическая':
+        power = 214
+    else:
+        power = 232
+
+    message = (f"\n❖✨ Редкость: {rarity}"
+               f"\n❖⚜️ Мощь: {power}")
+    buttons = [' 🔙 ', f"{icon}"]
+    calls = ['banner', f"{button}"]
+
     if await is_in_inventory():
         fragments = 4
         # Если персонаж уже в инвентаре, увеличиваем только силу и деньги
@@ -131,17 +182,24 @@ async def card_gacha(user_id, callback):
                    f"\n<i> Зачислены только бонусы"
                    f"\n + 2х 🧩 Осколков </i>")
     else:
-        fragments = 2
-        # Если персонажа нет в инвентаре, добавляем его и увеличиваем силу, деньги и количество персонажей
+        if account['universe'] not in ['Allstars', 'Allstars(old)']:
+            strength = character_photo.get_stats(universe, character, 'arena')['strength']
+            agility = character_photo.get_stats(universe, character, 'arena')['agility']
+            intelligence = character_photo.get_stats(universe, character, 'arena')['intelligence']
+            power = character_photo.get_stats(universe, character, 'arena')['power']
+            message = (f"\n❖ ✨ Редкость: {rarity}"
+                       f"\n❖ 🗺 Вселенная: {ch_universe}"
+                       f"\n\n   ✊🏻 Сила: {strength}"
+                       f"\n   👣 Ловкость: {agility}"
+                       f"\n   🧠 Интелект: {intelligence}"
+                       f"\n   ⚜️ Мощь: {power}")
+            buttons = ["🎴 Навыки", " 🔙 ", f"{icon}"]
+            calls = [Ability(action="ability", universe=universe,
+                     character=character, back='banner'), "banner", f"{button}"]
+
         await mongodb.push(universe, character_category, character, user_id)
-        await mongodb.update_value(user_id, {'campaign.power': power})
         await mongodb.update_value(user_id, {'account.fragments': fragments})
-        message = (f"\n❖ ✨ Редкость: {rarity}"
-                   f"\n❖ 🗺 Вселенная: {ch_universe}"
-                   f"\n\n   ✊🏻 Сила: {strength}"
-                   f"\n   👣 Ловкость: {agility}"
-                   f"\n   🧠 Интелект: {intelligence}"
-                   f"\n   ⚜️ Мощь: {power}")
+        await mongodb.update_value(user_id, {'campaign.power': power})
 
     pattern = dict(
         caption=f"\n ── •✧✧• ────────────"
@@ -151,10 +209,9 @@ async def card_gacha(user_id, callback):
                 f"\n──❀*̥˚──◌──◌──❀*̥˚────"
                 f"\n<i> + {fragments}🧩 Осколков </i>",
         reply_markup=inline_builder(
-            ["🎴 Навыки", " 🔙 ", f"{icon}"],
-            [Ability(action="ability", universe=universe,
-                     character=character, back='banner'), "banner", f"{button}"],
-            row_width=[1, 2]),
+            buttons,
+            calls,
+            row_width=[2, 2]),
         parse_mode=ParseMode.HTML
     )
 
@@ -202,21 +259,40 @@ async def first_summon(callback, universe):
     avatar_type = character_photo.get_stats(universe, character, 'type')
     ch_universe = character_photo.get_stats(universe, character, 'universe')
     rarity = character_photo.get_stats(universe, character, 'rarity')
-    strength = character_photo.get_stats(universe, character, 'arena')['strength']
-    agility = character_photo.get_stats(universe, character, 'arena')['agility']
-    intelligence = character_photo.get_stats(universe, character, 'arena')['intelligence']
-    power = character_photo.get_stats(universe, character, 'arena')['power']
+
+    if rarity == 'Обычная':
+        power = 142
+    elif rarity == 'Редкая':
+        power = 160
+    elif rarity == 'Эпическая':
+        power = 178
+    elif rarity == 'Легендарная':
+        power = 196
+    elif rarity == 'Мифическая':
+        power = 214
+    else:
+        power = 232
+
+    msg = (f"\n❖✨ Редкость: {rarity}"
+           f"\n❖⚜️ Мощь: {power}")
+
+    if universe not in ['Allstars', 'Allstars(old)']:
+        strength = character_photo.get_stats(universe, character, 'arena')['strength']
+        agility = character_photo.get_stats(universe, character, 'arena')['agility']
+        intelligence = character_photo.get_stats(universe, character, 'arena')['intelligence']
+        power = character_photo.get_stats(universe, character, 'arena')['power']
+        msg = (f"\n❖ ✨ Редкость: {rarity}"
+               f"\n❖ 🗺 Вселенная: {ch_universe}"
+               f"\n\n   ✊🏻 Сила: {strength}"
+               f"\n   👣 Ловкость: {agility}"
+               f"\n   🧠 Интелект: {intelligence}"
+               f"\n   ⚜️ Мощь: {power}")
 
     pattern = dict(
         caption=f"\n ── •✧✧• ────────────"
                 f"\n  🎴  〢 {character} "
                 f"\n ── •✧✧• ────────────"
-                f"\n❖ ✨ Редкость: {rarity}"
-                f"\n❖ 🗺 Вселенная: {ch_universe}"
-                f"\n\n   ✊🏻 Сила: {strength}"
-                f"\n   👣 Ловкость: {agility}"
-                f"\n   🧠 Интелект: {intelligence}"
-                f"\n   ⚜️ Мощь: {power}"
+                f"{msg}"
                 f"\n──❀*̥˚──◌──◌──❀*̥˚────",
         reply_markup=success(),
         parse_mode=ParseMode.HTML
@@ -255,117 +331,148 @@ async def first_summon(callback, universe):
     await callback.message.edit_media(new_photo, inline_id)
 
     await callback.message.edit_caption(inline_message_id=inline_id, **pattern)
-    await callback.message.answer("❖ Добро пожаловать", reply_markup=menu_button())
+    account = await mongodb.get_user(callback.from_user.id)
+    if account is not None and account['_id'] == callback.from_user.id:
+        await callback.message.answer("❖ Добро пожаловать", reply_markup=menu_button())
     return character, character_category, power
 
 
-@router.message((F.text == 'Получить карту') | (F.text == 'получить карту')
-                | (F.text == 'призыв') | (F.text == 'Призыв') | (F.text == '🎴 Получить карту'))
+@router.message((F.text == 'Grab') | (F.text == 'grab')
+                | (F.text == 'Граб') | (F.text == 'граб') | (F.text == '🎴 Grab'))
 async def campaign_rank(message: Message):
     user_id = message.from_user.id
     account = await mongodb.get_user(user_id)
     universe = account['universe']
 
     if account is not None and account['_id'] == user_id:
-        # Если 'last_call_time' не существует, установите его в текущее время
-        if 'last_call_time' not in account or datetime.now() - account['last_call_time'] >= timedelta(hours=4):
-            now = datetime.now()
-            await mongodb.update_get_card(user_id, now)
-            # Извлеките обновленные данные после обновления
-            character_category = golden_gacha()
-            character = random.choice(characters[universe][character_category])
-            avatar = character_photo.get_stats(universe, character, 'avatar')
-            avatar_type = character_photo.get_stats(universe, character, 'type')
-            ch_universe = character_photo.get_stats(universe, character, 'universe')
-            rarity = character_photo.get_stats(universe, character, 'rarity')
-            strength = character_photo.get_stats(universe, character, 'arena')['strength']
-            agility = character_photo.get_stats(universe, character, 'arena')['agility']
-            intelligence = character_photo.get_stats(universe, character, 'arena')['intelligence']
-
-            async def is_in_inventory():
-                get_account = await mongodb.get_user(user_id)
-                if universe in get_account['inventory']['characters'] and character_category in \
-                        get_account['inventory']['characters'][universe]:
-                    return character in get_account['inventory']['characters'][universe][character_category]
+        bot = message.bot  # Используем объект бота из сообщения
+        if await check_user_subscription(user_id, bot):
+            # Если 'last_call_time' не существует, установите его в текущее время
+            if 'last_call_time' not in account or datetime.now() - account['last_call_time'] >= timedelta(hours=4):
+                now = datetime.now()
+                await mongodb.update_get_card(user_id, now)
+                # Извлеките обновленные данные после обновления
+                character_category = golden_gacha()
+                character = random.choice(characters[universe][character_category])
+                avatar = character_photo.get_stats(universe, character, 'avatar')
+                avatar_type = character_photo.get_stats(universe, character, 'type')
+                ch_universe = character_photo.get_stats(universe, character, 'universe')
+                rarity = character_photo.get_stats(universe, character, 'rarity')
+                if rarity == 'Обычная':
+                    power = 142
+                elif rarity == 'Редкая':
+                    power = 160
+                elif rarity == 'Эпическая':
+                    power = 178
+                elif rarity == 'Легендарная':
+                    power = 196
+                elif rarity == 'Мифическая':
+                    power = 214
                 else:
-                    return False
+                    power = 232
+                msg = (f"\n❖✨ Редкость: {rarity}"
+                       f"\n❖⚜️ Мощь: {power}")
+                buttons = []
+                calls = []
 
-            if await is_in_inventory():
-                fragments = 4
-                # Если персонаж уже в инвентаре, увеличиваем только силу и деньги
-                await mongodb.update_value(user_id, {'account.fragments': fragments})
-                msg = (f"\n❖ Вам попалась повторка:"
-                       f"\n<i> Зачислены только бонусы"
-                       f"\n + 2х 🧩 Осколков </i>")
+                async def is_in_inventory():
+                    get_account = await mongodb.get_user(user_id)
+                    if universe in get_account['inventory']['characters'] and character_category in \
+                            get_account['inventory']['characters'][universe]:
+                        return character in get_account['inventory']['characters'][universe][character_category]
+                    else:
+                        return False
+
+                if await is_in_inventory():
+                    fragments = 4
+                    # Если персонаж уже в инвентаре, увеличиваем только силу и деньги
+                    await mongodb.update_value(user_id, {'account.fragments': fragments})
+                    msg = (f"\n❖ Вам попалась повторка:"
+                           f"\n<i> Зачислены только бонусы"
+                           f"\n + 2х 🧩 Осколков </i>")
+                else:
+                    fragments = 2
+                    if account['universe'] not in ['Allstars', 'Allstars(old)']:
+                        strength = character_photo.get_stats(universe, character, 'arena')['strength']
+                        agility = character_photo.get_stats(universe, character, 'arena')['agility']
+                        intelligence = character_photo.get_stats(universe, character, 'arena')['intelligence']
+                        msg = (f"\n❖ ✨ Редкость: {rarity}"
+                               f"\n\n   🗺 Вселенная: {ch_universe}"
+                               f"\n\n   ✊🏻 Сила: {strength}"
+                               f"\n   👣 Ловкость: {agility}"
+                               f"\n   🧠 Интелект: {intelligence}")
+                        buttons = ["🎴 Навыки"]
+                        calls = [Ability(action="ability", universe=universe,
+                                         character=character, back='banner')]
+
+                    await mongodb.push(universe, character_category, character, user_id)
+                    await mongodb.update_value(user_id, {'account.fragments': fragments})
+                    await mongodb.update_value(user_id, {'campaign.power': power})
+
+                pattern = dict(
+                    caption=f"\n ── •✧✧• ────────────"
+                            f"\n  🃏  〢 {character} "
+                            f"\n ── •✧✧• ────────────"
+                            f"{msg}"
+                            f"\n──❀*̥˚──◌──◌──❀*̥˚────"
+                            f"\n<i> + {fragments}🧩 Осколков </i>",
+                    reply_markup=inline_builder(buttons, calls,
+                                                row_width=[1]),
+                    parse_mode=ParseMode.HTML
+                )
+
+                if character_category == 'divine':
+                    media_id = "CgACAgIAAx0CfstymgACBiVlzikq6HGeA2exxOQQbekNg_KImAACDEIAAsuUcUpNy3ouWDG9xTQE"
+                    time = 7
+                elif character_category == 'mythical':
+                    media_id = "CgACAgIAAx0CfstymgACBiRlzikgAAEbiUWlzuHAYpT3rlL91O4AAgtCAALLlHFKEzbl8cFs3cg0BA"
+                    time = 6.2
+                elif character_category == 'legendary':
+                    media_id = "CgACAgIAAx0CfstymgACBiNlzikdQ_RssBYRl4A0G--qgie-ewACCkIAAsuUcUo0j4VTQm0baDQE"
+                    time = 7.2
+                elif character_category == 'epic':
+                    media_id = "CgACAgIAAx0CfstymgACBixlzivkRBW3Iki8XQ11VLPBx7nqXAACH0IAAsuUcUojWO7WBnMQlzQE"
+                    time = 7.3
+                elif character_category == 'rare':
+                    media_id = "CgACAgIAAx0CfstymgACBitlzivdoGBCYVhnFaEGl6QWqoxXhgACHkIAAsuUcUqp4UhpJLR2LTQE"
+                    time = 7.2
+                else:
+                    media_id = "CgACAgIAAx0CfstymgACBiplzivQmnDtjQTgUR23iW_IC4XYjwACHUIAAsuUcUoqWzNNWaav6zQE"
+                    time = 7.2
+
+                gacha_msg = await message.reply_animation(media_id)
+
+                await asyncio.sleep(time)
+
+                if avatar_type == 'photo':
+                    new_photo = InputMediaPhoto(media=avatar)
+                else:
+                    new_photo = InputMediaAnimation(media=avatar)
+
+                await gacha_msg.edit_media(new_photo)
+                await gacha_msg.edit_caption(**pattern)
+
             else:
-                fragments = 2
-                character_category = account['inventory']['characters'][universe].get('character_category', None)
-                await mongodb.push(universe, character_category, character, user_id)
-                await mongodb.update_value(user_id, {'account.fragments': fragments})
-                msg = (f"\n❖ ✨ Редкость: {rarity}"
-                       f"\n\n   🗺 Вселенная: {ch_universe}"
-                       f"\n\n   ✊🏻 Сила: {strength}"
-                       f"\n   👣 Ловкость: {agility}"
-                       f"\n   🧠 Интелект: {intelligence}")
+                # Вычислите, сколько времени осталось
+                remaining_time = timedelta(hours=4) - (datetime.now() - account['last_call_time'])
+                remaining_seconds = int(remaining_time.total_seconds())
+                remaining_hours = remaining_seconds // 3600
+                remaining_minutes = (remaining_seconds % 3600) // 60
 
-            pattern = dict(
-                caption=f"\n ── •✧✧• ────────────"
-                        f"\n  🃏  〢 {character} "
-                        f"\n ── •✧✧• ────────────"
-                        f"{msg}"
-                        f"\n\n──❀*̥˚──◌──◌──❀*̥˚────"
-                        f"\n<i> + {fragments}🧩 Осколков </i>",
-                reply_markup=inline_builder(["🎴 Навыки"],
-                                            [Ability(action="ability", universe=universe, character=character),
-                                             "banner", "golden"],
-                                            row_width=[1]),
-                parse_mode=ParseMode.HTML
-            )
-
-            if character_category == 'divine':
-                media_id = "CgACAgIAAx0CfstymgACBiVlzikq6HGeA2exxOQQbekNg_KImAACDEIAAsuUcUpNy3ouWDG9xTQE"
-                time = 7
-            elif character_category == 'mythical':
-                media_id = "CgACAgIAAx0CfstymgACBiRlzikgAAEbiUWlzuHAYpT3rlL91O4AAgtCAALLlHFKEzbl8cFs3cg0BA"
-                time = 6.2
-            elif character_category == 'legendary':
-                media_id = "CgACAgIAAx0CfstymgACBiNlzikdQ_RssBYRl4A0G--qgie-ewACCkIAAsuUcUo0j4VTQm0baDQE"
-                time = 7.2
-            elif character_category == 'epic':
-                media_id = "CgACAgIAAx0CfstymgACBixlzivkRBW3Iki8XQ11VLPBx7nqXAACH0IAAsuUcUojWO7WBnMQlzQE"
-                time = 7.3
-            elif character_category == 'rare':
-                media_id = "CgACAgIAAx0CfstymgACBitlzivdoGBCYVhnFaEGl6QWqoxXhgACHkIAAsuUcUqp4UhpJLR2LTQE"
-                time = 7.2
-            else:
-                media_id = "CgACAgIAAx0CfstymgACBiplzivQmnDtjQTgUR23iW_IC4XYjwACHUIAAsuUcUoqWzNNWaav6zQE"
-                time = 7.2
-
-            gacha_msg = await message.reply_animation(media_id)
-
-            await asyncio.sleep(time)
-
-            if avatar_type == 'photo':
-                new_photo = InputMediaPhoto(media=avatar)
-            else:
-                new_photo = InputMediaAnimation(media=avatar)
-
-            await gacha_msg.edit_media(new_photo)
-            await gacha_msg.edit_caption(**pattern)
-
+                await message.reply_animation(
+                    animation="CgACAgIAAx0CfstymgACBzpl0I7O2WanntSMhoK4cXEfBxt33AAC4j8AAvasiUp11UMJwtm8UTQE",
+                    caption="\n ── •✧✧• ────────────"
+                    f"\n✶ 🔮 Мжно совершить бесплатный 🎫 золотой призыв раз в ⏳ 4 часа"
+                    f"\n ── •✧✧• ────────────"
+                    f"\n⏳ подожди еще {remaining_hours}ч {remaining_minutes}мин")
         else:
-            # Вычислите, сколько времени осталось
-            remaining_time = timedelta(hours=4) - (datetime.now() - account['last_call_time'])
-            remaining_seconds = int(remaining_time.total_seconds())
-            remaining_hours = remaining_seconds // 3600
-            remaining_minutes = (remaining_seconds % 3600) // 60
-
             await message.reply_animation(
                 animation="CgACAgIAAx0CfstymgACBzpl0I7O2WanntSMhoK4cXEfBxt33AAC4j8AAvasiUp11UMJwtm8UTQE",
                 caption="\n ── •✧✧• ────────────"
-                f"\n✶ 🔮 Мжно совершить бесплатный 🎫 золотой призыв раз в ⏳ 4 часа"
-                f"\n ── •✧✧• ────────────"
-                f"\n⏳ подожди еще {remaining_hours}ч {remaining_minutes}мин")
+                        f"\n✶ 🔮 Мжно совершить бесплатный 🎫 золотой призыв раз в ⏳ 4 часа"
+                        f"\n ── •✧✧• ────────────"
+                        f"\n🔒 Для разблокировки нужно подписаться на канал бота",
+                reply_markup=channel_check())
     else:
         media = "CgACAgIAAx0CfstymgACBbRlzDgYWpgLO50Lgeg0HImQEC9GEAAC7D4AAsywYUo5sbjTkVkCRjQE"
         await message.answer_animation(animation=media, caption="✧ • 📄 Ты не регистрирован"

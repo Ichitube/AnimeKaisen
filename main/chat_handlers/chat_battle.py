@@ -25,7 +25,8 @@ async def on_bot_join(event: ChatMemberUpdated):
     print(event)
     chat_id = event.chat.id
     title = event.chat.title
-    await mongodb.start_chat(chat_id, title, 'Bleach')
+    link = event.chat.username
+    await mongodb.start_chat(chat_id, title, link, 'Bleach')
     await bot.send_message(chat_id, text=f"💮 Привет, я рад присоединиться к вашей группе {title}!")
 
 
@@ -56,7 +57,7 @@ async def duel_timeout(chat_id, user_id, r, mes):
         if account["battle"]["battle"]["status"] == 2:
             rival = await mongodb.get_user(account["battle"]["battle"]["rid"])
             universe = rival['universe']
-            character = rival['character']
+            character = rival['character'][rival['universe']]
             avatar = character_photo.get_stats(universe, character, 'avatar')
             avatar_type = character_photo.get_stats(universe, character, 'type')
             await mongodb.update_many(
@@ -69,10 +70,10 @@ async def duel_timeout(chat_id, user_id, r, mes):
             )
             if avatar_type == 'photo':
                 await bot.send_photo(chat_id=chat_id, photo=avatar,
-                                     caption=f"👑 {rival['character']} Победил")
+                                     caption=f"👑 {rival['character'][rival['universe']]} Победил")
             else:
                 await bot.send_animation(chat_id=chat_id, animation=avatar,
-                                         caption=f"👑 {rival["character"]} Победил")
+                                         caption=f"👑 {rival['character'][rival['universe']]} Победил")
             await bot.edit_message_text(chat_id=chat_id, message_id=mes.message_id,
                                         text=f"✖️ Время вышло 🕘", reply_markup=None)
 
@@ -91,16 +92,28 @@ async def request_timeout(chat_id, user_id, mes):
 async def duel(message: Message):
     user_id = message.from_user.id
     if not message.reply_to_message:
-        return await message.reply("✖️ Нужно ответить на сообщение соперника")
+        return await message.reply("✖️ Нужно ответить на сообщение соперника!")
     rival_id = message.reply_to_message.from_user.id
     if user_id == rival_id:
-        return await message.reply("✖️ Нельзя бросить вызов самому себе")
+        return await message.reply("✖️ Нельзя бросить вызов самому себе!")
     chat_id = message.chat.id
     account = await mongodb.get_user(user_id)
     rival = await mongodb.get_user(rival_id)
+    if rival is None:
+        await message.reply(text="✖️ Соперник не регистрирован!")
+        return
+    if account is None:
+        await message.reply(text="✖️ Ты не регистрирован!")
+        return
 
     if request_data.get(chat_id):
         return await message.reply("✖️ Идёт битва!")
+
+    elif account['universe'] in ['Allstars', 'Allstars(old)']:
+        return await message.reply("✖️ Ты не из вселенной где доступна арена!")
+
+    elif rival['universe'] in ['Allstars', 'Allstars(old)']:
+        return await message.reply("✖️ Соперник не из вселенной где доступна арена!")
 
     elif account["battle"]["battle"]["status"] == 1:
         await message.reply(text="💢 Вы уже находитесь в поиске соперника!")
@@ -121,12 +134,7 @@ async def duel(message: Message):
     request_data[chat_id] = {}
     request_data[chat_id][user_id] = False
     request_data[chat_id][rival_id] = user_id
-    account = await mongodb.get_user(user_id)
-    rival = await mongodb.get_user(rival_id)
-    if rival is None:
-        await bot.send_message(user_id, text="✖️ Соперник не регистрирован")
-    if account is None:
-        await bot.send_message(user_id, text="Ты не регистрирован")
+
     message = await bot.send_animation(
         animation='CgACAgQAAx0CfstymgACDfJmEvqMok4D9NPyOY0bevepOE4LpQAC9gIAAu-0jFK0picm9zwgKzQE', chat_id=chat_id,
         caption=f"❖ {account['name']} бросил вызов {rival['name']}"
@@ -192,7 +200,7 @@ async def start_duel(callback: CallbackQuery):
         else:
             ident = account["_id"]
             name = account["name"]
-            character = account['character']
+            character = account['character'][account['universe']]
             strength = character_photo.get_stats(universe, character, 'arena')['strength']
             agility = character_photo.get_stats(universe, character, 'arena')['agility']
             intelligence = character_photo.get_stats(universe, character, 'arena')['intelligence']
@@ -210,7 +218,7 @@ async def start_duel(callback: CallbackQuery):
             r_ident = rival["_id"]
             r_name = rival["name"]
             r_universe = rival['universe']
-            r_character = rival['character']
+            r_character = rival['character'][rival['universe']]
             r_strength = character_photo.get_stats(r_universe, r_character, 'arena')['strength']
             r_agility = character_photo.get_stats(r_universe, r_character, 'arena')['agility']
             r_intelligence = character_photo.get_stats(r_universe, r_character, 'arena')['intelligence']
@@ -277,7 +285,7 @@ async def duel_battle(callback: CallbackQuery):
             await callback.answer("✖️ Недостаточно энергии 🪫", show_alert=True)
             return
 
-        await bot.edit_message_reply_markup(chat_id, callback.message.message_id)
+        await bot.edit_message_reply_markup(chat_id=chat_id, message_id=callback.message.message_id)
 
         duel_battle_data[chat_id][character.ident] = character
         duel_battle_data[chat_id][r_character.ident] = r_character
@@ -338,7 +346,7 @@ async def duel_battle(callback: CallbackQuery):
             if character.b_round != r_character.b_round:
                 del request_data[chat_id]
                 universe = rival['universe']
-                character = rival['character']
+                character = rival['character'][rival['universe']]
                 avatar = character_photo.get_stats(universe, character, 'avatar')
                 avatar_type = character_photo.get_stats(universe, character, 'type')
                 if avatar_type == 'photo':
@@ -362,7 +370,7 @@ async def duel_battle(callback: CallbackQuery):
             if character.b_round != r_character.b_round:
                 del request_data[chat_id]
                 universe = account['universe']
-                character = account['character']
+                character = account['character'][account['universe']]
                 avatar = character_photo.get_stats(universe, character, 'avatar')
                 avatar_type = character_photo.get_stats(universe, character, 'type')
                 if avatar_type == 'photo':

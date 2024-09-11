@@ -2,7 +2,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 
 from recycling import profile
 
-client = AsyncIOMotorClient("mongodb://localhost:27017")  #mongodb+srv://dire:1243qwtr@animekaisen.8r7or8e.mongodb.net/?retryWrites=true&w=majority,
+client = AsyncIOMotorClient("mongodb+srv://dire:1243qwtr@animekaisen.8r7or8e.mongodb.net/?retryWrites=true&w=majority&appName=AnimeKaisen")  #mongodb+srv://dire:1243qwtr@animekaisen.8r7or8e.mongodb.net/?retryWrites=true&w=majority,
 
 db = client["AnimeKaisen"]
 
@@ -15,7 +15,9 @@ async def input_user(user_id: int, name, universe, character, power):
         '_id': user_id,
         'name': name,
         'universe': universe,
-        'character': character,
+        'character': {
+            universe: character
+        },
         'account': {
             'prime': False,
             'money': 1000,
@@ -81,6 +83,32 @@ async def update_user(user_id: int, data: dict):
     await db.users.update_one({"_id": user_id}, {"$set": data})
 
 
+async def set_money(message):
+    result = await db.users.update_many(
+        {"account.money": {"$gt": 10000}},  # Условие: money больше 100000
+        {"$set": {"account.money": 100}}  # Действие: установить money в 100
+    )
+
+    await message.answer(text=f"Modified {result.modified_count} documents.")
+
+
+async def users():
+    user_count = await db.users.count_documents({})
+    return user_count
+
+
+async def chats():
+    chat_count = await db.chats.count_documents({})
+    return chat_count
+
+
+async def change_char(user_id: int, universe, character):
+    await db.users.update_one(
+        {"_id": user_id},
+        {"$set": {f"character.{universe}": character}}
+    )
+
+
 async def update_many(data, update):
     await db.users.update_many(data, update)
 
@@ -100,8 +128,16 @@ async def in_battle():
 
 
 async def push(universe, character_category, character, user_id: int):
-    await db.users.update_one({'_id': user_id},
-                              {'$push': {f'inventory.characters.{universe}.{character_category}': character}})
+    await db.users.update_one(
+        {'_id': user_id},
+        {'$push': {f'inventory.characters.{universe}.{character_category}': character}})
+
+
+async def pull(universe, character_category, character, user_id: int):
+    await db.users.update_one(
+        {'_id': user_id},
+        {'$pull': {f'inventory.characters.{universe}.{character_category}': character}}
+    )
 
 
 async def push_home(user_id: int, home):
@@ -146,7 +182,8 @@ async def wins_rating(var, account, icon):
         name = account['name']
         wins = account['battle']['stats']['wins']
         user_rank = await profile.rerank_battle(account['stats']['rank'])
-        text = f"\n❖ Ваша место в рейтинге: \n{user_position}. {name} - {wins} {icon} Побед • {user_rank}"
+        text = (f"──────────────────"
+                f"\n❖ Ваша место в рейтинге: \n{user_position}. {name} - {wins} {icon} Побед • {user_rank}")
     else:
         text = "\n❖ Вы не зарегистрированы"
     cursor = db.users.find()
@@ -155,7 +192,7 @@ async def wins_rating(var, account, icon):
 
     top_accounts_cursor = sorted_cursor.limit(10)
 
-    rating_table = "\n\n"
+    rating_table = "\n"
     index = 1
     async for account in top_accounts_cursor:
         rank = await profile.rerank_battle(account['stats']['rank'])
@@ -171,9 +208,10 @@ async def wins_rating(var, account, icon):
 # здесь обработка чатов
 
 
-async def start_chat(chat_id, title, universe):
+async def start_chat(chat_id, title, link, universe):
     data = dict({
         '_id': chat_id,
+        'link': link,
         'title': title,
         'universe': universe,
         'top': {},

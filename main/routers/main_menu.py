@@ -26,7 +26,7 @@ async def main_menu(message: Message | CallbackQuery):
     if account is not None and account['_id'] == user_id:
 
         universe = account['universe']
-        character = account['character']
+        character = account['character'][account['universe']]
         avatar = character_photo.get_stats(universe, character, 'avatar')
         avatar_type = character_photo.get_stats(universe, character, 'type')
 
@@ -81,11 +81,23 @@ async def main_menu(message: Message | CallbackQuery):
                              "\n ❖ Для этого отправь команду /start")
 
 
+@router.message(F.animation)
+async def file_id(message: Message):
+    if message.chat.id == -1002127262362:
+        await message.reply(f"ID гифа, на который вы ответили: {message.animation.file_id}")
+
+
+@router.message(F.photo)
+async def file_id(message: Message):
+    if message.chat.id == -1002127262362:
+        await message.reply(f"ID фотографии, на которую вы ответили: {message.photo[-1].file_id}")
+
+
 @router.message(Command("file_id"))
 async def file_id(message: Message):
     if message.reply_to_message:
         if message.reply_to_message.photo:
-            await message.reply(f"ID фотографии, на которую вы ответили: {message.reply_to_message.photo[-1].file_id}")
+            await message.reply(f"ID фотографии, на которую вы ответили: {message.reply_to_message.photo[-1].file_id} IDgroup{message.chat.id}")
         elif message.reply_to_message.animation:
             await message.reply(f"ID гифа, на который вы ответили: {message.reply_to_message.animation.file_id}")
     else:

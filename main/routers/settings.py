@@ -19,19 +19,19 @@ async def settings(message: Message | CallbackQuery):
         caption=f"❖  ⚙️ <b>Настройки</b>"
                 f"\n── •✧✧• ────────────"
                 f"\n <b>🪪 Имя: {account['name']}"
-                f"\n 🎴 Персонаж: {account['character']}</b>"
+                f"\n 🎴 Персонаж: {account['character'][account['universe']]}</b>"
                 f"\n── •✧✧• ────────────",
         parse_mode=ParseMode.HTML,
         reply_markup=inline_builder(
-            ["🪪 Изменить", "🎴 Изменить", "🔙 Назад"],
-            ["change_name", "inventory", "main_page"],
-            row_width=[2, 1])
+            ["🪪 Изменить", "🎴 Изменить", "🗺 Сменить вселенную", "🔙 Назад"],
+            ["change_name", "inventory", "change_universe", "main_page"],
+            row_width=[2, 1, 1])
     )
 
     if isinstance(message, CallbackQuery):
         await message.message.edit_caption(**pattern)
     else:
-        media_id = character_photo.get_stats(account['universe'], account['character'], 'avatar')
+        media_id = character_photo.get_stats(account['universe'], account['character'][account['universe']], 'avatar')
 
         await message.answer_animation(media_id, **pattern)
 
@@ -58,3 +58,21 @@ async def form_name(message: Message, state: FSMContext):
 
 async def change_name(user_id: int, name: str):
     await mongodb.update_user(user_id, {'name': name})
+
+
+@router.callback_query(F.data == "change_universe")
+async def change_universe(callback: CallbackQuery):
+    await callback.message.edit_caption(caption="❖  🗺 Выбери вселенную: ",
+                                        reply_markup=inline_builder(
+                                            ['🗡 Bleach', '🍥 Naruto', '🌟 Allstars', '⭐️ Allstars(old)'],
+                                            ['Bleach', 'Naruto', 'Allstars', 'Allstars(old)'],
+                                            row_width=1))
+
+
+# @router.callback_query(F.data.in_(['Allstars', 'Bleach']))
+# async def change_universe(callback: CallbackQuery, state: FSMContext):
+#     await state.update_data(universe=callback.data)
+#     data = await state.get_data()
+#     await state.clear()
+#     await change_universe_db(callback.from_user.id, data['universe'])
+#     await settings(callback)

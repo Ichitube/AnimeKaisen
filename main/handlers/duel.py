@@ -48,7 +48,7 @@ async def arena(callback: CallbackQuery | Message):
     rank = await profile.rerank(account['stats']['rank'])
     in_battle = await mongodb.in_battle()
     universe = account['universe']
-    character = account['character']
+    character = account['character'][account['universe']]
     exp = account['stats']['exp']
     wins = account['battle']['stats']['wins']
     strength = character_photo.get_stats(universe, character, 'arena')['strength']
@@ -111,7 +111,7 @@ async def search_opponent(callback: CallbackQuery):
         else:
 
             universe = account['universe']
-            character = account['character']
+            character = account['character'][account['universe']]
             avatar = character_photo.get_stats(universe, character, 'avatar')
             avatar_type = character_photo.get_stats(universe, character, 'type')
             rarity = character_photo.get_stats(universe, character, 'rarity')
@@ -164,7 +164,7 @@ async def search_opponent(callback: CallbackQuery):
                 skills += skill + '\n'
 
             r_universe = rival['universe']
-            r_character = rival['character']
+            r_character = rival['character'][rival['universe']]
             r_avatar = character_photo.get_stats(r_universe, r_character, 'avatar')
             r_avatar_type = character_photo.get_stats(r_universe, r_character, 'type')
             r_rarity = character_photo.get_stats(r_universe, r_character, 'rarity')
@@ -378,7 +378,7 @@ async def battle(callback: CallbackQuery):
 
         await character.turn(bot, user_id, character_d["rid"], action, r_character)
 
-        account_text = (f"        {account['character']}"
+        account_text = (f"        {account['character'][account['universe']]}"
                         f"\n\n❤️{character.health}"
                         f" 🗡{character.attack}"
                         f" 🛡{character.defense}"
