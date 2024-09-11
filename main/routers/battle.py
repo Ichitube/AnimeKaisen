@@ -90,7 +90,7 @@ async def fill_profile(message: Message):
 
 
 @router.message(Command("message"))
-async def send_message_to_all(message: types.Message):
+async def send_message_to_all(message: Message):
     if message.from_user.id == 6946183730:
         # Извлекаем текст сообщения из команды
         command_parts = message.text.split(maxsplit=1)
