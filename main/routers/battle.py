@@ -806,7 +806,7 @@ async def ai(character):
             user_data[r_character.rid][character.b_round] = False
             # Запускаем таймер
             await bot.send_message(r_character.ident, "⏳ Ход соперника")
-            await ai(r_character)
+            await ai(character)
 
     if character.health <= 0 and r_character.health <= 0:
         await bot.send_animation(chat_id=r_character, animation=draw_animation,
