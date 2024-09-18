@@ -182,15 +182,14 @@ async def arena(callback: CallbackQuery | Message):
     await profile.update_rank(callback.from_user.id, account["battle"]["stats"]['wins'])
 
     rank = await profile.rerank(account['stats']['rank'])
-    in_battle = await mongodb.in_battle()
     universe = account['universe']
     character = account['character'][account['universe']]
     exp = account['stats']['exp']
     wins = account['battle']['stats']['wins']
     msg = "\n\nВы не можете участвовать так как ваша вселенная еще не добавлена"
 
-    buttons = ["⚔️ Битва", "👤 Битва", "⛓ Рабыня", "🏆 Рейтинг", "🔙 Назад"]
-    calls = ["search_opponent", "ai_battle", "slave", "battle_rating", "main_page"]
+    buttons = ["⚔️ Битва", "⛓ Рабыня", "🏆 Рейтинг", "🔙 Назад",]
+    calls = ["battle_arena", "slave", "battle_rating", "main_page"]
 
     if account['universe'] not in ['Allstars', 'Allstars(old)']:
         strength = character_photo.get_stats(universe, character, 'arena')['strength']
@@ -202,10 +201,6 @@ async def arena(callback: CallbackQuery | Message):
                f"\n   👣 Ловкость: {agility}"
                f"\n   🧠 Интелект: {intelligence}"
                f"\n   ⚜️ Мощь: {power}")
-
-        buttons = ["⚔️ Битва", "🎴 Навыки", "⛓ Рабыня", "🏆 Рейтинг", "📜 Правила", "🔙 Назад"]
-        calls = ["battle_arena", Ability(action="ability", universe=universe, character=character, back='arena'),
-                 "slave", "battle_rating", "battle_rules", "main_page"]
 
     pattern = dict(
         caption=f"❖  🏟️ <b>Арена</b>  ⚔️"
@@ -220,7 +215,7 @@ async def arena(callback: CallbackQuery | Message):
         reply_markup=inline_builder(
             buttons,
             calls,
-            row_width=[1, 2, 2, 1])
+            row_width=[1, 2, 1])
     )
 
     if isinstance(callback, CallbackQuery):
@@ -237,32 +232,17 @@ async def arena(callback: CallbackQuery | Message):
 @router.callback_query(F.data == "battle_arena")
 async def arena(callback: CallbackQuery | Message):
     account = await mongodb.get_user(callback.from_user.id)
+    if account['universe'] in ['Allstars', 'Allstars(old)']:
+        await callback.answer(
+            text="💢 Пока не доступно в вашой вселеноой!",
+            show_alert=True
+        )
+        return
     await profile.update_rank(callback.from_user.id, account["battle"]["stats"]['wins'])
-
-    rank = await profile.rerank(account['stats']['rank'])
     in_battle = await mongodb.in_battle()
-    universe = account['universe']
-    character = account['character'][account['universe']]
-    exp = account['stats']['exp']
-    wins = account['battle']['stats']['wins']
-    msg = "\n\nВы не можете участвовать так как ваша вселенная еще не добавлена"
 
-    buttons = ["⚔️ Битва", "👤 Битва", "⛓ Рабыня", "🏆 Рейтинг", "📜 Правила", "🔙 Назад"]
-    calls = ["search_opponent", "ai_battle", "slave", "battle_rating", "battle_rules", "main_page"]
-
-    if account['universe'] not in ['Allstars', 'Allstars(old)']:
-        strength = character_photo.get_stats(universe, character, 'arena')['strength']
-        agility = character_photo.get_stats(universe, character, 'arena')['agility']
-        intelligence = character_photo.get_stats(universe, character, 'arena')['intelligence']
-        power = character_photo.get_stats(universe, character, 'arena')['power']
-
-        msg = (f"\n\n   ✊🏻 Сила: {strength}"
-               f"\n   👣 Ловкость: {agility}"
-               f"\n   🧠 Интелект: {intelligence}"
-               f"\n   ⚜️ Мощь: {power}")
-
-        buttons = ["⚔️ PvP", "✨ AI", "📜 Правила", "🔙 Назад"]
-        calls = ["search_opponent", "ai_battle", "battle_rules", "arena"]
+    buttons = ["⚔️ PvP", "✨ AI", "🔙 Назад", "📜 Правила",]
+    calls = ["search_opponent", "ai_battle", "arena", "battle_rules",]
 
     pattern = dict(
         caption=f"❖  🏟️ <b>Арена</b>  ⚔️"
@@ -275,7 +255,7 @@ async def arena(callback: CallbackQuery | Message):
         reply_markup=inline_builder(
             buttons,
             calls,
-            row_width=[2, 1, 1])
+            row_width=[2, 2])
     )
 
     media = InputMediaPhoto(
@@ -294,7 +274,7 @@ async def search_opponent(callback: CallbackQuery | Message):
 
     if account['universe'] in ['Allstars', 'Allstars(old)']:
         await callback.answer(
-            text="💢 Пока доступно в вашой вселеноой!",
+            text="💢 Пока не доступно в вашой вселеноой!",
             show_alert=True
         )
         return
