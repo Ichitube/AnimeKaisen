@@ -1,12 +1,11 @@
 from aiogram import Router, F
-
-from aiogram.types import CallbackQuery
 from aiogram.enums import ParseMode
-
-from keyboards.builders import inline_builder
+from aiogram.types import CallbackQuery
 from data import mongodb
-from .store import store
+from keyboards.builders import inline_builder
+
 from .crystalpay_sdk import CrystalPAY, InvoiceType
+from .store import store
 
 crystalpayAPI = CrystalPAY("direbilling", "3fd18bf80390f19f80679409d4a3ae8e8ea14048",
                            "d06aee367b2b5053c1f064cc48798a73a1adefa7")

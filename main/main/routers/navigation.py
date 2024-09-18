@@ -1,10 +1,9 @@
 from aiogram import Router, F
-from aiogram.types import CallbackQuery, InputMediaAnimation
 from aiogram.enums import ParseMode
-
+from aiogram.types import CallbackQuery, InputMediaAnimation
+from data import mongodb
 from keyboards.builders import inline_builder
 from recycling import profile
-from data import mongodb
 
 router = Router()
 

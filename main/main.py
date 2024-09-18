@@ -10,7 +10,8 @@ from chat_handlers import chat_battle
 from callbacks import callback
 from middlewares.AntiFloodMiddleWare import AntiFloodMiddleware, AntiFloodMiddlewareM
 
-bot = Bot(token="6776753252:AAH4FKaWyegHYHnh_RBJINk2sEhtaebxWrk", default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+bot = Bot(token="6776753252:AAH4FKaWyegHYHnh_RBJINk2sEhtaebxWrk",
+          default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 
 
 async def main():

@@ -1,16 +1,13 @@
 from aiogram import Router, F
-
-from aiogram.types import Message, CallbackQuery, InputMediaAnimation
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
-
+from aiogram.types import Message, CallbackQuery, InputMediaAnimation
 from data import mongodb
-from utils.states import Form
+from filters.chat_type import ChatTypeFilter
+from keyboards.builders import inline_builder, profile, rm, get_common
 from routers import main_menu
 from routers.gacha import first_summon
-from keyboards.builders import inline_builder, profile, rm, get_common
-from filters.chat_type import ChatTypeFilter
-
+from utils.states import Form
 
 router = Router()
 

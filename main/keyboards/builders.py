@@ -1,10 +1,9 @@
 from typing import Optional
 
+from aiogram.filters.callback_data import CallbackData
 from aiogram.types import ReplyKeyboardRemove, InlineKeyboardButton, KeyboardButton
 from aiogram.utils.keyboard import (ReplyKeyboardBuilder, InlineKeyboardBuilder,
                                     InlineKeyboardMarkup, ReplyKeyboardMarkup)
-
-from aiogram.filters.callback_data import CallbackData
 
 
 class Ability(CallbackData, prefix="fabnum"):

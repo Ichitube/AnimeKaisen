@@ -1,6 +1,7 @@
-import random
 import asyncio
 import inspect
+import random
+
 from data import character_photo
 
 

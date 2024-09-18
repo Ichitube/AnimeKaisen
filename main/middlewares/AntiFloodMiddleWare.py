@@ -2,7 +2,6 @@ from typing import Callable, Awaitable, Dict, Any
 
 from aiogram import BaseMiddleware
 from aiogram.types import CallbackQuery, Message
-
 from cachetools import TTLCache
 
 

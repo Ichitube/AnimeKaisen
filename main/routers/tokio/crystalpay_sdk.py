@@ -1,6 +1,8 @@
-import requests
-import json
 import hashlib
+import json
+
+import requests
+
 
 class InvoiceType:
 

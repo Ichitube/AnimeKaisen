@@ -1,11 +1,12 @@
 from contextlib import suppress
+
 from aiogram import Router, F
+from aiogram.exceptions import TelegramBadRequest
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message, InputMediaAnimation, InputMediaPhoto
-from aiogram.exceptions import TelegramBadRequest
+from data import mongodb, character_photo
 from filters.chat_type import ChatTypeFilter
 from keyboards import builders
-from data import mongodb, character_photo
 
 router = Router()
 

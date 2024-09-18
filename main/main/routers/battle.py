@@ -1,19 +1,18 @@
 import asyncio
 import random
+
 from aiogram import Router, F
-
-from aiogram.types import CallbackQuery, Message, InputMediaPhoto
-from aiogram.filters import Command
 from aiogram.enums import ParseMode
-
-from keyboards.builders import reply_builder, inline_builder, menu_button, Ability, rm
-from filters.chat_type import ChatTypeFilter, CallbackChatTypeFilter
-from recycling import profile
-from routers import main_menu
+from aiogram.filters import Command
+from aiogram.types import CallbackQuery, Message, InputMediaPhoto
+from chat_handlers.chat_battle import bot
 from data import characters, character_photo
 from data import mongodb
 from data.mongodb import db
-from chat_handlers.chat_battle import bot
+from filters.chat_type import ChatTypeFilter, CallbackChatTypeFilter
+from keyboards.builders import reply_builder, inline_builder, menu_button, Ability, rm
+from recycling import profile
+from routers import main_menu
 
 router = Router()
 

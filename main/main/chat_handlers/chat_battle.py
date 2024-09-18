@@ -1,14 +1,14 @@
 import asyncio
+
 from aiogram import Router, F
-
-from aiogram.types import CallbackQuery, Message, ChatMemberUpdated
-from aiogram.filters import Command, ChatMemberUpdatedFilter, JOIN_TRANSITION
 from aiogram.enums import ParseMode
-
-from keyboards.builders import inline_builder, menu_button
-from filters.chat_type import ChatTypeFilter, CallbackChatTypeFilter
+from aiogram.filters import Command, ChatMemberUpdatedFilter, JOIN_TRANSITION
+from aiogram.types import CallbackQuery, Message, ChatMemberUpdated
 from data import characters, character_photo
 from data import mongodb
+from filters.chat_type import ChatTypeFilter, CallbackChatTypeFilter
+from keyboards.builders import inline_builder, menu_button
+
 from main import bot
 
 router = Router()

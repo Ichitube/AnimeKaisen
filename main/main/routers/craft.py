@@ -1,13 +1,11 @@
-import random
 import asyncio
+import random
 
 from aiogram import Router, F
-
-from aiogram.types import CallbackQuery, InputMediaAnimation, InputMediaPhoto
 from aiogram.enums import ParseMode
-
-from keyboards.builders import inline_builder, Ability
+from aiogram.types import CallbackQuery, InputMediaAnimation, InputMediaPhoto
 from data import mongodb, character_photo
+from keyboards.builders import inline_builder, Ability
 from routers.gacha import characters
 
 router = Router()

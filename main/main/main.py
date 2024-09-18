@@ -1,14 +1,16 @@
 import asyncio
+
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
-from routers import registration, battle, gacha, banner, settings, navigation, main_menu, inventory, craft, slaves
-from data import character_photo
-from routers.tokio import tokio, dungeon, store, Pay, home
-from handlers import chat_commands
-from chat_handlers import chat_battle
+
 from callbacks import callback
+from chat_handlers import chat_battle
+from data import character_photo
+from handlers import chat_commands
 from middlewares.AntiFloodMiddleWare import AntiFloodMiddleware, AntiFloodMiddlewareM
+from routers import registration, battle, gacha, banner, settings, navigation, main_menu, inventory, craft, slaves
+from routers.tokio import tokio, dungeon, store, Pay, home
 
 bot = Bot(token="6776753252:AAH4FKaWyegHYHnh_RBJINk2sEhtaebxWrk", default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 

@@ -1,10 +1,8 @@
 from aiogram import Router, F
-
-from aiogram.types import CallbackQuery, InputMediaAnimation
 from aiogram.enums import ParseMode
-
-from keyboards.builders import inline_builder
+from aiogram.types import CallbackQuery, InputMediaAnimation
 from data import mongodb
+from keyboards.builders import inline_builder
 from routers import gacha
 
 router = Router()

@@ -1,15 +1,10 @@
 import re
-from contextlib import suppress
+
 from aiogram import Router, F
-from typing import Match
-
-from aiogram.types import Message, CallbackQuery, InputMediaAnimation, InputMediaPhoto
-from aiogram.exceptions import TelegramBadRequest
-from aiogram.fsm.context import FSMContext
 from aiogram.enums import ParseMode
-
-from keyboards.builders import start_button, goto_bot, inline_builder, Pagination, pagination_group
+from aiogram.types import Message
 from data import mongodb, character_photo
+from keyboards.builders import start_button, goto_bot
 from recycling import profile
 
 router = Router()

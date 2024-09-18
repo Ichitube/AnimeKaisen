@@ -1,12 +1,10 @@
-from datetime import datetime, timedelta
-import random
 import asyncio
+import random
+from datetime import datetime, timedelta
 
 from aiogram import Router, F
-
 from aiogram.enums import ParseMode
 from aiogram.types import InputMediaAnimation, InputMediaPhoto, Message
-
 from data import mongodb, character_photo
 from keyboards.builders import inline_builder, start_button, menu_button, success, Ability
 

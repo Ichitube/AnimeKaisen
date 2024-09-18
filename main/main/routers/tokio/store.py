@@ -1,16 +1,15 @@
 from contextlib import suppress
 
 from aiogram import Router, F
-
-from aiogram.fsm.context import FSMContext
-from aiogram.types import CallbackQuery, InputMediaAnimation
 from aiogram.enums import ParseMode
 from aiogram.exceptions import TelegramBadRequest
-
-from keyboards.builders import inline_builder
-from ..slaves import slave_info
+from aiogram.fsm.context import FSMContext
+from aiogram.types import CallbackQuery, InputMediaAnimation
 from data import mongodb, character_photo
 from keyboards import builders
+from keyboards.builders import inline_builder
+
+from ..slaves import slave_info
 
 router = Router()
 

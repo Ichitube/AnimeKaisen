@@ -1,13 +1,11 @@
 import random
 
 from aiogram import Router, F
-
-from aiogram.types import CallbackQuery, InputMediaAnimation, Message
 from aiogram.enums import ParseMode
-
-from keyboards.builders import inline_builder
+from aiogram.types import CallbackQuery, InputMediaAnimation, Message
 from data import mongodb
 from filters.chat_type import ChatTypeFilter
+from keyboards.builders import inline_builder
 
 router = Router()
 

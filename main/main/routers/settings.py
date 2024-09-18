@@ -1,13 +1,10 @@
 from aiogram import Router, F
-
-from utils.states import Name
-from aiogram.types import Message, CallbackQuery
 from aiogram.enums import ParseMode
 from aiogram.fsm.context import FSMContext
-
-from keyboards.builders import inline_builder
+from aiogram.types import Message, CallbackQuery
 from data import mongodb, character_photo
-
+from keyboards.builders import inline_builder
+from utils.states import Name
 
 router = Router()
 

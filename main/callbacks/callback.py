@@ -1,8 +1,7 @@
 from aiogram import Router, F
-
 from aiogram.types import Message, CallbackQuery
-from routers import main_menu
 from data import mongodb
+from routers import main_menu
 
 router = Router()
 

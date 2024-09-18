@@ -1,14 +1,9 @@
-from aiogram import Router, F
+from aiogram import Router
 
-from aiogram.types import Message, CallbackQuery, InputMediaAnimation, InputMediaPhoto
-from aiogram.utils.keyboard import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import Message
 from aiogram.filters import Command
-from aiogram.enums import ParseMode
 
-from keyboards.builders import inline_builder, menu_button
-from data import mongodb, character_photo
-from recycling import profile
-from filters.chat_type import ChatTypeFilter
+from data import mongodb
 
 router = Router()
 

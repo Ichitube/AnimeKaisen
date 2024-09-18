@@ -1,12 +1,10 @@
-from datetime import datetime, timedelta
-import random
 import asyncio
+import random
+from datetime import datetime, timedelta
 
 from aiogram import Router, F
-
 from aiogram.enums import ParseMode
 from aiogram.types import InputMediaAnimation, InputMediaPhoto, Message
-
 from data import mongodb, character_photo
 from keyboards.builders import inline_builder, start_button, menu_button, success, Ability, channel_check
 
@@ -25,12 +23,12 @@ router = Router()
 
 characters = {
     'Bleach': {
-        'divine': ['Toshiro Hitsuyaga 🌠', 'Ulquiorra Cifer 🌠', 'Urahara Kisuke🌠', 'Toshiro Hitsuyaga🌠', 'Aizen Sosuke🌠', 'Aizen Sosuke 🌠', 'Aizen Sosuke 🌠 ', 'Aizen Sosuke  🌠', 'Ichigo Kurosaki 🌠', 'Ichigo Kurosaki  🌠', 'Ichigo Kurosaki 🌠 ', 'Ichigo Kurosaki🌠 ', 'Ichigo Kurosaki🌠'],
-        'mythical': ['Toshiro Hitsuyaga 🌌', 'Urahara Kisuke🌌', 'Urahara Kisuke 🌌', 'Urahara Kisuke 🌌 ', 'Urahara Kisuke  🌌', 'Ulquiorra Cifer 🌌', 'Ulquiorra Cifer🌌', 'Aizen Sosuke 🌌', 'Aizen Sosuke🌌', 'Aizen Sosuke 🌌 ', 'Ichigo Kurosaki 🌌', 'Ichigo Kurosaki  🌌', 'Ichigo Kurosaki 🌌 '],
+        'divine': ['Toshiro Hitsuyaga 🌠', 'Unohana Retsu 🌠', 'Ulquiorra Cifer 🌠', 'Urahara Kisuke🌠', 'Toshiro Hitsuyaga🌠', 'Aizen Sosuke🌠', 'Aizen Sosuke 🌠', 'Aizen Sosuke 🌠 ', 'Aizen Sosuke  🌠', 'Ichigo Kurosaki 🌠', 'Ichigo Kurosaki  🌠', 'Ichigo Kurosaki 🌠 ', 'Ichigo Kurosaki🌠 ', 'Ichigo Kurosaki🌠'],
+        'mythical': ['Toshiro Hitsuyaga 🌌', 'Unohana Retsu 🌌', 'Urahara Kisuke🌌', 'Urahara Kisuke 🌌', 'Urahara Kisuke 🌌 ', 'Urahara Kisuke  🌌', 'Ulquiorra Cifer 🌌', 'Ulquiorra Cifer🌌', 'Aizen Sosuke 🌌', 'Aizen Sosuke🌌', 'Aizen Sosuke 🌌 ', 'Ichigo Kurosaki 🌌', 'Ichigo Kurosaki  🌌', 'Ichigo Kurosaki 🌌 '],
         'legendary': ['Ichigo Kurosaki 🌅', 'Ulquiorra Cifer 🌅', 'Toshiro Hitsuyaga 🌅', 'Aizen Sosuke 🌅', 'Kurosaki Ichigo 🌅'],
         'epic': ['Toshiro Hitsuyaga 🎆', 'Toshiro Hitsuyaga🎆', 'Aizen Sosuke 🎆', 'Ichigo Kurosaki 🎆', 'Ichigo Kurosaki 🎆', 'Ichigo Kurosaki🎆'],
-        'rare': ['Toshiro Hitsuyaga 🎇', 'Toshiro Hitsuyaga🎇', 'Urahara Kisuke 🎇', 'Ichigo Kurosaki 🎇', 'Ichigo Kurosaki🎇', 'Ichigo Kurosaki 🎇 '],
-        'common': ['Toshiro Hitsuyaga 🌁', 'Ulquiorra Cifer 🌁', 'Ulquiorra Cifer🌁', 'Urahara Kisuke 🌁', 'Urahara Kisuke🌁', 'Aizen Sosuke 🌁', 'Aizen Sosuke🌁', 'Toshiro Hitsuyaga🌁', 'Toshiro Hitsuyaga 🌁 ', 'Toshiro Hitsuyaga  🌁', 'Ichigo Kurosaki 🌁', 'Ichigo Kurosaki🌁', 'Ichigo Kurosaki 🌁 ', 'Ichigo Kurosaki  🌁']
+        'rare': ['Toshiro Hitsuyaga 🎇', 'Unohana Retsu 🎇', 'Toshiro Hitsuyaga🎇', 'Urahara Kisuke 🎇', 'Ichigo Kurosaki 🎇', 'Ichigo Kurosaki🎇', 'Ichigo Kurosaki 🎇 '],
+        'common': ['Toshiro Hitsuyaga 🌁', 'Ulquiorra Cifer 🌁', 'Unohana Retsu 🌁', 'Unohana Retsu🌁', 'Ulquiorra Cifer🌁', 'Urahara Kisuke 🌁', 'Urahara Kisuke🌁', 'Aizen Sosuke 🌁', 'Aizen Sosuke🌁', 'Unohana Retsu 🌁 ', 'Toshiro Hitsuyaga🌁', 'Toshiro Hitsuyaga 🌁 ', 'Toshiro Hitsuyaga  🌁', 'Ichigo Kurosaki 🌁', 'Ichigo Kurosaki🌁', 'Ichigo Kurosaki 🌁 ', 'Ichigo Kurosaki  🌁']
     },
     'Naruto': {
         'divine': ['Naruto Uzumaki 🌠', 'Sasuke 🌠', 'Uchiha Sasuke◾️ 🌠', 'Uchiha◾️ 🌠', 'Sasuke Uchiha 🌠', 'Uzumaki Naruto 🌠', 'Naruto 🌠', 'Naruto Uzumaki◾️ 🌠', 'Naruto◾️ 🌠', 'Uchiha Sasuke 🌠'],
