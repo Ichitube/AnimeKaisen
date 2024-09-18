@@ -418,9 +418,6 @@ async def search_opponent(callback: CallbackQuery | Message):
 @router.message(ChatTypeFilter(chat_type=["private"]), Command("ai_battle"))
 @router.callback_query(F.data == "ai_battle")
 async def search_opponent(callback: CallbackQuery | Message):
-    if callback.from_user.id != 6946183730:
-        await callback.answer("У вас нет прав на выполнение этой команды", show_alert=True)
-        return
     user_id = callback.from_user.id
     account = await mongodb.get_user(user_id)
     universe = account['universe']
