@@ -460,7 +460,7 @@ async def campaign_rank(message: Message):
                 await message.reply_animation(
                     animation="CgACAgIAAx0CfstymgACBzpl0I7O2WanntSMhoK4cXEfBxt33AAC4j8AAvasiUp11UMJwtm8UTQE",
                     caption="\n ── •✧✧• ────────────"
-                    f"\n✶ 🔮 Мжно совершить бесплатный 🎫 золотой призыв раз в ⏳ 4 часа"
+                    f"\n✶ 🔮 Можно совершить бесплатный 🎫 золотой призыв раз в ⏳ 4 часа"
                     f"\n ── •✧✧• ────────────"
                     f"\n⏳ подожди еще {remaining_hours}ч {remaining_minutes}мин")
         else:
