@@ -1,8 +1,9 @@
 import random
+from datetime import datetime, timedelta
 
 from aiogram import Router, F
 
-from aiogram.types import CallbackQuery, InputMediaAnimation, Message
+from aiogram.types import CallbackQuery, InputMediaAnimation, InputMediaPhoto, Message
 from aiogram.enums import ParseMode
 
 from keyboards.builders import inline_builder
@@ -88,4 +89,103 @@ async def card_battle(callback: CallbackQuery):
 
 @router.callback_query(F.data == "quests")
 async def requisites(callback: CallbackQuery):
-    await callback.answer(f"❖  📜 Задании в разработке", show_alert=True)
+    user_id = callback.from_user.id
+    current_date = datetime.today().date()
+    current_datetime = datetime.combine(current_date, datetime.time(datetime.now()))
+    account = await mongodb.get_user(user_id)
+    yesterday_date = datetime.combine(current_date, datetime.time(datetime.now())) - timedelta(days=1)
+    if "tasks" not in account:
+        await mongodb.update_user(user_id, {"tasks": {
+            "last_summon": yesterday_date,
+            "last_arena_fight": yesterday_date,
+            "last_shop_purchase": yesterday_date,
+            "last_free_summon": yesterday_date,
+            "last_dungeon": yesterday_date,
+            "last_tasks_view": current_datetime,
+            "last_get_reward": yesterday_date
+        }})
+        account = await mongodb.get_user(user_id)
+    last_view_date = account["tasks"]["last_tasks_view"]
+    last_view_date = last_view_date.date()
+    if last_view_date != current_date:
+        await mongodb.update_user(user_id, {"tasks.last_summon": yesterday_date})
+        await mongodb.update_user(user_id, {"tasks.last_arena_fight": yesterday_date})
+        await mongodb.update_user(user_id, {"tasks.last_shop_purchase": yesterday_date})
+        await mongodb.update_user(user_id, {"tasks.last_dungeon": yesterday_date})
+        await mongodb.update_user(user_id, {"tasks.last_free_summon": yesterday_date})
+        await mongodb.update_user(user_id, {"tasks.last_tasks_view": current_date})
+    reward = "ℹ️"
+    last_get_reward = account["tasks"]["last_get_reward"].date()
+    if last_get_reward == current_date:
+        reward = "✅"
+    account = await mongodb.get_user(user_id)
+    summon = "ℹ️"
+    if account["tasks"]["last_summon"].date() == current_date:
+        summon = "✅"
+    arena_fight = "ℹ️"
+    if account["tasks"]["last_arena_fight"].date() == current_date:
+        arena_fight = "✅"
+    dungeon = "ℹ️"
+    if account["tasks"]["last_dungeon"].date() == current_date:
+        dungeon = "✅"
+    free_summon = "ℹ️"
+    if account["tasks"]["last_free_summon"].date() == current_date:
+        free_summon = "✅"
+    shop_purchase = "ℹ️"
+    if account["tasks"]["last_shop_purchase"].date() == current_date:
+        shop_purchase = "✅"
+
+    pattern = dict(
+        caption=f"❖  📜  <b>Задании</b>"
+                f"\n── •✧✧• ────────────"
+                f"\n ❖ 📃 Список ежедневных заданий:"
+                f"\n\n  {summon} • 🔮 Совершите призыв"
+                f"\n  {arena_fight} • ⚔️ Сразитесь в арене"
+                f"\n  {free_summon} • 🎴 Совершите бесплатный призыв"
+                f"\n  {dungeon} • ⛩ Продайте ресурсы в подземелье"
+                f"\n  {shop_purchase} • 🏪 Совершите покупку на рынке"
+                f"\n\n ❖ 🎁 Награда:"
+                f"\n\n  {reward} • 🎫 3х золотой билет"
+                f"\n  {reward} • 💴 1400 ¥"
+                f"\n── •✧✧• ────────────"
+                f"\n❃ ♻️ Задании обновляются каждый день в 00:00",
+        parse_mode=ParseMode.HTML,
+        reply_markup=inline_builder(
+            ["🎁 Получить", "🔙 Меню"],
+            ["get_quest_reward", "tokio"],
+            row_width=[1, 1]
+        )
+    )
+
+    media_id = InputMediaPhoto(media='AgACAgIAAx0CfstymgACHvFm7nfVl1UgyCpMV2em6oT-0fVueAAC0d8xG6zFeUuTGRHASLHNiwEAAwIAA3gAAzYE')
+
+    inline_id = callback.inline_message_id
+    await callback.message.edit_media(media_id, inline_id)
+    await callback.message.edit_caption(inline_id, **pattern)
+
+    # await callback.answer(f"❖  📜 Задании в разработке", show_alert=True)
+
+
+@router.callback_query(F.data == "get_quest_reward")
+async def get_quest_reward(callback: CallbackQuery):
+    user_id = callback.from_user.id
+    current_date = datetime.today().date()
+    current_datetime = datetime.combine(current_date, datetime.time(datetime.now()))
+    account = await mongodb.get_user(user_id)
+    last_get_reward = account["tasks"]["last_get_reward"]
+    last_get_reward = last_get_reward.date()
+    if last_get_reward == current_date:
+        await callback.answer(f"❖ ✅ Награда уже получена, 🎁 возвращайтесь завтра!", show_alert=True)
+        return
+    else:
+        if (account["tasks"]["last_summon"].date() == current_date and account["tasks"]["last_arena_fight"].date() == current_date
+                and account["tasks"]["last_dungeon"].date() == current_date and account["tasks"]["last_free_summon"].date() == current_date
+                and account["tasks"]["last_shop_purchase"].date() == current_date):
+            await mongodb.update_user(user_id, {"account.money": account["account"]["money"] + 1400})
+            await mongodb.update_user(user_id, {"inventory.items.tickets.golden": account["inventory"]["items"]["tickets"]["golden"] + 3})
+            await mongodb.update_user(user_id, {"tasks.last_get_reward": current_datetime})
+            await callback.answer(f"❖ ✅ Награда получена", show_alert=True)
+            return
+        else:
+            await callback.answer(f"❖ ✖️ Не все задания выполнены", show_alert=True)
+            return

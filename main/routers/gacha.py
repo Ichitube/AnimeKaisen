@@ -236,6 +236,10 @@ async def card_gacha(user_id, callback):
 
     await callback.message.edit_media(media, inline_id)
 
+    current_date = datetime.today().date()
+    current_datetime = datetime.combine(current_date, datetime.time(datetime.now()))
+    await mongodb.update_user(user_id, {"tasks.last_summon": current_datetime})
+
     await asyncio.sleep(time)
 
     if avatar_type == 'photo':
@@ -441,6 +445,10 @@ async def campaign_rank(message: Message):
                 gacha_msg = await message.reply_animation(media_id)
 
                 await asyncio.sleep(time)
+
+                current_date = datetime.today().date()
+                current_datetime = datetime.combine(current_date, datetime.time(datetime.now()))
+                await mongodb.update_user(user_id, {"tasks.last_free_summon": current_datetime})
 
                 if avatar_type == 'photo':
                     new_photo = InputMediaPhoto(media=avatar)

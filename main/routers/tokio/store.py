@@ -1,5 +1,6 @@
-from contextlib import suppress
+from datetime import datetime, timedelta
 
+from contextlib import suppress
 from aiogram import Router, F
 
 from aiogram.fsm.context import FSMContext
@@ -95,6 +96,9 @@ async def buy_common_ticket(callback: CallbackQuery, count: int):
         await mongodb.update_user(
             user_id, {'inventory.items.tickets.common': account['inventory']['items']['tickets']['common'] + count}
         )
+        current_date = datetime.today().date()
+        current_datetime = datetime.combine(current_date, datetime.time(datetime.now()))
+        await mongodb.update_user(user_id, {"tasks.last_shop_purchase": current_datetime})
         await callback.answer(f"❖  🏪  Вы успешно приобрели {count} 🎟 обычных билетов", show_alert=True)
     else:
         await callback.answer(f"❖  🏪  У вас недостаточно 💴 ¥", show_alert=True)
@@ -146,6 +150,9 @@ async def buy_golden_ticket(callback: CallbackQuery, count: int):
         await mongodb.update_user(
             user_id, {'inventory.items.tickets.golden': account['inventory']['items']['tickets']['golden'] + count}
         )
+        current_date = datetime.today().date()
+        current_datetime = datetime.combine(current_date, datetime.time(datetime.now()))
+        await mongodb.update_user(user_id, {"tasks.last_shop_purchase": current_datetime})
         await callback.answer(f"❖  💮  Вы успешно приобрели {count} 🎫 золотых билетов", show_alert=True)
     else:
         await callback.answer(f"❖  💮  У вас недостаточно 💴 ¥", show_alert=True)
@@ -208,6 +215,9 @@ async def buy_home(callback: CallbackQuery, state: FSMContext):
             await mongodb.update_user(user_id, {'account.money': money - result[1]})
             await mongodb.update_value(user_id, {'campaign.power': result[1]})
             await mongodb.push_home(user_id, data.get('home'))
+            current_date = datetime.today().date()
+            current_datetime = datetime.combine(current_date, datetime.time(datetime.now()))
+            await mongodb.update_user(user_id, {"tasks.last_shop_purchase": current_datetime})
             await callback.answer(f"❖  🏪  Вы успешно приобрели дом 🔑", show_alert=True)
         else:
             await callback.answer(f"❖  🏪  У вас недостаточно 💴 ¥", show_alert=True)
@@ -275,6 +285,9 @@ async def buy_home(callback: CallbackQuery, state: FSMContext):
         if money >= result[4]:
             await mongodb.update_user(user_id, {'account.money': money - result[4]})
             await mongodb.push_slave(user_id, data.get('slave'))
+            current_date = datetime.today().date()
+            current_datetime = datetime.combine(current_date, datetime.time(datetime.now()))
+            await mongodb.update_user(user_id, {"tasks.last_shop_purchase": current_datetime})
             await callback.answer(f"❖  🔖  Вы успешно приобрели рабыню", show_alert=True)
         else:
             await callback.answer(f"❖  ✖️  У вас недостаточно 💴 ¥", show_alert=True)

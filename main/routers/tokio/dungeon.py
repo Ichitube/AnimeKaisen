@@ -1,4 +1,5 @@
 import asyncio
+from datetime import datetime, timedelta
 
 from aiogram import Router, F
 from aiogram.enums import ParseMode
@@ -89,7 +90,9 @@ async def sell_resources(callback: CallbackQuery):
     await mongodb.update_user(user_id, {'campaign.nephritis': 0})
     await mongodb.update_user(user_id, {'campaign.gold': 0})
     await mongodb.update_user(user_id, {'campaign.silver': 0})
-
+    current_date = datetime.today().date()
+    current_datetime = datetime.combine(current_date, datetime.time(datetime.now()))
+    await mongodb.update_user(user_id, {"tasks.last_dungeon": current_datetime})
     await callback.answer(f"❖  💰 Ресупсы проданы за 💴 {nephritis + gold + silver} ¥", show_alert=True)
 
 

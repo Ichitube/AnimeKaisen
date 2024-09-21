@@ -260,3 +260,7 @@ async def chat_rating(chat_id, icon):
 
 async def update_get_card(user_id, date):
     db.users.update_one({'_id': user_id}, {'$set': {'last_call_time': date}}, upsert=True)
+
+
+async def update_time(user_id, data, date):
+    db.users.update_one({'_id': user_id}, {'$set': {data: date}}, upsert=True)

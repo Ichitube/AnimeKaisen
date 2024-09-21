@@ -1,5 +1,6 @@
 import asyncio
 import random
+from datetime import datetime, timedelta
 
 from aiogram import Router, F
 from aiogram.enums import ParseMode
@@ -153,7 +154,9 @@ async def surrender_f(user_id, r, mes):
             rival = await mongodb.get_user(account["battle"]["battle"]["rid"])
             await bot.send_animation(chat_id=user_id, animation=lose_animation,
                                      caption=surrender_text, reply_markup=menu_button())
-
+            current_date = datetime.today().date()
+            current_datetime = datetime.combine(current_date, datetime.time(datetime.now()))
+            await mongodb.update_user(account["battle"]["battle"]["rid"], {"tasks.last_arena_fight": current_datetime})
             await mongodb.update_value(account["_id"], {"battle.stats.loses": 1})
             await mongodb.update_value(account["battle"]["battle"]["rid"], {"battle.stats.wins": 1})
             await mongodb.update_value(account["battle"]["battle"]["rid"], {"stats.exp": 100})
@@ -576,6 +579,9 @@ async def surrender(message: Message):
             await mongodb.update_value(account["battle"]["battle"]["rid"], {"battle.stats.wins": 1})
             await mongodb.update_value(account["battle"]["battle"]["rid"], {"stats.exp": 100})
             await mongodb.update_value(account["battle"]["battle"]["rid"], {"account.money": 200})
+            current_date = datetime.today().date()
+            current_datetime = datetime.combine(current_date, datetime.time(datetime.now()))
+            await mongodb.update_user(account["battle"]["battle"]["rid"], {"tasks.last_arena_fight": current_datetime})
         await mongodb.update_many(
             {"_id": {"$in": [account["_id"]]}},
             {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
@@ -685,15 +691,31 @@ async def battle(callback: CallbackQuery):
                 await bot.send_animation(chat_id=r_character, animation=draw_animation,
                                          caption=draw_text, reply_markup=menu_button())
 
-            await mongodb.update_many(
-                {"_id": {"$in": [account["_id"], character.rid]}},
-                {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
-            )
+            # await mongodb.update_many(
+            #     {"_id": {"$in": [account["_id"], character.rid]}},
+            #     {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
+            # )
+            #
+            # await mongodb.update_many(
+            #     {"_id": {"$in": [account["_id"], character.rid]}},
+            #     {"$inc": {"stats.exp": 80, "battle.stats.ties": 1, "account.money": 150}}
+            # )
 
-            await mongodb.update_many(
-                {"_id": {"$in": [account["_id"], character.rid]}},
-                {"$inc": {"stats.exp": 80, "battle.stats.ties": 1, "account.money": 150}}
-            )
+            await mongodb.update_value(account["_id"], {"battle.stats.ties": 1})
+            await mongodb.update_value(account["_id"], {"stats.exp": 80})
+            await mongodb.update_value(account["_id"], {"account.money": 150})
+            current_date = datetime.today().date()
+            current_datetime = datetime.combine(current_date, datetime.time(datetime.now()))
+            await mongodb.update_user(account["_id"], {"tasks.last_arena_fight": current_datetime})
+            await mongodb.update_user(account["_id"], {"battle.battle.status": 0})
+            await mongodb.update_user(account["_id"], {"battle.battle.rid": ""})
+            if r_character.ident != character.ident * 10:
+                await mongodb.update_value(character.rid, {"battle.stats.ties": 1})
+                await mongodb.update_value(character.rid, {"stats.exp": 80})
+                await mongodb.update_value(character.rid, {"account.money": 150})
+                await mongodb.update_user(character.rid, {"tasks.last_arena_fight": current_datetime})
+                await mongodb.update_user(character.rid, {"battle.battle.status": 0})
+                await mongodb.update_user(character.rid, {"battle.battle.rid": ""})
 
         elif character.health <= 0:
             if character.b_round != r_character.b_round:
@@ -703,18 +725,21 @@ async def battle(callback: CallbackQuery):
                     await bot.send_animation(chat_id=character.rid, animation=lose_animation,
                                              caption=win_text, reply_markup=menu_button())
 
-                await mongodb.update_many(
-                    {"_id": {"$in": [account["_id"], character.rid]}},
-                    {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
-                )
-
                 await mongodb.update_value(account["_id"], {"battle.stats.loses": 1})
                 await mongodb.update_value(account["_id"], {"stats.exp": 55})
                 await mongodb.update_value(account["_id"], {"account.money": 100})
+                current_date = datetime.today().date()
+                current_datetime = datetime.combine(current_date, datetime.time(datetime.now()))
+                await mongodb.update_user(account["_id"], {"tasks.last_arena_fight": current_datetime})
+                await mongodb.update_user(account["_id"], {"battle.battle.status": 0})
+                await mongodb.update_user(account["_id"], {"battle.battle.rid": ""})
                 if r_character.ident != character.ident * 10:
                     await mongodb.update_value(character.rid, {"battle.stats.wins": 1})
                     await mongodb.update_value(character.rid, {"stats.exp": 100})
                     await mongodb.update_value(character.rid, {"account.money": 200})
+                    await mongodb.update_user(character.rid, {"tasks.last_arena_fight": current_datetime})
+                    await mongodb.update_user(character.rid, {"battle.battle.status": 0})
+                    await mongodb.update_user(character.rid, {"battle.battle.rid": ""})
 
             else:
                 await send_round_photo()
@@ -727,14 +752,18 @@ async def battle(callback: CallbackQuery):
                     await bot.send_animation(chat_id=character.rid, animation=lose_animation,
                                              caption=lose_text, reply_markup=menu_button())
 
-                await mongodb.update_many(
-                    {"_id": {"$in": [account["_id"], character.rid]}},
-                    {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
-                )
+                current_date = datetime.today().date()
+                current_datetime = datetime.combine(current_date, datetime.time(datetime.now()))
                 if r_character.ident != character.ident * 10:
                     await mongodb.update_value(character.rid, {"battle.stats.loses": 1})
                     await mongodb.update_value(character.rid, {"stats.exp": 55})
                     await mongodb.update_value(character.rid, {"account.money": 100})
+                    await mongodb.update_user(character.rid, {"tasks.last_arena_fight": current_datetime})
+                    await mongodb.update_user(character.rid, {"battle.battle.status": 0})
+                    await mongodb.update_user(character.rid, {"battle.battle.rid": ""})
+                await mongodb.update_user(account["_id"], {"battle.battle.status": 0})
+                await mongodb.update_user(account["_id"], {"battle.battle.rid": ""})
+                await mongodb.update_user(account["_id"], {"tasks.last_arena_fight": current_datetime})
                 await mongodb.update_value(account["_id"], {"battle.stats.wins": 1})
                 await mongodb.update_value(account["_id"], {"stats.exp": 100})
                 await mongodb.update_value(account["_id"], {"account.money": 200})
@@ -822,6 +851,10 @@ async def ai(character):
             {"$inc": {"stats.exp": 80, "battle.stats.ties": 1, "account.money": 150}}
         )
 
+        current_date = datetime.today().date()
+        current_datetime = datetime.combine(current_date, datetime.time(datetime.now()))
+        await mongodb.update_user(character.rid, {"tasks.last_arena_fight": current_datetime})
+
     elif character.health <= 0:
         if character.b_round != r_character.b_round:
             await bot.send_animation(chat_id=character.rid, animation=lose_animation,
@@ -834,6 +867,9 @@ async def ai(character):
 
             await mongodb.update_value(character.rid, {"stats.exp": 20})
             await mongodb.update_value(character.rid, {"account.money": 40})
+            current_date = datetime.today().date()
+            current_datetime = datetime.combine(current_date, datetime.time(datetime.now()))
+            await mongodb.update_user(character.rid, {"tasks.last_arena_fight": current_datetime})
 
         else:
             await ai_send_round_photo()
@@ -850,6 +886,9 @@ async def ai(character):
 
             await mongodb.update_value(character.rid, {"stats.exp": 10})
             await mongodb.update_value(character.rid, {"account.money": 20})
+            current_date = datetime.today().date()
+            current_datetime = datetime.combine(current_date, datetime.time(datetime.now()))
+            await mongodb.update_user(character.rid, {"tasks.last_arena_fight": current_datetime})
 
         else:
             await ai_send_round_photo()
