@@ -344,10 +344,10 @@ async def first_summon(callback, universe):
 async def campaign_rank(message: Message):
     user_id = message.from_user.id
     account = await mongodb.get_user(user_id)
-    universe = account['universe']
 
     if account is not None and account['_id'] == user_id:
         bot = message.bot  # Используем объект бота из сообщения
+        universe = account['universe']
         if await check_user_subscription(user_id, bot):
             # Если 'last_call_time' не существует, установите его в текущее время
             if 'last_call_time' not in account or datetime.now() - account['last_call_time'] >= timedelta(hours=4):
@@ -484,6 +484,6 @@ async def campaign_rank(message: Message):
         await message.answer_animation(animation=media, caption="✧ • 📄 Ты не регистрирован"
                                                                 f"\n── •✧✧• ────────────"
                                                                 f"\n❖ 💮 Присоединяйся в мир битв и "
-                                                                f"получи своего первого 🎴 персонажа"
-                                                                f"\n\n── •✧✧• ────────────",
+                                                                f"получи своего первого 🎴 персонажа ✨"
+                                                                f"\n── •✧✧• ────────────",
                                        reply_markup=start_button())
