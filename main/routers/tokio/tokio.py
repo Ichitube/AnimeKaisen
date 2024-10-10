@@ -113,7 +113,7 @@ async def requisites(callback: CallbackQuery):
         await mongodb.update_user(user_id, {"tasks.last_shop_purchase": yesterday_date})
         await mongodb.update_user(user_id, {"tasks.last_dungeon": yesterday_date})
         await mongodb.update_user(user_id, {"tasks.last_free_summon": yesterday_date})
-        await mongodb.update_user(user_id, {"tasks.last_tasks_view": current_date})
+        await mongodb.update_user(user_id, {"tasks.last_tasks_view": current_datetime})
     reward = "ℹ️"
     last_get_reward = account["tasks"]["last_get_reward"].date()
     if last_get_reward == current_date:
