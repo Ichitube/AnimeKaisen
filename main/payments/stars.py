@@ -1,21 +1,63 @@
-from aiogram import Router, F
+from os import getenv
+from dotenv import load_dotenv
 
-from aiogram.types import CallbackQuery
+from aiogram import Router, F, Bot
+
+from aiogram.types import CallbackQuery, LabeledPrice, PreCheckoutQuery, Message
 from aiogram.enums import ParseMode
 
 from keyboards.builders import inline_builder
 from data import mongodb
-from .store import store
-from .crystalpay_sdk import CrystalPAY, InvoiceType
-
-crystalpayAPI = CrystalPAY("direbilling", "3fd18bf80390f19f80679409d4a3ae8e8ea14048",
-                           "d06aee367b2b5053c1f064cc48798a73a1adefa7")
 
 router = Router()
 
-tasks = {}
+
+# @router.callback_query(F.data == "buy_keys")
+# async def buy_keys(callback: CallbackQuery):
+#     await callback.message.delete()
+#
+#     pattern = dict(caption=f"\n<blockquote expandable>❖ 🧧 Вы можете купить священный билет за 20 🌟</blockquote>"
+#                            f"\n── •✧✧• ────────────",
+#                    parse_mode=ParseMode.HTML,
+#                    reply_markup=inline_builder(["🧧 Купить", "✖️ Отмена"], ["stars", "store"], row_width=[2, 1]))
+#
+#     media_id = "CgACAgIAAx0CfstymgACBQVluXo_n-FnFfBB1XW8zCIU7_Ed0QAC6TsAAtfz0Enh8jW0yBuKgzQE"
+#
+#     await callback.message.answer_animation(animation=media_id, **pattern)
+
+@router.message(F.text.lower().in_(['донат', 'купить']))
+@router.callback_query(F.data == "buy_keys")
+async def buy_keys(message: Message | CallbackQuery):
+    if isinstance(message, CallbackQuery):
+        await callback.message.answer_invoice(
+            title="🌟 Покупка билет 🧧",
+            description="❖ 🧧 Священный билет имеет высокий шанс выпадения редких персонажей"
+                        "\n\n\n\n • Цена: 20 🌟",
+            payload="access_to_private",
+            currency="XTR",
+            prices=[LabeledPrice(label="XTR", amount=1)],
+        )
+    else:
+        await message.answer_invoice(
+            title="🌟 Покупка билет 🧧",
+            description="❖ 🧧 Священный билет имеет высокий шанс выпадения редких персонажей",
+                       # f"\n\n • Цена: 20 🌟",
+            payload="access_to_private",
+            currency="XTR",
+            prices=[LabeledPrice(label="XTR", amount=20)]
+        )
 
 
+@router.pre_checkout_query()
+async def process_pre_checkout_query(event: PreCheckoutQuery):
+    await event.answer(ok=True)
+
+
+@router.message(F.successful_payment)
+async def successful_payment(message: Message, bot: Bot):
+    # await bot.refund_star_payment(message.from_user.id, message.successful_payment.telegram_payment_charge_id)
+    await mongodb.update_value(message.from_user.id, {'inventory.items.tickets.keys': 1})
+    await message.answer("❖ Вы успешно приобрели 🧧 священный билет")
 
 # @router.callback_query(F.data == "buy_keys")
 # async def buy_keys(callback: CallbackQuery):

@@ -6,6 +6,7 @@ from routers import registration, battle, gacha, banner, settings, navigation, m
 from data import character_photo
 from routers.tokio import tokio, dungeon, store, Pay, home
 from handlers import chat_commands, admins
+from payments import stars
 from chat_handlers import chat_battle
 from callbacks import callback
 from middlewares.AntiFloodMiddleWare import AntiFloodMiddleware, AntiFloodMiddlewareM
@@ -37,7 +38,8 @@ async def main():
         character_photo.router,
         slaves.router,
         home.router,
-        admins.router
+        admins.router,
+        stars.router
     )
 
     dp.callback_query.middleware(AntiFloodMiddleware())
