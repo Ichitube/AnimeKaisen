@@ -29,7 +29,7 @@ router = Router()
 @router.callback_query(F.data == "buy_keys")
 async def buy_keys(message: Message | CallbackQuery):
     if isinstance(message, CallbackQuery):
-        await callback.message.answer_invoice(
+        await message.message.answer_invoice(
             title="🌟 Покупка билет 🧧",
             description="❖ 🧧 Священный билет имеет высокий шанс выпадения редких персонажей"
                         "\n\n\n\n • Цена: 20 🌟",
