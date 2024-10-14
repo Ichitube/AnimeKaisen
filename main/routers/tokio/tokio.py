@@ -105,6 +105,27 @@ async def requisites(callback: CallbackQuery):
             "last_get_reward": yesterday_date
         }})
         account = await mongodb.get_user(user_id)
+    # Получаем tasks или создаем пустой словарь, если его нет
+    tasks = account.get("tasks", {})
+
+    # Список полей, которые должны быть в tasks
+    required_fields = {
+        "last_summon": yesterday_date,
+        "last_arena_fight": yesterday_date,
+        "last_shop_purchase": yesterday_date,
+        "last_free_summon": yesterday_date,
+        "last_dungeon": yesterday_date,
+        "last_tasks_view": current_datetime,
+        "last_get_reward": yesterday_date
+    }
+
+    # Проверяем и добавляем недостающие поля
+    for field, value in required_fields.items():
+        if field not in tasks:
+            tasks[field] = value
+    # Обновляем данные пользователя
+    await mongodb.update_user(user_id, {"tasks": tasks})
+    account = await mongodb.get_user(user_id)
     last_view_date = account["tasks"]["last_tasks_view"]
     last_view_date = last_view_date.date()
     if last_view_date != current_date:

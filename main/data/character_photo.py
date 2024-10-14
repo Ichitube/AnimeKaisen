@@ -608,11 +608,11 @@ def home_stats(name: str):
 
 
 s_stats = {
-        'Алекси': ('CgACAgIAAx0CfstymgACD0ZmGQuj-TUH0EaHzCE01UdHdiqcGgACTkcAAoofyEiCZ9PYwk9VxzQE', 'Алекси', 50, 'heal', 10000),
-        'Вилли': ('CgACAgIAAx0CfstymgACD0hmGQutT-LRIY1_8NfBQqzakjj3SAACUUcAAoofyEgNOObyJvd72TQE', 'Вилли',  70, 'attack', 10000),
-        'Пушистик': ('CgACAgIAAx0CfstymgACD0dmGQutNdjmwtt7uPxRDNw8n_Mt_gACUEcAAoofyEhgSwrVi03r0TQE', 'Пушистик', 50, 'heal', 10000),
-        'Лера': ('CgACAgIAAx0CfstymgACD1JmGQ5HuGtNegOJ18XNrW3nFECTFAACaEcAAoofyEgRJnqIGb9B0DQE', 'Лера', 70, 'attack', 10000),
-        'Беата': ('CgACAgIAAx0CfstymgACD1hmGVnuoE1Vh_qLRX9YhwjjvNaNtgACMkYAAqk6yUiLbHT72gGuszQE', 'Беата', 70, 'attack', 10000),
+        'Алекси': ('CgACAgIAAx0CfstymgACD0ZmGQuj-TUH0EaHzCE01UdHdiqcGgACTkcAAoofyEiCZ9PYwk9VxzQE', 'Алекси', 50, 'heal', 100, 20, '💉 Лекарь'),
+        'Вилли': ('CgACAgIAAx0CfstymgACD0hmGQutT-LRIY1_8NfBQqzakjj3SAACUUcAAoofyEgNOObyJvd72TQE', 'Вилли',  70, 'attack', 100, 20, '🗡 Воин'),
+        'Пушистик': ('CgACAgIAAx0CfstymgACD0dmGQutNdjmwtt7uPxRDNw8n_Mt_gACUEcAAoofyEhgSwrVi03r0TQE', 'Пушистик', 50, 'heal', 100, 20, '💉 Лекарь'),
+        'Лера': ('CgACAgIAAx0CfstymgACD1JmGQ5HuGtNegOJ18XNrW3nFECTFAACaEcAAoofyEgRJnqIGb9B0DQE', 'Лера', 70, 'attack', 100, 20, '🗡 Воин'),
+        'Беата': ('CgACAgIAAx0CfstymgACD1hmGVnuoE1Vh_qLRX9YhwjjvNaNtgACMkYAAqk6yUiLbHT72gGuszQE', 'Беата', 70, 'attack', 100, 20, '🗡 Воин'),
     }
 
 

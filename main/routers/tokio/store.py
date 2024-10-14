@@ -1,10 +1,12 @@
+from os import getenv
+from dotenv import load_dotenv
 from datetime import datetime, timedelta
 
 from contextlib import suppress
-from aiogram import Router, F
+from aiogram import Router, F, Bot
 
 from aiogram.fsm.context import FSMContext
-from aiogram.types import CallbackQuery, InputMediaAnimation
+from aiogram.types import CallbackQuery, InputMediaAnimation, LabeledPrice, PreCheckoutQuery, Message
 from aiogram.enums import ParseMode
 from aiogram.exceptions import TelegramBadRequest
 
@@ -34,7 +36,7 @@ async def store(callback: CallbackQuery):
                 f"\n❖  Вы можете купить 🎫 золотые и 🎟 обычные билеты за 💴 ¥"
                 f"\n\n❃  🎫 = 1000 💴"
                 f"\n❃  🎟 = 100 💴"
-                f"\n\n❖  Так же можете приобрести \n🧧 священный билет за 1 💲"
+                f"\n\n❖  Так же можете приобрести \n🧧 священный билет за 25 🌟"
                 f"\n── •✧✧• ────────────"
                 f"\n❃  💴 {money} ¥  🧧 ⋗ <b>{keys}</b>  🎫 ⋗ <b>{golden}</b>  🎟 ⋗ <b>{common}</b>",
         parse_mode=ParseMode.HTML,
@@ -169,9 +171,9 @@ async def inventory(callback: CallbackQuery, state: FSMContext):
     photo = InputMediaAnimation(media=result[0])
     await state.update_data(home=list(homes.keys())[0])
     await callback.message.edit_media(photo, inline_id)
-    await callback.message.edit_caption(inline_id, f"❖ ⚜️ Сила: {result[1]}"
-                                                   f"\n ── •✧✧• ────────────"
-                                                   f"\n❖  Вы можете 🔑 купить этот дом за {result[1]} 💴 ¥",
+    await callback.message.edit_caption(inline_id, caption=f"❖ ⚜️ Сила: {result[1]}"
+                                                           f"\n ── •✧✧• ────────────"
+                                                           f"\n❖  Вы можете 🔑 купить этот дом за {result[1]} 💴 ¥",
                                         reply_markup=builders.pagination_store())
 
 
@@ -192,7 +194,7 @@ async def inventory(callback: CallbackQuery, callback_data: builders.Pagination,
         await callback.message.edit_media(photo, inline_id)
         await callback.message.edit_caption(
             inline_id,
-            f"❖ ⚜️ Сила: {result[1]}"
+            caption=f"❖ ⚜️ Сила: {result[1]}"
             f"\n ── •✧✧• ────────────"
             f"\n❖  Вы можете 🔑 купить этот дом за {result[1]} 💴 ¥",
             reply_markup=builders.pagination_store(page_num)
@@ -235,11 +237,13 @@ async def store_slaves(callback: CallbackQuery, state: FSMContext):
     info = slave_info(result[3], result[2])
     await state.update_data(slave=list(slaves.keys())[0])
     await callback.message.edit_media(photo, inline_id)
-    await callback.message.edit_caption(inline_id, f"❖ 🔖 {result[1]}"
-                                                   f"\n──❀*̥˚──◌──◌──❀*̥˚────"
-                                                   f"\n{info}"
-                                                   f"\n──❀*̥˚──◌──◌──❀*̥˚────"
-                                                   f"\n❖  Вы можете 🔖 купить эту рабыню за {result[4]} 💴 ¥",
+    await callback.message.edit_caption(inline_id,
+                                        caption=f"❖ 🔖 {result[1]}"
+                                        f"\n──❀*̥˚──◌──◌──❀*̥˚────"
+                                        f"\n💮 Служение: {result[6]}"
+                                        f"\n\n{info}"
+                                        f"\n──❀*̥˚──◌──◌──❀*̥˚────"
+                                        f"\n • Цена: {result[5]} 🌟",
                                         reply_markup=builders.slaves_store())
 
 
@@ -261,34 +265,71 @@ async def inventory(callback: CallbackQuery, callback_data: builders.Pagination,
         await callback.message.edit_media(photo, inline_id)
         await callback.message.edit_caption(
             inline_id,
-            f"❖ 🔖 {result[1]}"
+            caption=f"❖ 🔖 {result[1]}"
             f"\n──❀*̥˚──◌──◌──❀*̥˚────"
-            f"\n{info}"
+            f"\n💮 Служение: {result[6]}"
+            f"\n\n{info}"
             f"\n──❀*̥˚──◌──◌──❀*̥˚────"
-            f"\n❖  Вы можете 🔖 купить эту рабыню за {result[4]} 💴 ¥",
+            f"\n • Цена: {result[5]} 🌟",
             reply_markup=builders.slaves_store(page_num)
         )
     await callback.answer()
 
 
+# @router.callback_query(F.data == "buy_slave")
+# async def buy_home(callback: CallbackQuery, state: FSMContext):
+#     user_id = callback.from_user.id
+#     account = await mongodb.get_user(user_id)
+#     data = await state.get_data()
+#     result = character_photo.slaves_stats(data['slave'])
+#     money = account['account']['money']
+#     if data.get('slave') in account['inventory']['slaves']:
+#         await callback.answer(f"❖  ✖️  У вас уже есть эта рабыня", show_alert=True)
+#         return
+#     else:
+#         if money >= result[4]:
+#             await mongodb.update_user(user_id, {'account.money': money - result[4]})
+#             await mongodb.push_slave(user_id, data.get('slave'))
+#             current_date = datetime.today().date()
+#             current_datetime = datetime.combine(current_date, datetime.time(datetime.now()))
+#             await mongodb.update_user(user_id, {"tasks.last_shop_purchase": current_datetime})
+#             await callback.answer(f"❖  🔖  Вы успешно приобрели рабыню", show_alert=True)
+#         else:
+#             await callback.answer(f"❖  ✖️  У вас недостаточно 💴 ¥", show_alert=True)
+#     await store(callback)
+
+
 @router.callback_query(F.data == "buy_slave")
-async def buy_home(callback: CallbackQuery, state: FSMContext):
+async def buy_keys(callback: CallbackQuery, state: FSMContext):
     user_id = callback.from_user.id
     account = await mongodb.get_user(user_id)
     data = await state.get_data()
     result = character_photo.slaves_stats(data['slave'])
-    money = account['account']['money']
     if data.get('slave') in account['inventory']['slaves']:
         await callback.answer(f"❖  ✖️  У вас уже есть эта рабыня", show_alert=True)
         return
-    else:
-        if money >= result[4]:
-            await mongodb.update_user(user_id, {'account.money': money - result[4]})
-            await mongodb.push_slave(user_id, data.get('slave'))
-            current_date = datetime.today().date()
-            current_datetime = datetime.combine(current_date, datetime.time(datetime.now()))
-            await mongodb.update_user(user_id, {"tasks.last_shop_purchase": current_datetime})
-            await callback.answer(f"❖  🔖  Вы успешно приобрели рабыню", show_alert=True)
-        else:
-            await callback.answer(f"❖  ✖️  У вас недостаточно 💴 ¥", show_alert=True)
-    await store(callback)
+    await callback.message.answer_invoice(
+        title=f"❖ 🔖 {result[1]}",
+        description=f"──❀*̥˚──◌──◌──❀*̥˚────",
+        payload="access_to_private",
+        currency="XTR",
+        prices=[LabeledPrice(label="XTR", amount=result[5])],
+    )
+
+
+@router.pre_checkout_query()
+async def process_pre_checkout_query(event: PreCheckoutQuery):
+    await event.answer(ok=True)
+
+
+@router.message(F.successful_payment)
+async def successful_payment(message: Message, bot: Bot):
+    data = await state.get_data()
+    result = character_photo.slaves_stats(data['slave'])
+    # await bot.refund_star_payment(message.from_user.id, message.successful_payment.telegram_payment_charge_id)
+    await mongodb.push_slave(user_id, data.get('slave'))
+    current_date = datetime.today().date()
+    current_datetime = datetime.combine(current_date, datetime.time(datetime.now()))
+    await mongodb.update_user(user_id, {"tasks.last_shop_purchase": current_datetime})
+
+    await message.answer(f"❖ 🔖 Вы успешно приобрели {result[1]}")
