@@ -35,7 +35,7 @@ async def buy_keys(message: Message | CallbackQuery):
                         "\n\n\n\n • Цена: 20 🌟",
             payload="access_to_private",
             currency="XTR",
-            prices=[LabeledPrice(label="XTR", amount=1)],
+            prices=[LabeledPrice(label="XTR", amount=20)],
         )
     else:
         await message.answer_invoice(
