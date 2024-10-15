@@ -1,6 +1,5 @@
 from os import getenv
 from dotenv import load_dotenv
-from datetime import datetime, timedelta
 
 from aiogram import Router, F, Bot
 
@@ -33,21 +32,19 @@ async def buy_keys(message: Message | CallbackQuery):
         await message.message.answer_invoice(
             title="🌟 Покупка билет 🧧",
             description="❖ 🧧 Священный билет имеет высокий шанс выпадения редких персонажей"
-                        "\n\n\n\n──❀*̥˚──◌──◌──❀*̥˚────"
-                        "\n\n\n\n • Цена: 25 🌟",
+                        "\n\n\n\n • Цена: 20 🌟",
             payload="access_to_private",
             currency="XTR",
-            prices=[LabeledPrice(label="XTR", amount=25)],
+            prices=[LabeledPrice(label="XTR", amount=1)],
         )
     else:
         await message.answer_invoice(
             title="🌟 Покупка билет 🧧",
-            description="❖ 🧧 Священный билет имеет высокий шанс выпадения редких персонажей"
-                        "\n\n\n\n──❀*̥˚──◌──◌──❀*̥˚────"
-                        "\n\n\n\n • Цена: 25 🌟",
+            description="❖ 🧧 Священный билет имеет высокий шанс выпадения редких персонажей",
+                       # f"\n\n • Цена: 20 🌟",
             payload="access_to_private",
             currency="XTR",
-            prices=[LabeledPrice(label="XTR", amount=25)]
+            prices=[LabeledPrice(label="XTR", amount=20)]
         )
 
 
@@ -60,11 +57,7 @@ async def process_pre_checkout_query(event: PreCheckoutQuery):
 async def successful_payment(message: Message, bot: Bot):
     # await bot.refund_star_payment(message.from_user.id, message.successful_payment.telegram_payment_charge_id)
     await mongodb.update_value(message.from_user.id, {'inventory.items.tickets.keys': 1})
-    current_date = datetime.today().date()
-    current_datetime = datetime.combine(current_date, datetime.time(datetime.now()))
-    await mongodb.update_user(user_id, {"tasks.last_shop_purchase": current_datetime})
     await message.answer("❖ Вы успешно приобрели 🧧 священный билет")
-
 
 # @router.callback_query(F.data == "buy_keys")
 # async def buy_keys(callback: CallbackQuery):
