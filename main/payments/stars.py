@@ -32,19 +32,19 @@ async def buy_keys(message: Message | CallbackQuery):
         await message.message.answer_invoice(
             title="🌟 Покупка билет 🧧",
             description="❖ 🧧 Священный билет имеет высокий шанс выпадения редких персонажей"
-                        "\n\n\n\n • Цена: 20 🌟",
+                        "\n\n\n\n • Цена: 25 🌟",
             payload="access_to_private",
             currency="XTR",
-            prices=[LabeledPrice(label="XTR", amount=1)],
+            prices=[LabeledPrice(label="XTR", amount=25)],
         )
     else:
         await message.answer_invoice(
             title="🌟 Покупка билет 🧧",
             description="❖ 🧧 Священный билет имеет высокий шанс выпадения редких персонажей",
-                       # f"\n\n • Цена: 20 🌟",
+                       # f"\n\n • Цена: 25 🌟",
             payload="access_to_private",
             currency="XTR",
-            prices=[LabeledPrice(label="XTR", amount=20)]
+            prices=[LabeledPrice(label="XTR", amount=25)]
         )
 
 
