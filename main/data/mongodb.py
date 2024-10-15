@@ -264,3 +264,17 @@ async def update_get_card(user_id, date):
 
 async def update_time(user_id, data, date):
     db.users.update_one({'_id': user_id}, {'$set': {data: date}}, upsert=True)
+
+
+async def clear_slaves_for_all_users():
+    await db.users.update_many(
+        {},  # Пустой фильтр означает обновление всех документов
+        {"$set": {"inventory.slaves": []}}  # Устанавливаем пустой массив для всех
+    )
+
+
+async def clear_slave_for_all_users():
+    await db.users.update_many(
+        {},  # Пустой фильтр означает обновление всех документов
+        {"$set": {"inventory.slave": []}}  # Устанавливаем пустой массив для всех
+    )
