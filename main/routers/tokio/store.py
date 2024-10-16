@@ -311,25 +311,25 @@ async def buy_keys(callback: CallbackQuery, state: FSMContext):
     await callback.message.answer_invoice(
         title=f"❖ 🔖 {result[1]}",
         description=f"──❀*̥˚──◌──◌──❀*̥˚────",
-        payload="access_to_private",
+        payload="buy_slave",
         currency="XTR",
         prices=[LabeledPrice(label="XTR", amount=result[5])],
     )
 
 
-@router.pre_checkout_query()
-async def process_pre_checkout_query(event: PreCheckoutQuery):
-    await event.answer(ok=True)
+# @router.pre_checkout_query()
+# async def process_pre_checkout_query(event: PreCheckoutQuery):
+#     await event.answer(ok=True)
 
 
-@router.message(F.successful_payment)
-async def successful_payment(message: Message, bot: Bot):
-    data = await state.get_data()
-    result = character_photo.slaves_stats(data['slave'])
-    # await bot.refund_star_payment(message.from_user.id, message.successful_payment.telegram_payment_charge_id)
-    await mongodb.push_slave(user_id, data.get('slave'))
-    current_date = datetime.today().date()
-    current_datetime = datetime.combine(current_date, datetime.time(datetime.now()))
-    await mongodb.update_user(user_id, {"tasks.last_shop_purchase": current_datetime})
-
-    await message.answer(f"❖ 🔖 Вы успешно приобрели {result[1]}")
+# @router.message(F.successful_payment)
+# async def successful_payment(message: Message, bot: Bot):
+#     data = await state.get_data()
+#     result = character_photo.slaves_stats(data['slave'])
+#     # await bot.refund_star_payment(message.from_user.id, message.successful_payment.telegram_payment_charge_id)
+#     await mongodb.push_slave(user_id, data.get('slave'))
+#     current_date = datetime.today().date()
+#     current_datetime = datetime.combine(current_date, datetime.time(datetime.now()))
+#     await mongodb.update_user(user_id, {"tasks.last_shop_purchase": current_datetime})
+#
+#     await message.answer(f"❖ 🔖 Вы успешно приобрели {result[1]}")
