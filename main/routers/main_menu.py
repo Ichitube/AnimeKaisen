@@ -165,7 +165,7 @@ async def form_name(message: Message, state: FSMContext):
             # Выдача награды
             reward = promo['reward']
             # Пример: Добавляем награду в инвентарь пользователя
-            await mongodb.update_value(message.from_user.id, {'inventory.account.money': 5000})
+            await mongodb.update_value(message.from_user.id, {'account.money': 5000})
             await mongodb.update_value(message.from_user.id, {'inventory.items.tickets.golden': 3})
             await mongodb.update_value(message.from_user.id, {'inventory.items.tickets.common': 5})
 
