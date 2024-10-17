@@ -317,6 +317,27 @@ async def buy_keys(callback: CallbackQuery, state: FSMContext):
     )
 
 
+@router.message(F.successful_payment)
+async def successful_payment(message: Message, bot: Bot, state: FSMContext):
+    payload = message.successful_payment.invoice_payload
+
+    if payload == "buy_slave":
+        # Обработка покупки рабыни
+        data = await state.get_data()
+        result = character_photo.slaves_stats(data['slave'])
+        await mongodb.push_slave(message.from_user.id, data.get('slave'))
+        current_date = datetime.today().date()
+        current_datetime = datetime.combine(current_date, datetime.time(datetime.now()))
+        # await bot.refund_star_payment(message.from_user.id, message.successful_payment.telegram_payment_charge_id)
+        await mongodb.update_user(message.from_user.id, {"tasks.last_shop_purchase": current_datetime})
+        await message.answer(f"❖ 🔖 Вы успешно приобрели {result[1]}")
+
+    elif payload == "buy_ticket":
+        # Обработка покупки билета
+        # await bot.refund_star_payment(message.from_user.id, message.successful_payment.telegram_payment_charge_id)
+        await mongodb.update_value(message.from_user.id, {'inventory.items.tickets.keys': 1})
+        await message.answer("❖ Вы успешно приобрели 🧧 священный билет")
+
 # @router.pre_checkout_query()
 # async def process_pre_checkout_query(event: PreCheckoutQuery):
 #     await event.answer(ok=True)
