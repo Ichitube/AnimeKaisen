@@ -391,7 +391,7 @@ async def duel_battle(callback: CallbackQuery):
                     await send_round_photo()
             else:
                 await send_round_photo()
-    except Exception as e:
+    except AttributeError as e:
         # Обработка ошибки AttributeError
         await callback.message.answer("❖ 🔂 Идёт разработка бота связи с чем битва была остановлена",
                                       reply_markup=menu_button())
@@ -400,11 +400,9 @@ async def duel_battle(callback: CallbackQuery):
             {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
         )
 
-        if account["battle"]["battle"]["rid"] != account["_id"] * 10:
-            await bot.send_message(account["battle"]["battle"]["rid"],
-                                   "❖ 🔂 Идёт разработка бота связи с чем битва была остановлена")
-            await mongodb.update_many(
-                {"_id": {"$in": [account["battle"]["battle"]["rid"]]}},
-                {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
-            )
-        await arena(callback, stop=1)
+        await bot.send_message(account["battle"]["battle"]["rid"],
+                               "❖ 🔂 Идёт разработка бота связи с чем битва была остановлена")
+        await mongodb.update_many(
+            {"_id": {"$in": [account["battle"]["battle"]["rid"]]}},
+            {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
+        )

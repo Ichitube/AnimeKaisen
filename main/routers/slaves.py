@@ -21,7 +21,7 @@ def slave_info(clas, point):
 
 
 @router.callback_query(F.data == "slave")
-async def slave(callback: CallbackQuery):
+async def slave(callback: CallbackQuery, state: FSMContext):
     inline_id = callback.inline_message_id
     account = await mongodb.get_user(callback.from_user.id)
     slaves = account['inventory']['slaves']
@@ -31,6 +31,7 @@ async def slave(callback: CallbackQuery):
     result = character_photo.slaves_stats(slaves[0])
     animation = InputMediaAnimation(media=result[0])
     info = slave_info(result[3], result[2])
+    await state.update_data(slaves=slaves)
     await callback.message.edit_media(animation, inline_id)
     await callback.message.edit_caption(inline_id,
                                         caption=f"❖ 🔖 {result[1]}"
@@ -39,8 +40,7 @@ async def slave(callback: CallbackQuery):
                                         f"\n\n{info}"
                                         f"\n──❀*̥˚──◌──◌──❀*̥˚────"
                                         f"\n❖ 🔖 1 из {len(slaves)}",
-                                        reply_markup=inline_builder(["🔖 Рабыни", "🔙 Назад", ], ["slaves", "arena"],
-                                                                    row_width=[1]))
+                                        reply_markup=pagination_slaves())
 
 
 # @router.callback_query(F.data == "slaves")
