@@ -32,30 +32,37 @@ async def slave(callback: CallbackQuery):
     animation = InputMediaAnimation(media=result[0])
     info = slave_info(result[3], result[2])
     await callback.message.edit_media(animation, inline_id)
-    await callback.message.edit_caption(inline_id, f"❖ 🔖 {result[1]}"
-                                                   f"\n──❀*̥˚──◌──◌──❀*̥˚────"
-                                                   f"\n{info}",
+    await callback.message.edit_caption(inline_id,
+                                        caption=f"❖ 🔖 {result[1]}"
+                                        f"\n──❀*̥˚──◌──◌──❀*̥˚────"
+                                        f"\n💮 Служение: {result[6]}"
+                                        f"\n\n{info}"
+                                        f"\n──❀*̥˚──◌──◌──❀*̥˚────"
+                                        f"\n❖ 🔖 1 из {len(slaves)}",
                                         reply_markup=inline_builder(["🔖 Рабыни", "🔙 Назад", ], ["slaves", "arena"],
                                                                     row_width=[1]))
 
 
-@router.callback_query(F.data == "slaves")
-async def all_slaves(callback: CallbackQuery, state: FSMContext):
-    inline_id = callback.inline_message_id
-    account = await mongodb.get_user(callback.from_user.id)
-    slaves = account['inventory']['slaves']
-    result = character_photo.slaves_stats(slaves[0])
-    photo = InputMediaAnimation(media=result[0])
-    info = slave_info(result[3], result[2])
-    total_slaves = len(slaves)
-    await state.update_data(slaves=slaves)
-    await callback.message.edit_media(photo, inline_id)
-    await callback.message.edit_caption(inline_id, f"❖ 🔖 {result[1]}"
-                                                   f"\n──❀*̥˚──◌──◌──❀*̥˚────"
-                                                   f"\n{info}"
-                                                   f"\n──❀*̥˚──◌──◌──❀*̥˚────"
-                                                   f"\nКоличество рабыни: {total_slaves}",
-                                        reply_markup=pagination_slaves())
+# @router.callback_query(F.data == "slaves")
+# async def all_slaves(callback: CallbackQuery, state: FSMContext):
+#     inline_id = callback.inline_message_id
+#     account = await mongodb.get_user(callback.from_user.id)
+#     slaves = account['inventory']['slaves']
+#     result = character_photo.slaves_stats(slaves[0])
+#     photo = InputMediaAnimation(media=result[0])
+#     info = slave_info(result[3], result[2])
+#     total_slaves = len(slaves)
+#     await state.update_data(slaves=slaves)
+#     await callback.message.edit_media(photo, inline_id)
+#     await callback.message.edit_caption(
+#         inline_id,
+#         caption=f"❖ 🔖 {result[1]}"
+#                 f"\n──❀*̥˚──◌──◌──❀*̥˚────"
+#                 f"\n💮 Служение: {result[6]}"
+#                 f"\n\n{info}"
+#                 f"\n──❀*̥˚──◌──◌──❀*̥˚────"
+#                 f"\n • Цена: {result[5]} 🌟",
+#         reply_markup=pagination_slaves())
 
 
 @router.callback_query(builders.Pagination.filter(F.action.in_(["prev_slave", "next_slave"])))
@@ -70,7 +77,6 @@ async def slaves_pagination(callback: CallbackQuery, callback_data: builders.Pag
         page_num = (page_num - 1) % len(slaves)
 
     with suppress(TelegramBadRequest):
-        total_slaves = len(slaves)
         result = character_photo.slaves_stats(slaves[page_num])
         photo = InputMediaAnimation(media=result[0])
         info = slave_info(result[3], result[2])
@@ -78,11 +84,12 @@ async def slaves_pagination(callback: CallbackQuery, callback_data: builders.Pag
         await callback.message.edit_media(photo, inline_id)
         await callback.message.edit_caption(
             inline_id,
-            f"❖ 🔖 {result[1]}"
-            f"\n──❀*̥˚──◌──◌──❀*̥˚────"
-            f"\n{info}"
-            f"\n──❀*̥˚──◌──◌──❀*̥˚────"
-            f"\nКоличество рабыни: {total_slaves}",
+            caption=f"❖ 🔖 {result[1]}"
+                    f"\n──❀*̥˚──◌──◌──❀*̥˚────"
+                    f"\n💮 Служение: {result[6]}"
+                    f"\n\n{info}"
+                    f"\n──❀*̥˚──◌──◌──❀*̥˚────"
+                    f"\n❖ 🔖 {page_num + 1} из {len(slaves)}",
             reply_markup=pagination_slaves(page_num)
         )
     await callback.answer()
@@ -97,5 +104,5 @@ async def set_slave(callback: CallbackQuery, state: FSMContext):
     index = slaves.index(slave_set)
     item = slaves.pop(index)
     slaves.insert(0, item)
-    await mongodb.update_user(user_id, {'inventory.slave': slaves})
+    await mongodb.update_user(user_id, {'inventory.slaves': slaves})
     await callback.answer(f"❖  🔖  Вы выбрали эту рабыню", show_alert=True)
