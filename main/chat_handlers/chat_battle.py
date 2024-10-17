@@ -22,7 +22,6 @@ request_data = {}
 
 @router.my_chat_member(ChatMemberUpdatedFilter(JOIN_TRANSITION))
 async def on_bot_join(event: ChatMemberUpdated):
-    print(event)
     chat_id = event.chat.id
     title = event.chat.title
     link = event.chat.username
