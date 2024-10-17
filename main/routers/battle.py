@@ -776,14 +776,6 @@ async def battle(callback: CallbackQuery):
             else:
                 await send_round_photo()
 
-            # Обработка ошибки AttributeError
-            await callback.message.answer("❖ 🔂 Идёт разработка бота связи с чем битва была остановлена",
-                                          reply_markup=menu_button())
-            await mongodb.update_many(
-                {"_id": {"$in": [account["_id"]]}},
-                {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
-            )
-
     except Exception as e:
         # Обработка ошибки AttributeError
         await callback.message.answer("❖ 🔂 Идёт разработка бота связи с чем битва была остановлена",
