@@ -299,3 +299,8 @@ async def add_promo_code(promo_code, reward):
         "reward": reward,
         "used_by": []
     })
+
+
+async def give_to_all(data, message):
+    await db.users.update_many({}, {"$inc": data})
+    await message.answer("❖ ✅ Всем выдано")

@@ -21,10 +21,19 @@ async def file_id(message: Message):
         await message.reply(text="❖ ✖️ Ты не админ")
 
 
+@router.message(Command("moneys"))
+async def file_id(message: Message):
+    if message.from_user.id in admins:
+        await mongodb.give_to_all({"account.money": 5000}, message)
+    else:
+        await message.reply(text="❖ ✖️ Ты не админ")
+
+
 @router.message(Command("users"))
 async def users_count(message: Message):
     if message.from_user.id in admins:
-        await message.reply(f"{1000 + mongodb.users()}")
+        users_c = await mongodb.users()
+        await message.reply(f"{1000 + users_c}")
     else:
         await message.reply("❖ ✖️ Ты не админ")
 

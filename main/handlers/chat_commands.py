@@ -108,10 +108,13 @@ async def give_money(message: Message):
             if account is not None and account['_id'] == user_id:
                 if friend is not None and friend['_id'] == friend_id:
                     if account['account']['money'] >= amount:
-                        await mongodb.update_user(user_id, {'account.money': account['account']['money'] - amount})
-                        await mongodb.update_user(friend_id, {'account.money': friend['account']['money'] + amount})
-                        await message.reply(f"❖ ✨ {account['name']} отправил {amount} 💴 ¥ пользователю {friend['name']}",
-                                            disable_web_page_preview=True)
+                        if amount <= 500:
+                            await mongodb.update_user(user_id, {'account.money': account['account']['money'] - amount})
+                            await mongodb.update_user(friend_id, {'account.money': friend['account']['money'] + amount})
+                            await message.reply(f"❖ ✨ {account['name']} отправил {amount} 💴 ¥ пользователю {friend['name']}",
+                                                disable_web_page_preview=True)
+                        else:
+                            await message.reply("❖ ✖️ Максимальная сумма перевода - 500 💴 ¥")
                     else:
                         await message.reply(f"❖ ✖️ Недостаточно средст. \nБаланс: {account['account']['money']} 💴 ¥")
                 else:
