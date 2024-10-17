@@ -8,6 +8,7 @@ db = client["AnimeKaisen"]
 
 collection = db["users"]
 chat_collection = db["chats"]
+promo_collection = db["promo"]
 
 
 async def input_user(user_id: int, name, universe, character, power):
@@ -278,3 +279,23 @@ async def clear_slave_for_all_users():
         {},  # Пустой фильтр означает обновление всех документов
         {"$set": {"inventory.slave": []}}  # Устанавливаем пустой массив для всех
     )
+
+
+async def find_promo(promo_code):
+    promo = await db.promo_collection.find_one({"code": promo_code})
+    return promo
+
+
+async def update_promo(promo_code, user_id):
+    await db.promo_collection.update_one(
+        {"code": promo_code},
+        {"$push": {"used_by": user_id}}
+    )
+
+
+async def add_promo_code(promo_code, reward):
+    await db.promo_collection.insert_one({
+        "code": promo_code,
+        "reward": reward,
+        "used_by": []
+    })

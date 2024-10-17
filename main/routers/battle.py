@@ -180,7 +180,7 @@ async def surrender_f(user_id, r, mes):
     F.text == "🏟️ Арена"
 )
 @router.callback_query(F.data == "arena")
-async def arena(callback: CallbackQuery | Message):
+async def arena(callback: CallbackQuery | Message, stop=0):
     account = await mongodb.get_user(callback.from_user.id)
     await profile.update_rank(callback.from_user.id, account["battle"]["stats"]['wins'])
 
@@ -222,18 +222,22 @@ async def arena(callback: CallbackQuery | Message):
     )
 
     if isinstance(callback, CallbackQuery):
-        media = InputMediaPhoto(
-            media='AgACAgIAAx0CfstymgACGt1mw15fTEgmIIHqVhdpBhzEZVm-lAACnOwxG2zEGUqsfpo-_pkKnAEAAwIAA3kAAzUE'
-        )
-        await callback.message.edit_media(media)
-        await callback.message.edit_caption(**pattern)
+        if stop == 0:
+            media = InputMediaPhoto(
+                media='AgACAgIAAx0CfstymgACGt1mw15fTEgmIIHqVhdpBhzEZVm-lAACnOwxG2zEGUqsfpo-_pkKnAEAAwIAA3kAAzUE'
+            )
+            await callback.message.edit_media(media)
+            await callback.message.edit_caption(**pattern)
+        else:
+            media = 'AgACAgIAAx0CfstymgACGt1mw15fTEgmIIHqVhdpBhzEZVm-lAACnOwxG2zEGUqsfpo-_pkKnAEAAwIAA3kAAzUE'
+            await callback.message.answer_photo(media, **pattern)
     else:
         media = 'AgACAgIAAx0CfstymgACGt1mw15fTEgmIIHqVhdpBhzEZVm-lAACnOwxG2zEGUqsfpo-_pkKnAEAAwIAA3kAAzUE'
         await callback.answer_photo(media, **pattern)
 
 
 @router.callback_query(F.data == "battle_arena")
-async def arena(callback: CallbackQuery | Message):
+async def b_arena(callback: CallbackQuery | Message):
     account = await mongodb.get_user(callback.from_user.id)
     if account['universe'] in ['Allstars', 'Allstars(old)']:
         await callback.answer(
@@ -597,300 +601,335 @@ async def surrender(message: Message):
 
 @router.callback_query(CallbackChatTypeFilter(chat_type=["private"]), F.data.startswith("˹"))
 async def battle(callback: CallbackQuery):
-    action = callback.data
-
     user_id = callback.from_user.id
     account = await mongodb.get_user(user_id)
+    try:
+        action = callback.data
+        character = battle_data.get(account["_id"])
+        r_character = battle_data.get(character.rid)
 
-    character = battle_data.get(account["_id"])
-    r_character = battle_data.get(character.rid)
+        if account["battle"]["battle"]["status"] == 2:
+            if character.b_turn:
+                return await bot.send_message(user_id, "✖️ Вы уже сделали ход!")
 
-    if account["battle"]["battle"]["status"] == 2:
-        if character.b_turn:
-            return await bot.send_message(user_id, "✖️ Вы уже сделали ход!")
+            mana, energy = await characters.turn(character, bot, action, r_character, 0)
 
-        mana, energy = await characters.turn(character, bot, action, r_character, 0)
+            if not mana:
+                await callback.answer("✖️ Недостаточно маны 🧪", show_alert=True)
+                return
 
-        if not mana:
-            await callback.answer("✖️ Недостаточно маны 🧪", show_alert=True)
-            return
+            if not energy:
+                await callback.answer("✖️ Недостаточно энергии 🪫", show_alert=True)
+                return
 
-        if not energy:
-            await callback.answer("✖️ Недостаточно энергии 🪫", show_alert=True)
-            return
+            await bot.edit_message_reply_markup(chat_id=callback.from_user.id, message_id=callback.message.message_id)
 
-        await bot.edit_message_reply_markup(chat_id=callback.from_user.id, message_id=callback.message.message_id)
+            battle_data[character.ident] = character
+            battle_data[r_character.ident] = r_character
+
+            async def send_round_photo():
+                if r_character.stun == 0:
+                    character.b_round += 1
+                    battle_data[r_character.ident].b_turn = False
+                    battle_data[character.ident].b_turn = True
+                    if r_character.ident != character.ident * 10:
+                        mes = await bot.send_message(r_character.ident,
+                                                     text=f".                    ˗ˋˏ💮 Раунд {r_character.b_round}ˎˊ˗"
+                                                          f"\n✧•───────────────────────•✧"
+                                                          f"\n<blockquote expandable>{account_text(r_character)}"
+                                                          f"\n✧•───────────────────────•✧"
+                                                          f"\n{account_text(character)}</blockquote>"
+                                                          f"\n✧•───────────────────────•✧"
+                                                          f"\n🔸 Ваш ход:",
+                                                     reply_markup=inline_builder(r_character.ability, r_character.ability,
+                                                                                 row_width=[2, 2]),
+                                                     parse_mode=ParseMode.HTML)
+                    else:
+                        await ai(r_character)
+                    user_data[user_id][character.b_round - 1] = True  # Обновляем состояние
+                    # Инициализируем состояние пользователя
+                    user_data[r_character.ident][r_character.b_round] = False
+                    # Запускаем таймер
+                    if r_character.ident != character.ident * 10:
+                        await surrender_f(r_character.ident, r_character.b_round, mes)
+                else:
+                    character.b_round += 1
+                    r_character.b_round += 1
+                    battle_data[character.rid].b_turn = True
+                    battle_data[character.ident].b_turn = False
+                    if r_character.ident != character.ident * 10:
+                        await bot.send_message(r_character.ident,
+                                               text=f".                    ˗ˋˏ💮 Раунд {r_character.b_round - 1}ˎˊ˗"
+                                                    f"\n✧•───────────────────────•✧"
+                                                    f"\n<blockquote expandable>{account_text(r_character)}"
+                                                    f"\n✧•───────────────────────•✧"
+                                                    f"\n{account_text(character)}"
+                                                    f"\n✧•───────────────────────•✧</blockquote>"
+                                                    f"\n💫 Вы под действием оглушения",
+                                               parse_mode=ParseMode.HTML)
+                    mes = await bot.send_message(user_id,
+                                                 text=f".                    ˗ˋˏ💮 Раунд {character.b_round}ˎˊ˗"
+                                                      f"\n✧•───────────────────────•✧"
+                                                      f"\n<blockquote expandable>{account_text(character)}"
+                                                      f"\n✧•───────────────────────•✧"
+                                                      f"\n{account_text(r_character)}</blockquote>"
+                                                      f"\n✧•───────────────────────•✧"
+                                                      f"\n🔸 Ваш ход:",
+                                                 reply_markup=inline_builder(character.ability, character.ability,
+                                                                             row_width=[2, 2]),
+                                                 parse_mode=ParseMode.HTML)
+                    user_data[r_character.ident][r_character.b_round - 1] = True  # Обновляем состояние
+                    user_data[character.ident][character.b_round - 1] = True  # Обновляем состояние
+                    # Инициализируем состояние пользователя
+                    user_data[user_id][character.b_round] = False
+                    # Запускаем таймер
+                    if r_character.ident != character.ident * 10:
+                        await bot.send_message(r_character.ident, "⏳ Ход соперника")
+                        await surrender_f(character.ident, character.b_round, mes)
+
+            if character.health <= 0 and r_character.health <= 0:
+                await bot.send_animation(chat_id=user_id, animation=draw_animation,
+                                         caption=draw_text, reply_markup=menu_button())
+                if r_character.ident != character.ident * 10:
+                    await bot.send_animation(chat_id=r_character, animation=draw_animation,
+                                             caption=draw_text, reply_markup=menu_button())
+
+                # await mongodb.update_many(
+                #     {"_id": {"$in": [account["_id"], character.rid]}},
+                #     {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
+                # )
+                #
+                # await mongodb.update_many(
+                #     {"_id": {"$in": [account["_id"], character.rid]}},
+                #     {"$inc": {"stats.exp": 80, "battle.stats.ties": 1, "account.money": 150}}
+                # )
+
+                await mongodb.update_value(account["_id"], {"battle.stats.ties": 1})
+                await mongodb.update_value(account["_id"], {"stats.exp": 80})
+                await mongodb.update_value(account["_id"], {"account.money": 150})
+                current_date = datetime.today().date()
+                current_datetime = datetime.combine(current_date, datetime.time(datetime.now()))
+                await mongodb.update_user(account["_id"], {"tasks.last_arena_fight": current_datetime})
+                await mongodb.update_user(account["_id"], {"battle.battle.status": 0})
+                await mongodb.update_user(account["_id"], {"battle.battle.rid": ""})
+                if r_character.ident != character.ident * 10:
+                    await mongodb.update_value(character.rid, {"battle.stats.ties": 1})
+                    await mongodb.update_value(character.rid, {"stats.exp": 80})
+                    await mongodb.update_value(character.rid, {"account.money": 150})
+                    await mongodb.update_user(character.rid, {"tasks.last_arena_fight": current_datetime})
+                    await mongodb.update_user(character.rid, {"battle.battle.status": 0})
+                    await mongodb.update_user(character.rid, {"battle.battle.rid": ""})
+
+            elif character.health <= 0:
+                if character.b_round != r_character.b_round:
+                    await bot.send_animation(chat_id=user_id, animation=lose_animation,
+                                             caption=lose_text, reply_markup=menu_button())
+                    if r_character.ident != character.ident * 10:
+                        await bot.send_animation(chat_id=character.rid, animation=lose_animation,
+                                                 caption=win_text, reply_markup=menu_button())
+
+                    await mongodb.update_value(account["_id"], {"battle.stats.loses": 1})
+                    await mongodb.update_value(account["_id"], {"stats.exp": 55})
+                    await mongodb.update_value(account["_id"], {"account.money": 100})
+                    current_date = datetime.today().date()
+                    current_datetime = datetime.combine(current_date, datetime.time(datetime.now()))
+                    await mongodb.update_user(account["_id"], {"tasks.last_arena_fight": current_datetime})
+                    await mongodb.update_user(account["_id"], {"battle.battle.status": 0})
+                    await mongodb.update_user(account["_id"], {"battle.battle.rid": ""})
+                    if r_character.ident != character.ident * 10:
+                        await mongodb.update_value(character.rid, {"battle.stats.wins": 1})
+                        await mongodb.update_value(character.rid, {"stats.exp": 100})
+                        await mongodb.update_value(character.rid, {"account.money": 200})
+                        await mongodb.update_user(character.rid, {"tasks.last_arena_fight": current_datetime})
+                        await mongodb.update_user(character.rid, {"battle.battle.status": 0})
+                        await mongodb.update_user(character.rid, {"battle.battle.rid": ""})
+
+                else:
+                    await send_round_photo()
+
+            elif r_character.health <= 0:
+                if character.b_round != r_character.b_round:
+                    await bot.send_animation(chat_id=user_id, animation=win_animation,
+                                             caption=win_text, reply_markup=menu_button())
+                    if r_character.ident != character.ident * 10:
+                        await bot.send_animation(chat_id=character.rid, animation=lose_animation,
+                                                 caption=lose_text, reply_markup=menu_button())
+
+                    current_date = datetime.today().date()
+                    current_datetime = datetime.combine(current_date, datetime.time(datetime.now()))
+                    if r_character.ident != character.ident * 10:
+                        await mongodb.update_value(character.rid, {"battle.stats.loses": 1})
+                        await mongodb.update_value(character.rid, {"stats.exp": 55})
+                        await mongodb.update_value(character.rid, {"account.money": 100})
+                        await mongodb.update_user(character.rid, {"tasks.last_arena_fight": current_datetime})
+                        await mongodb.update_user(character.rid, {"battle.battle.status": 0})
+                        await mongodb.update_user(character.rid, {"battle.battle.rid": ""})
+                    await mongodb.update_user(account["_id"], {"battle.battle.status": 0})
+                    await mongodb.update_user(account["_id"], {"battle.battle.rid": ""})
+                    await mongodb.update_user(account["_id"], {"tasks.last_arena_fight": current_datetime})
+                    await mongodb.update_value(account["_id"], {"battle.stats.wins": 1})
+                    await mongodb.update_value(account["_id"], {"stats.exp": 100})
+                    await mongodb.update_value(account["_id"], {"account.money": 200})
+
+                else:
+                    await send_round_photo()
+            else:
+                await send_round_photo()
+
+            # Обработка ошибки AttributeError
+            await callback.message.answer("❖ 🔂 Идёт разработка бота связи с чем битва была остановлена",
+                                          reply_markup=menu_button())
+            await mongodb.update_many(
+                {"_id": {"$in": [account["_id"]]}},
+                {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
+            )
+
+    except Exception as e:
+        # Обработка ошибки AttributeError
+        await callback.message.answer("❖ 🔂 Идёт разработка бота связи с чем битва была остановлена",
+                                      reply_markup=menu_button())
+        await mongodb.update_many(
+            {"_id": {"$in": [account["_id"]]}},
+            {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
+        )
+
+        if account["battle"]["battle"]["rid"] != account["_id"] * 10:
+            await bot.send_message(account["battle"]["battle"]["rid"],
+                                   "❖ 🔂 Идёт разработка бота связи с чем битва была остановлена")
+            await mongodb.update_many(
+                {"_id": {"$in": [account["battle"]["battle"]["rid"]]}},
+                {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
+            )
+        await arena(callback, stop=1)
+
+
+async def ai(character):
+    try:
+        r_character = battle_data.get(character.rid)
+
+        while True:
+            action = random.choice(character.ability)
+            # action = '˹🗡Атака˼'
+            mana, energy = await characters.turn(character, bot, action, r_character, 0, ai=True)
+
+            if not mana:
+                continue  # Выбираем новую способность
+
+            if not energy:
+                continue  # Выбираем новую способность
+
+            # Если хватает и маны, и энергии, выходим из цикла
+            break
 
         battle_data[character.ident] = character
         battle_data[r_character.ident] = r_character
 
-        async def send_round_photo():
+        async def ai_send_round_photo():
             if r_character.stun == 0:
                 character.b_round += 1
                 battle_data[r_character.ident].b_turn = False
                 battle_data[character.ident].b_turn = True
-                if r_character.ident != character.ident * 10:
-                    mes = await bot.send_message(r_character.ident,
-                                                 text=f".                    ˗ˋˏ💮 Раунд {r_character.b_round}ˎˊ˗"
-                                                      f"\n✧•───────────────────────•✧"
-                                                      f"\n<blockquote expandable>{account_text(r_character)}"
-                                                      f"\n✧•───────────────────────•✧"
-                                                      f"\n{account_text(character)}</blockquote>"
-                                                      f"\n✧•───────────────────────•✧"
-                                                      f"\n🔸 Ваш ход:",
-                                                 reply_markup=inline_builder(r_character.ability, r_character.ability,
-                                                                             row_width=[2, 2]),
-                                                 parse_mode=ParseMode.HTML)
-                else:
-                    await ai(r_character)
-                user_data[user_id][character.b_round - 1] = True  # Обновляем состояние
+                mes = await bot.send_message(r_character.ident,
+                                             text=f".                    ˗ˋˏ💮 Раунд {r_character.b_round}ˎˊ˗"
+                                                  f"\n✧•───────────────────────•✧"
+                                                  f"\n<blockquote expandable>{account_text(r_character)}"
+                                                  f"\n✧•───────────────────────•✧"
+                                                  f"\n{account_text(character)}</blockquote>"
+                                                  f"\n✧•───────────────────────•✧"
+                                                  f"\n🔸 Ваш ход:",
+                                             reply_markup=inline_builder(r_character.ability, r_character.ability,
+                                                                         row_width=[2, 2]),
+                                             parse_mode=ParseMode.HTML)
+                user_data[character.ident][character.b_round - 1] = True  # Обновляем состояние
                 # Инициализируем состояние пользователя
                 user_data[r_character.ident][r_character.b_round] = False
                 # Запускаем таймер
-                if r_character.ident != character.ident * 10:
-                    await surrender_f(r_character.ident, r_character.b_round, mes)
             else:
                 character.b_round += 1
                 r_character.b_round += 1
                 battle_data[character.rid].b_turn = True
                 battle_data[character.ident].b_turn = False
-                if r_character.ident != character.ident * 10:
-                    await bot.send_message(r_character.ident,
-                                           text=f".                    ˗ˋˏ💮 Раунд {r_character.b_round - 1}ˎˊ˗"
-                                                f"\n✧•───────────────────────•✧"
-                                                f"\n<blockquote expandable>{account_text(r_character)}"
-                                                f"\n✧•───────────────────────•✧"
-                                                f"\n{account_text(character)}"
-                                                f"\n✧•───────────────────────•✧</blockquote>"
-                                                f"\n💫 Вы под действием оглушения",
-                                           parse_mode=ParseMode.HTML)
-                mes = await bot.send_message(user_id,
-                                             text=f".                    ˗ˋˏ💮 Раунд {character.b_round}ˎˊ˗"
-                                                  f"\n✧•───────────────────────•✧"
-                                                  f"\n<blockquote expandable>{account_text(character)}"
-                                                  f"\n✧•───────────────────────•✧"
-                                                  f"\n{account_text(r_character)}</blockquote>"
-                                                  f"\n✧•───────────────────────•✧"
-                                                  f"\n🔸 Ваш ход:",
-                                             reply_markup=inline_builder(character.ability, character.ability,
-                                                                         row_width=[2, 2]),
-                                             parse_mode=ParseMode.HTML)
+                await bot.send_message(r_character.ident,
+                                       text=f".                    ˗ˋˏ💮 Раунд {r_character.b_round - 1}ˎˊ˗"
+                                            f"\n✧•───────────────────────•✧"
+                                            f"\n<blockquote expandable>{account_text(r_character)}"
+                                            f"\n✧•───────────────────────•✧"
+                                            f"\n{account_text(character)}"
+                                            f"\n✧•───────────────────────•✧</blockquote>"
+                                            f"\n💫 Вы под действием оглушения",
+                                       parse_mode=ParseMode.HTML)
+
                 user_data[r_character.ident][r_character.b_round - 1] = True  # Обновляем состояние
                 user_data[character.ident][character.b_round - 1] = True  # Обновляем состояние
                 # Инициализируем состояние пользователя
-                user_data[user_id][character.b_round] = False
+                user_data[r_character.rid][character.b_round] = False
                 # Запускаем таймер
-                if r_character.ident != character.ident * 10:
-                    await bot.send_message(r_character.ident, "⏳ Ход соперника")
-                    await surrender_f(character.ident, character.b_round, mes)
+                await bot.send_message(r_character.ident, "⏳ Ход соперника")
+                await ai(character)
 
         if character.health <= 0 and r_character.health <= 0:
-            await bot.send_animation(chat_id=user_id, animation=draw_animation,
+            await bot.send_animation(chat_id=r_character, animation=draw_animation,
                                      caption=draw_text, reply_markup=menu_button())
-            if r_character.ident != character.ident * 10:
-                await bot.send_animation(chat_id=r_character, animation=draw_animation,
-                                         caption=draw_text, reply_markup=menu_button())
 
-            # await mongodb.update_many(
-            #     {"_id": {"$in": [account["_id"], character.rid]}},
-            #     {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
-            # )
-            #
-            # await mongodb.update_many(
-            #     {"_id": {"$in": [account["_id"], character.rid]}},
-            #     {"$inc": {"stats.exp": 80, "battle.stats.ties": 1, "account.money": 150}}
-            # )
+            await mongodb.update_many(
+                {"_id": {"$in": [character.rid]}},
+                {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
+            )
 
-            await mongodb.update_value(account["_id"], {"battle.stats.ties": 1})
-            await mongodb.update_value(account["_id"], {"stats.exp": 80})
-            await mongodb.update_value(account["_id"], {"account.money": 150})
+            await mongodb.update_many(
+                {"_id": {"$in": [character.rid]}},
+                {"$inc": {"stats.exp": 80, "battle.stats.ties": 1, "account.money": 150}}
+            )
+
             current_date = datetime.today().date()
             current_datetime = datetime.combine(current_date, datetime.time(datetime.now()))
-            await mongodb.update_user(account["_id"], {"tasks.last_arena_fight": current_datetime})
-            await mongodb.update_user(account["_id"], {"battle.battle.status": 0})
-            await mongodb.update_user(account["_id"], {"battle.battle.rid": ""})
-            if r_character.ident != character.ident * 10:
-                await mongodb.update_value(character.rid, {"battle.stats.ties": 1})
-                await mongodb.update_value(character.rid, {"stats.exp": 80})
-                await mongodb.update_value(character.rid, {"account.money": 150})
-                await mongodb.update_user(character.rid, {"tasks.last_arena_fight": current_datetime})
-                await mongodb.update_user(character.rid, {"battle.battle.status": 0})
-                await mongodb.update_user(character.rid, {"battle.battle.rid": ""})
+            await mongodb.update_user(character.rid, {"tasks.last_arena_fight": current_datetime})
 
         elif character.health <= 0:
             if character.b_round != r_character.b_round:
-                await bot.send_animation(chat_id=user_id, animation=lose_animation,
-                                         caption=lose_text, reply_markup=menu_button())
-                if r_character.ident != character.ident * 10:
-                    await bot.send_animation(chat_id=character.rid, animation=lose_animation,
-                                             caption=win_text, reply_markup=menu_button())
+                await bot.send_animation(chat_id=character.rid, animation=lose_animation,
+                                         caption=win_text, reply_markup=menu_button())
 
-                await mongodb.update_value(account["_id"], {"battle.stats.loses": 1})
-                await mongodb.update_value(account["_id"], {"stats.exp": 55})
-                await mongodb.update_value(account["_id"], {"account.money": 100})
+                await mongodb.update_many(
+                    {"_id": {"$in": [character.rid]}},
+                    {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
+                )
+
+                await mongodb.update_value(character.rid, {"stats.exp": 20})
+                await mongodb.update_value(character.rid, {"account.money": 40})
                 current_date = datetime.today().date()
                 current_datetime = datetime.combine(current_date, datetime.time(datetime.now()))
-                await mongodb.update_user(account["_id"], {"tasks.last_arena_fight": current_datetime})
-                await mongodb.update_user(account["_id"], {"battle.battle.status": 0})
-                await mongodb.update_user(account["_id"], {"battle.battle.rid": ""})
-                if r_character.ident != character.ident * 10:
-                    await mongodb.update_value(character.rid, {"battle.stats.wins": 1})
-                    await mongodb.update_value(character.rid, {"stats.exp": 100})
-                    await mongodb.update_value(character.rid, {"account.money": 200})
-                    await mongodb.update_user(character.rid, {"tasks.last_arena_fight": current_datetime})
-                    await mongodb.update_user(character.rid, {"battle.battle.status": 0})
-                    await mongodb.update_user(character.rid, {"battle.battle.rid": ""})
+                await mongodb.update_user(character.rid, {"tasks.last_arena_fight": current_datetime})
 
             else:
-                await send_round_photo()
+                await ai_send_round_photo()
 
         elif r_character.health <= 0:
             if character.b_round != r_character.b_round:
-                await bot.send_animation(chat_id=user_id, animation=win_animation,
-                                         caption=win_text, reply_markup=menu_button())
-                if r_character.ident != character.ident * 10:
-                    await bot.send_animation(chat_id=character.rid, animation=lose_animation,
-                                             caption=lose_text, reply_markup=menu_button())
+                await bot.send_animation(chat_id=character.rid, animation=lose_animation,
+                                         caption=lose_text, reply_markup=menu_button())
 
+                await mongodb.update_many(
+                    {"_id": {"$in": [character.rid]}},
+                    {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
+                )
+
+                await mongodb.update_value(character.rid, {"stats.exp": 10})
+                await mongodb.update_value(character.rid, {"account.money": 20})
                 current_date = datetime.today().date()
                 current_datetime = datetime.combine(current_date, datetime.time(datetime.now()))
-                if r_character.ident != character.ident * 10:
-                    await mongodb.update_value(character.rid, {"battle.stats.loses": 1})
-                    await mongodb.update_value(character.rid, {"stats.exp": 55})
-                    await mongodb.update_value(character.rid, {"account.money": 100})
-                    await mongodb.update_user(character.rid, {"tasks.last_arena_fight": current_datetime})
-                    await mongodb.update_user(character.rid, {"battle.battle.status": 0})
-                    await mongodb.update_user(character.rid, {"battle.battle.rid": ""})
-                await mongodb.update_user(account["_id"], {"battle.battle.status": 0})
-                await mongodb.update_user(account["_id"], {"battle.battle.rid": ""})
-                await mongodb.update_user(account["_id"], {"tasks.last_arena_fight": current_datetime})
-                await mongodb.update_value(account["_id"], {"battle.stats.wins": 1})
-                await mongodb.update_value(account["_id"], {"stats.exp": 100})
-                await mongodb.update_value(account["_id"], {"account.money": 200})
+                await mongodb.update_user(character.rid, {"tasks.last_arena_fight": current_datetime})
 
             else:
-                await send_round_photo()
+                await ai_send_round_photo()
         else:
-            await send_round_photo()
-
-
-async def ai(character):
-    r_character = battle_data.get(character.rid)
-
-    while True:
-        action = random.choice(character.ability)
-        # action = '˹🗡Атака˼'
-        mana, energy = await characters.turn(character, bot, action, r_character, 0, ai=True)
-
-        if not mana:
-            continue  # Выбираем новую способность
-
-        if not energy:
-            continue  # Выбираем новую способность
-
-        # Если хватает и маны, и энергии, выходим из цикла
-        break
-
-    battle_data[character.ident] = character
-    battle_data[r_character.ident] = r_character
-
-    async def ai_send_round_photo():
-        if r_character.stun == 0:
-            character.b_round += 1
-            battle_data[r_character.ident].b_turn = False
-            battle_data[character.ident].b_turn = True
-            mes = await bot.send_message(r_character.ident,
-                                         text=f".                    ˗ˋˏ💮 Раунд {r_character.b_round}ˎˊ˗"
-                                              f"\n✧•───────────────────────•✧"
-                                              f"\n<blockquote expandable>{account_text(r_character)}"
-                                              f"\n✧•───────────────────────•✧"
-                                              f"\n{account_text(character)}</blockquote>"
-                                              f"\n✧•───────────────────────•✧"
-                                              f"\n🔸 Ваш ход:",
-                                         reply_markup=inline_builder(r_character.ability, r_character.ability,
-                                                                     row_width=[2, 2]),
-                                         parse_mode=ParseMode.HTML)
-            user_data[character.ident][character.b_round - 1] = True  # Обновляем состояние
-            # Инициализируем состояние пользователя
-            user_data[r_character.ident][r_character.b_round] = False
-            # Запускаем таймер
-        else:
-            character.b_round += 1
-            r_character.b_round += 1
-            battle_data[character.rid].b_turn = True
-            battle_data[character.ident].b_turn = False
-            await bot.send_message(r_character.ident,
-                                   text=f".                    ˗ˋˏ💮 Раунд {r_character.b_round - 1}ˎˊ˗"
-                                        f"\n✧•───────────────────────•✧"
-                                        f"\n<blockquote expandable>{account_text(r_character)}"
-                                        f"\n✧•───────────────────────•✧"
-                                        f"\n{account_text(character)}"
-                                        f"\n✧•───────────────────────•✧</blockquote>"
-                                        f"\n💫 Вы под действием оглушения",
-                                   parse_mode=ParseMode.HTML)
-
-            user_data[r_character.ident][r_character.b_round - 1] = True  # Обновляем состояние
-            user_data[character.ident][character.b_round - 1] = True  # Обновляем состояние
-            # Инициализируем состояние пользователя
-            user_data[r_character.rid][character.b_round] = False
-            # Запускаем таймер
-            await bot.send_message(r_character.ident, "⏳ Ход соперника")
-            await ai(character)
-
-    if character.health <= 0 and r_character.health <= 0:
-        await bot.send_animation(chat_id=r_character, animation=draw_animation,
-                                 caption=draw_text, reply_markup=menu_button())
-
+            await ai_send_round_photo()
+    except AttributeError as e:
+        # Обработка ошибки AttributeError
+        await callback.message.answer("❖ 🔂 Идёт разработка бота связи с чем битва была остановлена",
+                                      reply_markup=menu_button())
         await mongodb.update_many(
-            {"_id": {"$in": [character.rid]}},
+            {"_id": {"$in": [account["_id"]]}},
             {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
         )
-
-        await mongodb.update_many(
-            {"_id": {"$in": [character.rid]}},
-            {"$inc": {"stats.exp": 80, "battle.stats.ties": 1, "account.money": 150}}
-        )
-
-        current_date = datetime.today().date()
-        current_datetime = datetime.combine(current_date, datetime.time(datetime.now()))
-        await mongodb.update_user(character.rid, {"tasks.last_arena_fight": current_datetime})
-
-    elif character.health <= 0:
-        if character.b_round != r_character.b_round:
-            await bot.send_animation(chat_id=character.rid, animation=lose_animation,
-                                     caption=win_text, reply_markup=menu_button())
-
-            await mongodb.update_many(
-                {"_id": {"$in": [character.rid]}},
-                {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
-            )
-
-            await mongodb.update_value(character.rid, {"stats.exp": 20})
-            await mongodb.update_value(character.rid, {"account.money": 40})
-            current_date = datetime.today().date()
-            current_datetime = datetime.combine(current_date, datetime.time(datetime.now()))
-            await mongodb.update_user(character.rid, {"tasks.last_arena_fight": current_datetime})
-
-        else:
-            await ai_send_round_photo()
-
-    elif r_character.health <= 0:
-        if character.b_round != r_character.b_round:
-            await bot.send_animation(chat_id=character.rid, animation=lose_animation,
-                                     caption=lose_text, reply_markup=menu_button())
-
-            await mongodb.update_many(
-                {"_id": {"$in": [character.rid]}},
-                {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
-            )
-
-            await mongodb.update_value(character.rid, {"stats.exp": 10})
-            await mongodb.update_value(character.rid, {"account.money": 20})
-            current_date = datetime.today().date()
-            current_datetime = datetime.combine(current_date, datetime.time(datetime.now()))
-            await mongodb.update_user(character.rid, {"tasks.last_arena_fight": current_datetime})
-
-        else:
-            await ai_send_round_photo()
-    else:
-        await ai_send_round_photo()
+        await arena(callback, stop=1)

@@ -454,7 +454,7 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
         await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹◾️Финал⛓Гецуга◾️˼':
-        energy = await calculate_energy(self, 70)
+        energy = await calculate_energy(self, 55)
         if not energy:
             return True, False
 
@@ -521,6 +521,9 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
         mana = await calculate_mana(self, 15)
         if not mana:
             return False, True
+        energy = await calculate_energy(self, 10)
+        if not energy:
+            return True, False
 
         damage = self.attack // 2 + self.intelligence + self.strength + self.agility
 
@@ -541,6 +544,9 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
         mana = await calculate_mana(self, 25)
         if not mana:
             return False, True
+        energy = await calculate_energy(self, 15)
+        if not energy:
+            return True, False
 
         stun = Passive("❄️Заморозка", bash, undo_bash, 3, 1, apply_once=True)
 
@@ -1552,6 +1558,9 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
         mana = await calculate_mana(self, 10)
         if not mana:
             return False, True
+        energy = await calculate_energy(self, 5)
+        if not energy:
+            return True, False
 
         dragon = Passive("👥", decrease_hp, fix_effects, 3, (self.agility + self.strength) * 3)
 
@@ -1567,6 +1576,9 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
         mana = await calculate_mana(self, 10)
         if not mana:
             return False, True
+        energy = await calculate_energy(self, 15)
+        if not energy:
+            return True, False
 
         damage = self.attack * 3 + self.intelligence * 2
         bleed_effect = 50  # добавление эффекта кровотечения
@@ -1586,7 +1598,7 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
         mana = await calculate_mana(self, 25)
         if not mana:
             return False, True
-        energy = await calculate_energy(self, 10)
+        energy = await calculate_energy(self, 15)
         if not energy:
             return True, False
 
@@ -1813,7 +1825,7 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
         mana = await calculate_mana(self, 40)
         if not mana:
             return False, True
-        energy = await calculate_energy(self, 25)
+        energy = await calculate_energy(self, 15)
         if not energy:
             return True, False
 
@@ -1835,7 +1847,7 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
         mana = await calculate_mana(self, 25)
         if not mana:
             return False, True
-        energy = await calculate_energy(self, 20)
+        energy = await calculate_energy(self, 15)
         if not energy:
             return True, False
 
@@ -1856,7 +1868,7 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
         mana = await calculate_mana(self, 50)
         if not mana:
             return False, True
-        energy = await calculate_energy(self, 25)
+        energy = await calculate_energy(self, 15)
         if not energy:
             return True, False
 
@@ -1895,7 +1907,6 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
         energy = await calculate_energy(self, 15)
         if not energy:
             return True, False
-
 
         damage = self.attack + self.intelligence
 

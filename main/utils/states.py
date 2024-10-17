@@ -16,3 +16,7 @@ class Character(StatesGroup):
 
 class Universe(StatesGroup):
     universe = State()
+
+
+class Promo(StatesGroup):
+    promo = State()

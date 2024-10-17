@@ -51,8 +51,8 @@ async def tokio(callback: CallbackQuery | Message):
                 f"\n❃ 💴 {money} ¥",
         parse_mode=ParseMode.HTML,
         reply_markup=inline_builder(
-            ["🔮 Призыв", "🪪 Профиль", "🏪 Рынок", "🃏 Битва", "🏯 Клан", "🏠 Дом", "📜 Задании"],
-            ["banner", "main_page", "store", "card_battle", "clan", "home", "quests"],
+            ["🔮 Призыв", "🪪 Профиль", "🏪 Рынок", "🏠 Дом", "📜 Задании", "🃏 Битва", "🏯 Клан"],
+            ["banner", "main_page", "store", "home", "quests", "card_battle", "clan"],
             row_width=[1, 2, 2]
             )
     )

@@ -1,3 +1,6 @@
+import random
+import string
+
 from aiogram import Router
 
 from aiogram.types import Message
@@ -21,7 +24,7 @@ async def file_id(message: Message):
 @router.message(Command("users"))
 async def users_count(message: Message):
     if message.from_user.id in admins:
-        await message.reply(f"{mongodb.users()}")
+        await message.reply(f"{1000 + mongodb.users()}")
     else:
         await message.reply("❖ ✖️ Ты не админ")
 
@@ -55,3 +58,18 @@ async def chats_count(message: Message):
 @router.message(Command("user_id"))
 async def chats_count(message: Message):
     await message.reply(f"{message.from_user.id}")
+
+
+def generate_promo_code(length=6):
+    characters = string.ascii_uppercase + string.digits
+    return ''.join(random.choice(characters) for _ in range(length))
+
+
+@router.message(Command("promo_generate"))
+async def chats_count(message: Message):
+    if message.from_user.id in admins:
+        promo_code = generate_promo_code()
+        await mongodb.add_promo_code(promo_code, "5000¥💴  3🎫 5🎟")
+        await message.reply(f"📦 New Promo: {promo_code}")
+    else:
+        await message.reply("❖ ✖️ Ты не админ")

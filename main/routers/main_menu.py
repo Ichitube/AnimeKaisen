@@ -1,12 +1,14 @@
-from aiogram import Router, F
+from aiogram import Router, F, Bot
 from aiogram.enums import ParseMode
 from aiogram.filters import Command
+from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery, InputMediaAnimation, InputMediaPhoto
 from aiogram.utils.keyboard import InlineKeyboardMarkup, InlineKeyboardButton
 from data import mongodb, character_photo
 from filters.chat_type import ChatTypeFilter
 from keyboards.builders import inline_builder, menu_button
 from recycling import profile
+from utils.states import Promo
 
 router = Router()
 
@@ -124,6 +126,9 @@ async def referral_link(callback: CallbackQuery):
                 InlineKeyboardButton(text="🎁 Получить", switch_inline_query=f"{text}"),
             ],
             [
+                InlineKeyboardButton(text="📦 Промокод", callback_data="promocode"),
+            ],
+            [
                 InlineKeyboardButton(text="🔙 Назад", callback_data="main_page")
             ]
         ]
@@ -142,6 +147,44 @@ async def referral_link(callback: CallbackQuery):
                                         f'\n\n ⋗ {deep_link} '
                                         f'\n── •✧✧• ────────────'
                                         f'\n вы пригласили {count} человек', reply_markup=share_keyboard())
+
+
+@router.callback_query(F.data == "promocode")
+async def apply_promo_code(callback: CallbackQuery, state: FSMContext, bot: Bot):
+    await state.set_state(Promo.promo)
+    await callback.message.answer(text="❖ 📦 Введите промокод: ")
+
+
+@router.message(Promo.promo)
+async def form_name(message: Message, state: FSMContext):
+    promo_code = message.text.upper().strip()
+    user_id = message.from_user.id
+    promo = await mongodb.find_promo(promo_code)
+    if promo:
+        if user_id not in promo.get('used_by', []):
+            # Выдача награды
+            reward = promo['reward']
+            # Пример: Добавляем награду в инвентарь пользователя
+            await mongodb.update_value(message.from_user.id, {'inventory.account.money': 5000})
+            await mongodb.update_value(message.from_user.id, {'inventory.items.tickets.golden': 3})
+            await mongodb.update_value(message.from_user.id, {'inventory.items.tickets.common': 5})
+
+            # Обновляем список использовавших промокод
+
+            await mongodb.update_promo(promo_code, user_id)
+
+            await message.answer(f"❖ 📦 Промокод успешно применён! "
+                                 f"\n • Ваша награда: "
+                                 f"\n • {reward}")
+            await state.clear()
+        else:
+            await message.answer("❖ ✅ Вы уже использовали этот промокод")
+            await state.clear()
+            return
+    else:
+        await message.answer("❖ ✖️ Промокод не найден")
+        await state.clear()
+        return
 
 
 @router.message(ChatTypeFilter(chat_type=["private"]), Command("menu_button"))
