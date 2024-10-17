@@ -215,7 +215,7 @@ def pagination_slaves(page: int = 0):
         InlineKeyboardButton(text='☑️ Выбрать', callback_data='set_slave')
     )
     builder.row(
-        InlineKeyboardButton(text='🔙 Назад', callback_data="slave")
+        InlineKeyboardButton(text='🔙 Назад', callback_data="battle_arena")
     )
     return builder.as_markup()
 

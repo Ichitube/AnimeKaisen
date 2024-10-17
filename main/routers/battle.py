@@ -112,13 +112,13 @@ async def send_message_to_all(message: Message):
         await message.answer("У вас нет прав на выполнение этой команды")
 
 
-@router.message(Command("users"))
-async def fill_profile(message: Message):
-    if message.from_user.id == 6946183730:
-        users = await mongodb.users()
-        await message.answer(f"Всего пользователей: {users}")
-    else:
-        await message.answer("У вас нет прав на выполнение этой команды")
+# @router.message(Command("users"))
+# async def fill_profile(message: Message):
+#     if message.from_user.id == 6946183730:
+#         users = await mongodb.users()
+#         await message.answer(f"Всего пользователей: {users}")
+#     else:
+#         await message.answer("У вас нет прав на выполнение этой команды")
 
 
 @router.message(Command("chats"))

@@ -32,8 +32,8 @@ async def file_id(message: Message):
 @router.message(Command("users"))
 async def users_count(message: Message):
     if message.from_user.id in admins:
-        users_c = await mongodb.users()
-        await message.reply(f"{1000 + users_c}")
+        users_c = await mongodb.users() + 1000
+        await message.reply(f"{users_c}")
     else:
         await message.reply("❖ ✖️ Ты не админ")
 
