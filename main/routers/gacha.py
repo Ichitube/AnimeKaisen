@@ -31,7 +31,7 @@ characters = {
         'common': ['Toshiro Hitsuyaga 🌁', 'Ulquiorra Cifer 🌁', 'Unohana Retsu 🌁', 'Unohana Retsu🌁', 'Ulquiorra Cifer🌁', 'Urahara Kisuke 🌁', 'Urahara Kisuke🌁', 'Aizen Sosuke 🌁', 'Aizen Sosuke🌁', 'Unohana Retsu 🌁 ', 'Toshiro Hitsuyaga🌁', 'Toshiro Hitsuyaga 🌁 ', 'Toshiro Hitsuyaga  🌁', 'Ichigo Kurosaki 🌁', 'Ichigo Kurosaki🌁', 'Ichigo Kurosaki 🌁 ', 'Ichigo Kurosaki  🌁']
     },
     'Naruto': {
-        'divine': ['Naruto Uzumaki 🌠', 'Sasuke 🌠', 'Uchiha Sasuke◾️ 🌠', 'Uchiha◾️ 🌠', 'Sasuke Uchiha 🌠', 'Uzumaki Naruto 🌠', 'Naruto 🌠', 'Naruto Uzumaki◾️ 🌠', 'Naruto◾️ 🌠', 'Uchiha Sasuke 🌠'],
+        'divine': ['Naruto Uzumaki 🌠', 'Uchiha▫️ 🌠', 'Naruto▫️ 🌠', 'Sasuke 🌠', 'Uchiha Sasuke◾️ 🌠', 'Uchiha◾️ 🌠', 'Sasuke Uchiha 🌠', 'Uzumaki Naruto 🌠', 'Naruto 🌠', 'Naruto Uzumaki◾️ 🌠', 'Naruto◾️ 🌠', 'Uchiha Sasuke 🌠'],
         'mythical': ['Naruto Uzumaki 🌌', 'Sasuke Uchiha 🌌', 'Naruto▫️ 🌌', 'Sasuke 🌌', 'Uchiha Sasuke◾️ 🌌', 'Sasuke◾️ 🌌', 'Sasuke▫️ 🌌', 'Sasuke Uchiha◾️ 🌌', 'Uchiha Sasuke▫️ 🌌', 'Naruto 🌌', 'Uzumaki Naruto 🌌', 'Naruto Uzumaki◾️ 🌌', 'Uchiha Sasuke 🌌'],
         'legendary': ['Naruto Uzumaki 🌅', 'Uchiha Sasuke 🌅'],
         'epic': ['Naruto Uzumaki 🎆', 'Uchiha Sasuke 🎆'],
