@@ -47,7 +47,8 @@ async def store(callback: CallbackQuery):
             )
     )
 
-    media_id = "CgACAgIAAxkBAAIVAmXMvH4t4RtOQzePYbQgdnNEbFEeAAKOOwACeyZoSiAP4_7nfuBVNAQ"
+    media_id = "CgACAgIAAx0CfstymgACIBlnE7j9A6EltliDF5gpy4mJSQHuQQAC01gAAqiJoEiAQXKi8JylYDYE"
+    # "CgACAgIAAxkBAAIVAmXMvH4t4RtOQzePYbQgdnNEbFEeAAKOOwACeyZoSiAP4_7nfuBVNAQ"
     media = InputMediaAnimation(media=media_id)
     await callback.message.edit_media(media, inline_id)
     await callback.message.edit_caption(inline_id, **pattern)

@@ -25,7 +25,14 @@ menu = ["CgACAgIAAxkBAAIVCWXMvbya7qFOU8F85SXUu24hM5wgAAKfOwACeyZoShH4z6iUPi8kNAQ
         "CgACAgIAAxkBAAIVA2XMyQ7c7bzjIhd4ecf9W6TGWm6eAAKPOwACeyZoSsm5IEXYiJoKNAQ",
         "CgACAgIAAx0CfstymgACBd5lzO0zU05NJEIDdrzbQNLwSMi_XgACbUkAAsywaUqtbVk4cEzxrzQE",
         "CgACAgIAAx0CfstymgACBd1lzO0zAm8ov_iX9BAY7_QVIkf3NQACbEkAAsywaUoWn4BRgx1huTQE",
-        "CgACAgIAAx0CfstymgACBdxlzO0yxbOLTRm_B0ttpbA7WYEFdgACa0kAAsywaUoVOJ0ILUcy3jQE"]
+        "CgACAgIAAx0CfstymgACBdxlzO0yxbOLTRm_B0ttpbA7WYEFdgACa0kAAsywaUoVOJ0ILUcy3jQE",
+        "CgACAgIAAx0CfstymgACIB5nE7mXOOMrHrWyLobEDbk85ehs7QAC6FgAAqiJoEg5NN5yufK0QzYE",
+        "CgACAgIAAx0CfstymgACIBRnE7ipKamfva-CfgqsiZJ-EKMGxwACxFgAAqiJoEijvBsGD_fnpjYE",
+        "CgACAgIAAx0CfstymgACIBJnE7ih9KNvH8o3P1Yy1rTY4o7YVQACwlgAAqiJoEiVpQSxmKi5sjYE",
+        "CgACAgIAAx0CfstymgACIBBnE7ibsUe_hxrML0hwjTHC0jWZXQACwVgAAqiJoEhlPEBRZo_wlTYE",
+        "CgACAgIAAx0CfstymgACIA5nE7iRTMe8cH8bBZgvI8ZbeAW0tAACv1gAAqiJoEi3kcjjLHSleDYE",
+        "CgACAgIAAx0CfstymgACIAxnE7iJXL7xxL4a5vmYVhL3zTuYZwACvVgAAqiJoEgvOYe5dmhxFjYE",
+        "CgACAgIAAx0CfstymgACIApnE7h9jBb9jkmJNh_KJ792kiapEAACu1gAAqiJoEjYTH71QJA-TjYE"]
 
 
 @router.message(

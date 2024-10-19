@@ -110,6 +110,11 @@ def return_hp(player, _):
     player.health += hp
 
 
+def return_half_hp(player, _):
+    hp = player.pre_hp - player.health
+    player.health += hp // 2
+
+
 def block_hp(player, _points):
     hp = player.pre_hp - player.health
     player.health += hp
@@ -521,7 +526,7 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
         mana = await calculate_mana(self, 15)
         if not mana:
             return False, True
-        energy = await calculate_energy(self, 10)
+        energy = await calculate_energy(self, 15)
         if not energy:
             return True, False
 
@@ -544,7 +549,7 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
         mana = await calculate_mana(self, 25)
         if not mana:
             return False, True
-        energy = await calculate_energy(self, 15)
+        energy = await calculate_energy(self, 20)
         if not energy:
             return True, False
 
@@ -601,7 +606,7 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
         mana = await calculate_mana(self, 25)
         if not mana:
             return False, True
-        energy = await calculate_energy(self, 10)
+        energy = await calculate_energy(self, 20)
         if not energy:
             return True, False
 
@@ -825,11 +830,11 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
         block = Passive("🪞", block_hp, fix_effects, 1, hp, apply_once=True)
         self.add_passive(block)
 
-        calculate_shield(enemy, hp)
+        calculate_shield(enemy, hp // 2)
 
         gif = 'CgACAgIAAx0CfstymgACD8BmHz9000pc48CLJIiGlTCTa_WpswACrTcAAkXDAAFJ9MpYhplmZGw0BA'
         caption = (f"🔶Мильон Эскудо"
-                   f"\n<blockquote expandable>Айзен блокировал и нанес {hp} 🗡 урона</blockquote>")
+                   f"\n<blockquote expandable>Айзен блокировал и нанес {hp // 2} 🗡 урона</blockquote>")
 
         await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
@@ -1868,7 +1873,7 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
         mana = await calculate_mana(self, 50)
         if not mana:
             return False, True
-        energy = await calculate_energy(self, 15)
+        energy = await calculate_energy(self, 10)
         if not energy:
             return True, False
 
@@ -2029,14 +2034,14 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
         new_skills = ["˹🗡Атака˼", '˹⚡Чидори Катана˼', '˹🔥Рьюйка но Дзюцу˼',
                       "˹👁Гендзюцу❟❛❟˼", "˹◼️Аматэрасу˼", "˹❛☉❟Риннеган˼", "˹🩻Сусаноо˼"]
         skills_change = Passive("❟❛❟", change_skills, undo_change_skills, 10, new_skills)
-        re_hp = Passive("❟❛❟Шаринган", return_hp, fix_effects, 9, 0)
+        re_hp = Passive("❟❛❟Шаринган", return_half_hp, fix_effects, 6, 0)
         self.add_passive(re_hp)
         self.add_passive(skills_change)
 
         gif = 'CgACAgIAAx0CfstymgACHVlm3Wk8eo-qgJOqprGm5azXamBa1gACrE0AAg_z6EpEoT5_7NNoIjYE'
         caption = (f"👁Мангекьё❟❛❟Шаринган⚛"
                    f"\n<blockquote expandable>❟❛❟Шаринган - Саске предвидит атаку "
-                   f"врага и уклоняается на 5⏳</blockquote>")
+                   f"врага и уклоняается от половины на 3⏳</blockquote>")
 
         await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
@@ -2112,7 +2117,7 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
         mana = await calculate_mana(self, 20)
         if not mana:
             return False, True
-        energy = await calculate_energy(self, 15)
+        energy = await calculate_energy(self, 20)
         if not energy:
             return True, False
 
@@ -2196,7 +2201,7 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
 
         calculate_shield(enemy, damage)
 
-        gif = 'CgACAgIAAx0CfstymgACHXVm30ek0l34CPfHivmZjNBy1hPgJwAClV4AAgfJ-EqC4kqVw4K_FDYE'
+        gif = 'CgACAgIAAx0CfstymgACHSxnE3vrHPWFEynrZlxRDbOFnYg6qQACBFMAAg_z4Eocrl60txtztjYE'
         caption = (f"🏹Сусаноо Кагутсучи"
                    f"\n<blockquote expandable>Саске использовал 🏹Сусаноо Кагутсучи, нанося "
                    f"{damage}🗡 урона</blockquote>")
@@ -2298,12 +2303,16 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
 
             await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
-# Slaves effect
 
+# Slaves effect
     if self.slave:
-        self.passive_names.append(self.slave)
+        # Проверяем, добавлена ли пассивка
+        if self.slave not in self.passive_names:
+            self.passive_names.append(self.slave)
+
         result = character_photo.slaves_stats(self.slave)
         clas = result[3]
+
         if clas == 'heal':
             if self.health > 0:
                 self.health += result[2]

@@ -776,7 +776,7 @@ async def battle(callback: CallbackQuery):
             else:
                 await send_round_photo()
 
-    except Exception as e:
+    except AttributeError as e:
         # Обработка ошибки AttributeError
         await callback.message.answer("❖ 🔂 Идёт разработка бота связи с чем битва была остановлена",
                                       reply_markup=menu_button())
