@@ -1834,7 +1834,7 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
         if not energy:
             return True, False
 
-        new_skills = ["˹🌀Тайкьёку Расенган˼"]
+        new_skills = ["˹🗡Атака˼", "˹🌀Тайкьёку Расенган˼", "˹🌑Биджу Дама˼"]
         skills_change = Passive("🦊", change_skills, undo_change_skills, 3, new_skills)
         sage_boost = Passive("⇪🗡⇪", increase_attack, decrease_attack, 3, 500, apply_once=True)
 
