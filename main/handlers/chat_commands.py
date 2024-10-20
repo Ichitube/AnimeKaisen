@@ -108,13 +108,35 @@ async def give_money(message: Message):
             if account is not None and account['_id'] == user_id:
                 if friend is not None and friend['_id'] == friend_id:
                     if account['account']['money'] >= amount:
-                        if amount <= 500:
-                            await mongodb.update_user(user_id, {'account.money': account['account']['money'] - amount})
-                            await mongodb.update_user(friend_id, {'account.money': friend['account']['money'] + amount})
-                            await message.reply(f"❖ ✨ {account['name']} отправил {amount} 💴 ¥ пользователю {friend['name']}",
-                                                disable_web_page_preview=True)
+                        if account['account']['prime']:
+                            if amount <= 1000:
+                                await mongodb.update_user(user_id, {'account.money': account['account']['money'] - amount})
+                                await mongodb.update_user(friend_id, {'account.money': friend['account']['money'] + amount})
+                                await message.reply(
+                                    f"❖ ✨ {account['name']} отправил {amount} 💴 ¥ пользователю {friend['name']}",
+                                    disable_web_page_preview=True)
+                            else:
+                                await message.reply("❖ ✖️ Максимальная сумма перевода 1000 💴 ¥")
                         else:
-                            await message.reply("❖ ✖️ Максимальная сумма перевода - 500 💴 ¥")
+                            await message.reply("❖ ✖️ Для перевода денег необходимо иметь 💮Pass")
+                        # if amount <= 5000:
+                        #     if account['account']['prime']:
+                        #
+                        #         await mongodb.update_user(user_id,
+                        #                                   {'account.money': account['account']['money'] - amount})
+                        #         await mongodb.update_user(friend_id,
+                        #                                   {'account.money': friend['account']['money'] + amount})
+                        #         await message.reply(
+                        #             f"❖ ✨ {account['name']} отправил {amount} 💴 ¥ пользователю {friend['name']}",
+                        #             disable_web_page_preview=True)
+                        #     else:
+                        #         await message.reply("❖ ✖️ Максимальная сумма перевода 250 💴 ¥"
+                        #                             "\n❖ Получите 💮Pass, чтобы увеличить лимит")
+                        # else:
+                        #     await mongodb.update_user(user_id, {'account.money': account['account']['money'] - amount})
+                        #     await mongodb.update_user(friend_id, {'account.money': friend['account']['money'] + amount})
+                        #     await message.reply(f"❖ ✨ {account['name']} отправил {amount} 💴 ¥ пользователю {friend['name']}",
+                        #                         disable_web_page_preview=True)
                     else:
                         await message.reply(f"❖ ✖️ Недостаточно средст. \nБаланс: {account['account']['money']} 💴 ¥")
                 else:
@@ -212,18 +234,21 @@ async def give_character(message: Message):
     await mongodb.pull(universe, rarity, character, user_id)
 
     # Отправляем сообщение с информацией о передаче персонажа
-    if avatar_type == 'photo':
-        await message.reply_photo(
-            avatar,
-            caption=f"❖ ✨ {account['name']} отправил персонажа {character} пользователю {friend['name']} на 🗺 вселенную {ch_universe}",
-            disable_web_page_preview=True
-        )
+    if account['account']['prime']:
+        if avatar_type == 'photo':
+            await message.reply_photo(
+                avatar,
+                caption=f"❖ ✨ {account['name']} отправил персонажа {character} пользователю {friend['name']} на 🗺 вселенную {ch_universe}",
+                disable_web_page_preview=True
+            )
+        else:
+            await message.reply_animation(
+                avatar,
+                caption=f"❖ ✨ {account['name']} отправил персонажа {character} пользователю {friend['name']} на 🗺 вселенную {ch_universe}",
+                disable_web_page_preview=True
+            )
     else:
-        await message.reply_animation(
-            avatar,
-            caption=f"❖ ✨ {account['name']} отправил персонажа {character} пользователю {friend['name']} на 🗺 вселенную {ch_universe}",
-            disable_web_page_preview=True
-        )
+        await message.reply("❖ ✖️ Для передачи персонажа необходимо иметь 💮 Pass")
 
 
 @router.message(F.text.lower().in_(['баланс', 'б']))
