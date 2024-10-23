@@ -90,3 +90,11 @@ async def chats_count(message: Message):
         await mongodb.remove_emojis()
     else:
         await message.reply("❖ ✖️ Ты не админ")
+
+
+@router.message(Command("reset_grab"))
+async def chats_count(message: Message):
+    if message.from_user.id in admins:
+        await mongodb.install_zero()
+    else:
+        await message.reply("❖ ✖️ Ты не админ")

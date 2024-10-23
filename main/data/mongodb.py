@@ -332,3 +332,7 @@ async def remove_emojis():
             if new_name != name:
                 # Обновление документа
                 await db.users.update_one({'_id': document['_id']}, {'$set': {'name': new_name}})
+
+
+async def install_zero():
+    await db.users.update_many({}, {"$set": {"account.last_call_time": 0}})
