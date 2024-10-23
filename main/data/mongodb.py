@@ -335,4 +335,4 @@ async def remove_emojis():
 
 
 async def install_zero():
-    await db.users.update_many({}, {"$set": {"account.last_call_time": 0}})
+    await db.users.update_many({}, {"$set": {"last_call_time": 0}})
