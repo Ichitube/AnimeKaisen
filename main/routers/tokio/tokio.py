@@ -190,7 +190,10 @@ async def requisites(callback: CallbackQuery):
         gold = "3"
         money = "1400"
         hall = "65"
-        msg = "\nКупите 💮Pass чтобы увеличить награду"
+        msg = "\n\nКупите 💮Pass чтобы увеличить награду"
+
+    if "halloween" not in account['inventory']['items']:
+        await mongodb.update_user(user_id, {"inventory.items.halloween": 0})
 
     pattern = dict(
         caption=f"❖  📜  <b>Квесты</b>"
@@ -205,9 +208,9 @@ async def requisites(callback: CallbackQuery):
                 f"\n\n {emoji} {reward} • 🎫 {gold}х золотой билет"
                 f"\n {emoji} {reward} • 💴 {money} ¥"
                 f"\n {emoji} {reward} • 🎃 {hall} Тыквы"
+                f"{msg}"
                 f"\n── •✧✧• ────────────"
-                f"\n❃ ♻️ Квесты обновляются каждый день в 00:00"
-                f"{msg}",
+                f"\n❃ ♻️ Квесты обновляются каждый день в 00:00",
         parse_mode=ParseMode.HTML,
         reply_markup=inline_builder(
             ["🎁 Получить", "🔙 Меню"],
@@ -237,6 +240,8 @@ async def get_quest_reward(callback: CallbackQuery):
         await callback.answer(f"❖ ✅ Награда уже получена, 🎁 возвращайтесь завтра!", show_alert=True)
         return
     else:
+        if "halloween" not in account['inventory']['items']:
+            await mongodb.update_user(user_id, {"inventory.items.halloween": 0})
         if (account["tasks"]["last_summon"].date() == current_date and account["tasks"]["last_arena_fight"].date() == current_date
                 and account["tasks"]["last_dungeon"].date() == current_date and account["tasks"]["last_free_summon"].date() == current_date
                 and account["tasks"]["last_shop_purchase"].date() == current_date):

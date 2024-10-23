@@ -269,7 +269,7 @@ async def card_gacha(user_id, callback):
 
     media = InputMediaAnimation(media=media_id)
 
-    await callback.message.edit_media(media, inline_id)
+    await callback.message.edit_media(media=media, inline_message_id=inline_id)
 
     current_date = datetime.today().date()
     current_datetime = datetime.combine(current_date, datetime.time(datetime.now()))
@@ -368,14 +368,12 @@ async def first_summon(callback, universe):
     await callback.message.edit_media(new_photo, inline_id)
 
     await callback.message.edit_caption(inline_message_id=inline_id, **pattern)
-    account = await mongodb.get_user(callback.from_user.id)
-    if account is not None and account['_id'] == callback.from_user.id:
-        if len(account['inventory']['characters']) <= 1:
-            await callback.message.answer("❖ Добро пожаловать", reply_markup=menu_button())
+    await callback.message.answer(f"❖ 📌 Добро пожаловать во вселенную {universe}", reply_markup=menu_button())
     return character, character_category, power
 
 
-@router.message(F.text.lower().in_(['grab', 'граб', '🎴 Grab', 'получить карту']))
+@router.message((F.text == 'Grab') | (F.text == 'grab')
+                | (F.text == 'Граб') | (F.text == 'граб') | (F.text == '🎴 Grab'))
 async def campaign_rank(message: Message):
     user_id = message.from_user.id
     account = await mongodb.get_user(user_id)
@@ -424,9 +422,9 @@ async def campaign_rank(message: Message):
                     fragments = 4
                     # Если персонаж уже в инвентаре, увеличиваем только силу и деньги
                     await mongodb.update_value(user_id, {'account.fragments': fragments})
-                    message = (f"\n❖ Вам попалась повторка:"
-                               f"\n<i> Зачислены только бонусы"
-                               f"\n + 2х 🧩 Осколков </i>")
+                    msg = (f"\n❖ Вам попалась повторка:"
+                           f"\n<i> Зачислены только бонусы"
+                           f"\n + 2х 🧩 Осколков </i>")
                 else:
                     fragments = 2
                     if account['universe'] not in ['Allstars', 'Allstars(old)']:
@@ -477,7 +475,7 @@ async def campaign_rank(message: Message):
                     media_id = "CgACAgIAAx0CfstymgACBiplzivQmnDtjQTgUR23iW_IC4XYjwACHUIAAsuUcUoqWzNNWaav6zQE"
                     time = 7.2
 
-                gacha_msg = await message.reply_animation(animation=media_id)
+                gacha_msg = await message.reply_animation(media_id)
 
                 await asyncio.sleep(time)
 
