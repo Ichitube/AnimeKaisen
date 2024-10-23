@@ -40,7 +40,7 @@ characters = {
     },
     'Allstars': {
         'soccer': ['Gojo Satoru ⚽', 'Sukuna ⚽'],
-        'halloween': ['Ichigo Kurosaki 👻', 'Rukia Kuchiki 👻'],
+        'halloween': ['Ichigo Kurosaki 👻', 'Rukia Kuchiki 👻', 'Ichigo 👻', 'Kurosaki Ichigo 👻', 'Hawk 👻', 'Zoro 👻', 'Sanji 👻', 'Luffi 👻', 'Kimiko 👻', 'Sasuke 👻', 'Gojo 👻', 'Gojo Satoru👻', 'Sukuna 👻', 'Ryomen Sukuna 👻', 'Megumi 👻', 'Rukia Kuchiki 👻', 'Kuchiki Rukia 👻', 'Robin 👻', 'Nami 👻', 'Kugisaki 👻', 'Kugisaki Nobara👻', 'Nobara Kugisaki 👻', '2b 👻', '2B 👻'],
         'divine': ['Sylpha 🌠', 'Hinata Shoyo 🌠', 'Suguru Geto 🌠', 'Neji Hyuga 🌠', 'Suzuya Juzo 🌠', 'Juzo 🌠', 'Juzo Suzuya 🌠', 'Inoske 🌠', 'Todoroki Touya 🌠', 'Mirai Niki 🌠', 'Mich Atsumu 🌠', 'Kurumi Tokisaki 🌠', 'Grimmjow 🌠', 'Zoro 🌠', 'Madara Uchiha 🌠', 'Blyu Lok 🌠', 'Mouchiro Tokito 🌠', 'Goku 🌠', 'Gojo Satoru 🌠', 'Ayanokoji  🌠', 'Nagi Seishiro 🌠', 'Anos Voldigoad 🌠', 'Inosuke 🌠', 'Dabi Mha 🌠', 'Sanemi Shinazigawa 🌠', 'Shanks 🌠', 'Lucifer 🌠', 'Sukuna 🌠', 'Muzan Kibutsiju 🌠', 'Yuta Okkotsu 🌠', 'Obito Uchiha 🌠', 'Will Serfort 🌠', 'Neito Monoma 🌠', 'Sae Itoshi 🌠', 'Choso 🌠', 'Ayanokoji 🌠', 'Polnareff 🌠', 'Jony 🌠', 'Rimuru Tempest 🌠', 'Sid Kageno 🌠', 'So Jin Wu 🌠', 'Zenitsu 🌠', 'Kaneki Ken 🌠', 'Shinobu Kocho 🌠', 'Kyouko Hori 🌠', 'Aliya 🌠', 'Hizuru Minakata 🌠', 'Shizuku 🌠', 'Yoruichi 🌠'],
         'mythical': ['Guts 🌌', 'Gojo 🌌', 'L 🌌', 'Brodyaga 🌌', 'Akashi 🌌', 'Kaneki Ken 🌌', 'Tomura 🌌', 'Dazai 🌌', 'Soshiro 🌌', 'Kaneki 🌌', 'Arima Kishou 🌌', 'Guts  🌌', 'Yuta Okkotsu 🌌', 'Yato 🌌', 'Gyro 🌌', 'Sendju 🌌', 'Nakoshi 🌌', 'Zoro 🌌', 'Nagi 🌌', 'Kitano 🌌', 'Asta 🌌', 'Rimuru Tempest 🌌', 'Ryunosuke 🌌', 'Melodias 🌌', 'Naruto Uzumaki 🌌', 'Levi Ackerman 🌌', 'Arturia Pendragon 🌌', 'Marin Katigawa 🌌', 'Arturia 🌌', 'Kiga 🌌', 'Raphtalia 🌌', 'Shikimori 🌌', 'Mikasa 🌌', 'Albedo 🌌', 'Fubuki 🌌', 'Lane 🌌', 'Mey 🌌', 'Yoruichi Shihoin 🌌', 'Nezuko 🌌', 'Kugisaki Nobara 🌌', 'Kurumi Tokisaki 🌌'],
         'legendary': ['F1 🌅', 'F2 🌅', 'F3 🌅', 'F4 🌅', 'F5 🌅', 'F6 🌅', 'F7 🌅', 'F8 🌅', 'F9 🌅', 'F10 🌅', 'F11 🌅', 'F12 🌅', 'F13 🌅', 'F14 🌅', 'F15 🌅', 'F16 🌅', 'F17 🌅', 'F18 🌅', 'F19 🌅', 'F20 🌅', 'F21 🌅', 'F22 🌅', 'F23 🌅', 'F24 🌅', 'F25 🌅', 'F26 🌅', 'F27 🌅', 'F28 🌅', 'F29 🌅', 'F30 🌅', 'F31 🌅', 'F32 🌅', 'F33 🌅'],
@@ -247,7 +247,7 @@ async def card_gacha(user_id, callback):
     )
     if character_category == 'halloween' or character_category == 'soccer':
         media_id = "CgACAgIAAxkDAAEDr_JnE9fQnk00RusWPffEMMTzJwmD6QACMEAAAkPekElgios1nCJOCjYE"
-        time = 4.5
+        time = 5
     elif character_category == 'divine':
         media_id = "CgACAgIAAx0CfstymgACBiVlzikq6HGeA2exxOQQbekNg_KImAACDEIAAsuUcUpNy3ouWDG9xTQE"
         time = 7
