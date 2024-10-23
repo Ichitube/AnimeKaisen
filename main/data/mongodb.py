@@ -1,4 +1,5 @@
 import re
+from datetime import datetime, timedelta
 
 from motor.motor_asyncio import AsyncIOMotorClient
 from recycling import profile
@@ -335,4 +336,7 @@ async def remove_emojis():
 
 
 async def install_zero():
-    await db.users.update_many({}, {"$set": {"last_call_time": 0}})
+    current_date = datetime.today().date()
+    current_date_minus_one = current_date - timedelta(days=1)
+    current_datetime = datetime.combine(current_date_minus_one, datetime.time(datetime.now()))
+    await db.users.update_many({}, {"$set": {"last_call_time": current_datetime}})
