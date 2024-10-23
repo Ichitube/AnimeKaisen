@@ -39,6 +39,29 @@ async def inventory(callback: CallbackQuery | Message):
         for item in sublist:
             if isinstance(item, str):
                 total_elements += 1
+    msg = (f"\n❖ 🃏 Количество карт: {total_elements}"
+           f"\n\n❖ 🌠 Божественные 🌟 {total_divine}"
+           f"\n❖ 🌌 Мифические ⭐️ {total_mythical}"
+           f"\n❖ 🌅 Легендарные ⭐️ {total_legendary}"
+           f"\n❖ 🎆 Эпические ⭐️ {total_epic}"
+           f"\n❖ 🎇 Редкие ⭐️ {total_rare}"
+           f"\n❖ 🌁 Обычные ⭐️ {total_common}")
+    buttons = [f"🌠 Божественные 🌟 {total_divine}", f"🌌 Мифические ⭐️ {total_mythical}", f"🌅 Легендарные ⭐️ {total_legendary}",
+               f"🎆 Эпические ⭐️ {total_epic}", f"🎇 Редкие ⭐️ {total_rare}", f"🌁 Обычные ⭐️ {total_common}", "🔙 Назад"]
+    callbacks = ["divine", "mythical", "legendary", "epic", "rare", "common", "main_page"]
+
+    if universe == "Allstars":
+        if "halloween" in account['inventory']['characters']['Allstars']:
+            total_halloween = len(account['inventory']['characters']['Allstars'].get('halloween', {}))
+            buttons.insert(0, f"👻 Halloween 🎃 {total_halloween}")
+            callbacks.insert(0, "halloween")
+        # if "soccer" not in account['inventory']['characters']['Allstars']:
+        #     account = await mongodb.get_user(user_id)
+        #     await mongodb.update_user(user_id, {"inventory.characters.Allstars.soccer": []})
+        #     total_soccer = len(account['inventory']['items'].get('soccer', {}))
+        #     buttons.insert(0, f"⚽️ Soccer {total_soccer}")
+        #     callbacks.insert(0, "soccer")
+
     pattern = dict(caption=f"🥡 Инвентарь"
                            f"\n── •✧✧• ────────────"
                            f"\n❖ Здесь вы можете увидеть все ваши 🃏 карты "
@@ -47,10 +70,8 @@ async def inventory(callback: CallbackQuery | Message):
                            f"\n── •✧✧• ────────────"
                            f"\n❖ 🃏 Количество карт: {total_elements}",
                    reply_markup=builders.inline_builder(
-                       [f"🌠 Божественные 🌟 {total_divine}", f"🌌 Мифические ⭐️ {total_mythical}",
-                        f"🌅 Легендарные ⭐️ {total_legendary}", f"🎆 Эпические ⭐️ {total_epic}",
-                        f"🎇 Редкие ⭐️ {total_rare}", f"🌁 Обычные ⭐️ {total_common}", "🔙 Назад"],
-                       ["divine", "mythical", "legendary", "epic", "rare", "common", "main_page"], row_width=[1]))
+                       buttons,
+                       callbacks, row_width=[1]))
     if isinstance(callback, CallbackQuery):
         inline_id = callback.inline_message_id
         media = InputMediaAnimation(media=media_id)
@@ -60,7 +81,8 @@ async def inventory(callback: CallbackQuery | Message):
         await callback.answer_animation(media_id, **pattern)
 
 
-@router.callback_query(F.data.in_(['common', 'rare', 'epic', 'legendary', 'mythical', 'divine']))
+@router.callback_query(F.data.in_(['soccer', 'halloween', 'common', 'rare',
+                                   'epic', 'legendary', 'mythical', 'divine']))
 async def inventory(callback: CallbackQuery, state: FSMContext):
     try:
         await state.update_data(rarity=callback.data)

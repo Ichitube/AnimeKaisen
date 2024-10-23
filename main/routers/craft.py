@@ -91,7 +91,7 @@ async def craft_card(callback: CallbackQuery):
 
     if await is_in_inventory():
         msg = (f"\n❖ ✖️ Вам попалась повторка"
-               f"\n❖ 🧩 Оскольки не потрачены")
+               f"\n❖ 🧩 Осколки не потрачены")
     else:
         await mongodb.update_user(user_id, {"account.fragments": fragments})
         await mongodb.push(universe, rarity_ch, character, user_id)

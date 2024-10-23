@@ -33,17 +33,17 @@ async def store(callback: CallbackQuery):
     pattern = dict(
         caption=f"❖  🏪  <b>Рынок</b>"
                 f"\n── •✧✧• ────────────"
-                f"\n❖  Вы можете купить 🎫 золотые и 🎟 обычные билеты за 💴 ¥"
+                f"\n❖  Вы можете купить 🎫 золотые, 🎟 обычные билеты и недвижимость за 💴 ¥"
                 f"\n\n❃  🎫 = 1000 💴"
                 f"\n❃  🎟 = 100 💴"
-                f"\n\n❖  Так же можете приобрести \n🧧 священный билет за 25 🌟"
+                f"\n\n❖  Так же можете приобрести 🧧Священный билет, 💮Pass и 🔖Рабынь за 🌟"
                 f"\n── •✧✧• ────────────"
                 f"\n❃  💴 {money} ¥  🧧 ⋗ <b>{keys}</b>  🎫 ⋗ <b>{golden}</b>  🎟 ⋗ <b>{common}</b>",
         parse_mode=ParseMode.HTML,
         reply_markup=inline_builder(
-            ["🧧 Купить ", "🎫 Купить", "🎟 Купить", "⛓ Рынок рабынь", "🏠 Рынок недвижимости", "🔙 Назад"],
-            ["buy_keys", "buy_golden", "buy_common", "slaves_store", "buy_home", "tokio"],
-            row_width=[1, 2, 1, 1, 1]
+            ["💮Pass", "🧧 Купить ", "🎫 Купить", "🎟 Купить", "⛓ Рынок рабынь", "🏠 Рынок недвижимости", "🔙 Назад"],
+            ["buy_pass", "buy_keys", "buy_golden", "buy_common", "slaves_store", "buy_home", "tokio"],
+            row_width=[2, 2, 1, 1, 1]
             )
     )
 
@@ -338,6 +338,20 @@ async def successful_payment(message: Message, bot: Bot, state: FSMContext):
         # await bot.refund_star_payment(message.from_user.id, message.successful_payment.telegram_payment_charge_id)
         await mongodb.update_value(message.from_user.id, {'inventory.items.tickets.keys': 1})
         await message.answer("❖ Вы успешно приобрели 🧧 священный билет")
+
+    elif payload == "buy_pass":
+        user_id = message.from_user.id
+        current_date = datetime.today().date()
+        current_datetime = datetime.combine(current_date, datetime.time(datetime.now()))
+        # Устанавливаем дату окончания пасса на месяц вперёд
+        expiration_date = current_datetime + timedelta(days=30)
+        # Обработка покупки пасса
+        # await bot.refund_star_payment(message.from_user.id, message.successful_payment.telegram_payment_charge_id)
+        await mongodb.update_value(user_id, {'account.prime': True})
+        await mongodb.update_user(user_id, {"pass_purchase": current_datetime})
+        await mongodb.update_user(user_id, {"pass_expiration": expiration_date})
+
+        await message.answer(f"❖ Вы успешно приобрели 💮Pass, который будет действовать до {expiration_date.strftime("%Y-%m-%d")}")
 
 # @router.pre_checkout_query()
 # async def process_pre_checkout_query(event: PreCheckoutQuery):

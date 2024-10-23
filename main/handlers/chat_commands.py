@@ -229,12 +229,11 @@ async def give_character(message: Message):
     elif rarity == 'Божественная':
         rarity = 'divine'
 
-    # Обновляем инвентари
-    await mongodb.push(universe, rarity, character, friend_id)
-    await mongodb.pull(universe, rarity, character, user_id)
-
     # Отправляем сообщение с информацией о передаче персонажа
     if account['account']['prime']:
+        # Обновляем инвентари
+        await mongodb.push(universe, rarity, character, friend_id)
+        await mongodb.pull(universe, rarity, character, user_id)
         if avatar_type == 'photo':
             await message.reply_photo(
                 avatar,

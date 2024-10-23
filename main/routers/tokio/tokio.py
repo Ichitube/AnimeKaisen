@@ -58,7 +58,7 @@ async def tokio(callback: CallbackQuery | Message):
                 f"\n❃ 💴 {money} ¥",
         parse_mode=ParseMode.HTML,
         reply_markup=inline_builder(
-            ["🔮 Призыв", "🪪 Профиль", "🏪 Рынок", "🏠 Дом", "📜 Задании", "🃏 Битва", "🏯 Клан"],
+            ["🎐 Баннеры", "🪪 Профиль", "🏪 Рынок", "🏠 Дом", "📜 Квесты", "🃏 Битва", "🏯 Клан"],
             ["banner", "main_page", "store", "home", "quests", "card_battle", "clan"],
             row_width=[1, 2, 2]
             )
@@ -163,20 +163,51 @@ async def requisites(callback: CallbackQuery):
     if account["tasks"]["last_shop_purchase"].date() == current_date:
         shop_purchase = "✅"
 
+    if account['account']['prime']:
+        # Получаем текущую дату
+        current_date = datetime.today().date()
+        emoji = "💮"
+        gold = "5"
+        money = "2500"
+        hall = "100"
+        msg = ""
+        current_datetime = datetime.combine(current_date, datetime.time(datetime.now()))
+
+        # Извлекаем дату истечения пасса из базы данных (предполагаем, что это объект даты)
+        if 'pass_expiration' in account:
+            pass_expires = account['pass_expiration']
+        else:
+            expiration_date = current_datetime + timedelta(days=30)
+            await mongodb.update_user(user_id, {"pass_expiration": expiration_date})
+            pass_expires = expiration_date
+
+        # Проверяем, истек ли пасс
+        if current_datetime > pass_expires:
+            # Обновляем статус prime на False
+            await mongodb.update_value(user_id, {'account.prime': False})
+    else:
+        emoji = ""
+        gold = "3"
+        money = "1400"
+        hall = "65"
+        msg = "\nКупите 💮Pass чтобы увеличить награду"
+
     pattern = dict(
-        caption=f"❖  📜  <b>Задании</b>"
+        caption=f"❖  📜  <b>Квесты</b>"
                 f"\n── •✧✧• ────────────"
-                f"\n ❖ 📃 Список ежедневных заданий:"
+                f"\n ❖ 📃 Список ежедневных квестов:"
                 f"\n\n  {summon} • 🔮 Совершите призыв"
                 f"\n  {arena_fight} • ⚔️ Сразитесь в арене"
                 f"\n  {free_summon} • 🎴 Совершите бесплатный призыв"
                 f"\n  {dungeon} • ⛩ Продайте ресурсы в подземелье"
                 f"\n  {shop_purchase} • 🏪 Совершите покупку на рынке"
                 f"\n\n ❖ 🎁 Награда:"
-                f"\n\n  {reward} • 🎫 3х золотой билет"
-                f"\n  {reward} • 💴 1400 ¥"
+                f"\n\n {emoji} {reward} • 🎫 {gold}х золотой билет"
+                f"\n {emoji} {reward} • 💴 {money} ¥"
+                f"\n {emoji} {reward} • 🎃 {hall} Тыквы"
                 f"\n── •✧✧• ────────────"
-                f"\n❃ ♻️ Задании обновляются каждый день в 00:00",
+                f"\n❃ ♻️ Квесты обновляются каждый день в 00:00"
+                f"{msg}",
         parse_mode=ParseMode.HTML,
         reply_markup=inline_builder(
             ["🎁 Получить", "🔙 Меню"],
@@ -209,11 +240,38 @@ async def get_quest_reward(callback: CallbackQuery):
         if (account["tasks"]["last_summon"].date() == current_date and account["tasks"]["last_arena_fight"].date() == current_date
                 and account["tasks"]["last_dungeon"].date() == current_date and account["tasks"]["last_free_summon"].date() == current_date
                 and account["tasks"]["last_shop_purchase"].date() == current_date):
-            await mongodb.update_user(user_id, {"account.money": account["account"]["money"] + 1400})
-            await mongodb.update_user(user_id, {"inventory.items.tickets.golden": account["inventory"]["items"]["tickets"]["golden"] + 3})
-            await mongodb.update_user(user_id, {"tasks.last_get_reward": current_datetime})
-            await callback.answer(f"❖ ✅ Награда получена", show_alert=True)
-            return
+            if account['account']['prime']:
+                await mongodb.update_user(user_id, {"account.money": account["account"]["money"] + 2500})
+                await mongodb.update_user(user_id, {
+                    "inventory.items.tickets.golden": account["inventory"]["items"]["tickets"]["golden"] + 5})
+                await mongodb.update_user(user_id, {
+                    "inventory.items.halloween": account["inventory"]["items"]["halloween"] + 100})
+                await mongodb.update_user(user_id, {"tasks.last_get_reward": current_datetime})
+                await callback.answer(f"❖ ✅ Награда получена", show_alert=True)
+                return
+                # Получаем текущую дату
+                current_date = datetime.today().date()
+                current_datetime = datetime.combine(current_date, datetime.time(datetime.now()))
+
+                # Извлекаем дату истечения пасса из базы данных (предполагаем, что это объект даты)
+                if 'pass_expiration' in account:
+                    pass_expires = account['pass_expiration']
+                else:
+                    expiration_date = current_datetime + timedelta(days=30)
+                    await mongodb.update_user(user_id, {"pass_expiration": expiration_date})
+                    pass_expires = expiration_date
+
+                # Проверяем, истек ли пасс
+                if current_datetime > pass_expires:
+                    # Обновляем статус prime на False
+                    await mongodb.update_value(user_id, {'account.prime': False})
+            else:
+                await mongodb.update_user(user_id, {"account.money": account["account"]["money"] + 1400})
+                await mongodb.update_user(user_id, {"inventory.items.tickets.golden": account["inventory"]["items"]["tickets"]["golden"] + 3})
+                await mongodb.update_user(user_id, {"inventory.items.halloween": account["inventory"]["items"]["halloween"] + 65})
+                await mongodb.update_user(user_id, {"tasks.last_get_reward": current_datetime})
+                await callback.answer(f"❖ ✅ Награда получена", show_alert=True)
+                return
         else:
             await callback.answer(f"❖ ✖️ Не все задания выполнены", show_alert=True)
             return

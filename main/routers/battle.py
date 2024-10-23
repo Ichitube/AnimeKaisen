@@ -82,6 +82,13 @@ async def fill_profile(message: Message):
                     except Exception as e:
                         print(f"Не удалось переслать сообщение пользователю {user['_id']}: {e}")
 
+                chats = db.chats.find()  # замените 'chats' на имя вашей коллекции чатов
+                async for chat in chats:
+                    try:
+                        await bot.forward_message(chat_id=chat['_id'], from_chat_id=channel_id, message_id=msg)
+                    except Exception as e:
+                        print(f"Не удалось переслать сообщение в чат {chat['_id']}: {e}")
+
             await forward_post_to_all_users(channel_id=-1002042458477, msg=message_id)
         else:
             await message.answer("Пожалуйста, укажите корректный message_id после команды /post")
@@ -248,7 +255,7 @@ async def b_arena(callback: CallbackQuery | Message):
     await profile.update_rank(callback.from_user.id, account["battle"]["stats"]['wins'])
     in_battle = await mongodb.in_battle()
 
-    buttons = ["⚔️ PvP", "✨ AI", "🔙 Назад", "📜 Правила",]
+    buttons = ["⚔️ PvP 🎃", "✨ AI", "🔙 Назад", "📜 Правила",]
     calls = ["search_opponent", "ai_battle", "arena", "battle_rules",]
 
     pattern = dict(
@@ -684,7 +691,7 @@ async def battle(callback: CallbackQuery):
                     user_data[user_id][character.b_round] = False
                     # Запускаем таймер
                     if r_character.ident != character.ident * 10:
-                        await bot.send_message(r_character.ident, "⏳ Ход соперника")
+                        await bot.send_message(chat_id=r_character.ident, text="⏳ Ход соперника")
                         await surrender_f(character.ident, character.b_round, mes)
 
             if character.health <= 0 and r_character.health <= 0:
@@ -712,6 +719,7 @@ async def battle(callback: CallbackQuery):
                 await mongodb.update_user(account["_id"], {"tasks.last_arena_fight": current_datetime})
                 await mongodb.update_user(account["_id"], {"battle.battle.status": 0})
                 await mongodb.update_user(account["_id"], {"battle.battle.rid": ""})
+                await mongodb.update_value(account["_id"], {"inventory.items.halloween": 4})
                 if r_character.ident != character.ident * 10:
                     await mongodb.update_value(character.rid, {"battle.stats.ties": 1})
                     await mongodb.update_value(character.rid, {"stats.exp": 80})
@@ -719,6 +727,7 @@ async def battle(callback: CallbackQuery):
                     await mongodb.update_user(character.rid, {"tasks.last_arena_fight": current_datetime})
                     await mongodb.update_user(character.rid, {"battle.battle.status": 0})
                     await mongodb.update_user(character.rid, {"battle.battle.rid": ""})
+                    await mongodb.update_value(character.rid, {"inventory.items.halloween": 4})
 
             elif character.health <= 0:
                 if character.b_round != r_character.b_round:
@@ -736,6 +745,7 @@ async def battle(callback: CallbackQuery):
                     await mongodb.update_user(account["_id"], {"tasks.last_arena_fight": current_datetime})
                     await mongodb.update_user(account["_id"], {"battle.battle.status": 0})
                     await mongodb.update_user(account["_id"], {"battle.battle.rid": ""})
+                    await mongodb.update_value(account["_id"], {"inventory.items.halloween": 2})
                     if r_character.ident != character.ident * 10:
                         await mongodb.update_value(character.rid, {"battle.stats.wins": 1})
                         await mongodb.update_value(character.rid, {"stats.exp": 100})
@@ -743,6 +753,7 @@ async def battle(callback: CallbackQuery):
                         await mongodb.update_user(character.rid, {"tasks.last_arena_fight": current_datetime})
                         await mongodb.update_user(character.rid, {"battle.battle.status": 0})
                         await mongodb.update_user(character.rid, {"battle.battle.rid": ""})
+                        await mongodb.update_value(character.rid, {"inventory.items.halloween": 5})
 
                 else:
                     await send_round_photo()
@@ -764,12 +775,14 @@ async def battle(callback: CallbackQuery):
                         await mongodb.update_user(character.rid, {"tasks.last_arena_fight": current_datetime})
                         await mongodb.update_user(character.rid, {"battle.battle.status": 0})
                         await mongodb.update_user(character.rid, {"battle.battle.rid": ""})
+                        await mongodb.update_value(character.rid, {"inventory.items.halloween": 2})
                     await mongodb.update_user(account["_id"], {"battle.battle.status": 0})
                     await mongodb.update_user(account["_id"], {"battle.battle.rid": ""})
                     await mongodb.update_user(account["_id"], {"tasks.last_arena_fight": current_datetime})
                     await mongodb.update_value(account["_id"], {"battle.stats.wins": 1})
                     await mongodb.update_value(account["_id"], {"stats.exp": 100})
                     await mongodb.update_value(account["_id"], {"account.money": 200})
+                    await mongodb.update_value(account["_id"], {"inventory.items.halloween": 5})
 
                 else:
                     await send_round_photo()

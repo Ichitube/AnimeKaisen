@@ -1,5 +1,6 @@
-from motor.motor_asyncio import AsyncIOMotorClient
+import re
 
+from motor.motor_asyncio import AsyncIOMotorClient
 from recycling import profile
 
 client = AsyncIOMotorClient("mongodb+srv://dire:1243qwtr@animekaisen.8r7or8e.mongodb.net/?retryWrites=true&w=majority&appName=AnimeKaisen")  #mongodb+srv://dire:1243qwtr@animekaisen.8r7or8e.mongodb.net/?retryWrites=true&w=majority,
@@ -9,6 +10,21 @@ db = client["AnimeKaisen"]
 collection = db["users"]
 chat_collection = db["chats"]
 promo_collection = db["promo"]
+
+
+emoji_pattern = re.compile(
+    "[\U0001F600-\U0001F64F"  # emoticons
+    "\U0001F300-\U0001F5FF"  # symbols & pictographs
+    "\U0001F680-\U0001F6FF"  # transport & map symbols
+    "\U0001F700-\U0001F77F"  # alchemical symbols
+    "\U0001F780-\U0001F7FF"  # Geometric Shapes Extended
+    "\U0001F800-\U0001F8FF"  # Supplemental Arrows-C
+    "\U0001F900-\U0001F9FF"  # Supplemental Symbols and Pictographs
+    "\U0001FA00-\U0001FA6F"  # Chess Symbols
+    "\U0001FA70-\U0001FAFF"  # Symbols and Pictographs Extended-A
+    "\U00002702-\U000027B0"  # Dingbats
+    "\U000024C2-\U0001F251" 
+    "]+", flags=re.UNICODE)
 
 
 async def input_user(user_id: int, name, universe, character, power):
@@ -304,3 +320,15 @@ async def add_promo_code(promo_code, reward):
 async def give_to_all(data, message):
     await db.users.update_many({}, {"$inc": data})
     await message.answer("❖ ✅ Всем выдано")
+
+
+async def remove_emojis():
+    cursor = db.users.find({})
+    async for document in cursor:
+        name = document.get('name', '')
+        if name:
+            # Удаление эмодзи из name
+            new_name = emoji_pattern.sub(r'', name)
+            if new_name != name:
+                # Обновление документа
+                await db.users.update_one({'_id': document['_id']}, {'$set': {'name': new_name}})

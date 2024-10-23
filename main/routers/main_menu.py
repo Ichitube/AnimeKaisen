@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from aiogram import Router, F, Bot
 from aiogram.enums import ParseMode
 from aiogram.filters import Command
@@ -24,6 +26,26 @@ async def main_menu(message: Message | CallbackQuery):
     account = await mongodb.get_user(user_id)
 
     if account is not None and account['_id'] == user_id:
+        if account['account']['prime']:
+            # Получаем текущую дату
+            current_date = datetime.today().date()
+            emoji = "💮"
+            current_datetime = datetime.combine(current_date, datetime.time(datetime.now()))
+
+            # Извлекаем дату истечения пасса из базы данных (предполагаем, что это объект даты)
+            if 'pass_expiration' in account:
+                pass_expires = account['pass_expiration']
+            else:
+                expiration_date = current_datetime + timedelta(days=30)
+                await mongodb.update_user(user_id, {"pass_expiration": expiration_date})
+                pass_expires = expiration_date
+
+            # Проверяем, истек ли пасс
+            if current_datetime > pass_expires:
+                # Обновляем статус prime на False
+                await mongodb.update_value(user_id, {'account.prime': False})
+        else:
+            emoji = ""
 
         universe = account['universe']
         character = account['character'][account['universe']]
@@ -45,7 +67,7 @@ async def main_menu(message: Message | CallbackQuery):
 
         pattern = dict(
             caption=f"\n── •✧✧• ────────────"
-                    f"\n 🪪  〢 Профиль {account['name']} "
+                    f"\n 🪪  〢 Профиль {account['name']} {emoji}"
                     f"\n── •✧✧• ────────────"
                     f"\n\n❖🎴 <b>{character}</b>"
                     f"\n❖🗺 Вселенная: {universe}"

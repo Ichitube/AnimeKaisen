@@ -335,7 +335,7 @@ async def duel_battle(callback: CallbackQuery):
                 end_animation = 'CgACAgQAAx0CfstymgACDfFmFCIV11emoqYRlGWGZRTtrA46oQACAwMAAtwWDVNLf3iCB-QL9jQE'
 
                 await bot.send_animation(chat_id=chat_id, animation=end_animation,
-                                         caption=f"☠️ Ничья", reply_markup=menu_button())
+                                         caption=f"☠️ Ничья")
 
                 await mongodb.update_many(
                     {"_id": {"$in": [account["_id"], character.rid]}},
@@ -351,10 +351,10 @@ async def duel_battle(callback: CallbackQuery):
                     avatar_type = character_photo.get_stats(universe, character, 'type')
                     if avatar_type == 'photo':
                         await bot.send_photo(chat_id=chat_id, photo=avatar,
-                                             caption=f"👑 {r_character.name} Победил", reply_markup=menu_button())
+                                             caption=f"👑 {r_character.name} Победил")
                     else:
                         await bot.send_animation(chat_id=chat_id, animation=avatar,
-                                                 caption=f"👑 {r_character.name} Победил", reply_markup=menu_button())
+                                                 caption=f"👑 {r_character.name} Победил")
 
                     await mongodb.insert_win(rival["_id"], rival["_id"], r_character.p_name)
 
@@ -375,10 +375,10 @@ async def duel_battle(callback: CallbackQuery):
                     avatar_type = character_photo.get_stats(universe, character, 'type')
                     if avatar_type == 'photo':
                         await bot.send_photo(chat_id=chat_id, photo=avatar,
-                                             caption=f"👑 {character.name} Победил", reply_markup=menu_button())
+                                             caption=f"👑 {character.name} Победил")
                     else:
                         await bot.send_animation(chat_id=user_id, animation=avatar,
-                                                 caption=f"👑 {character.name} Победил", reply_markup=menu_button())
+                                                 caption=f"👑 {character.name} Победил")
 
                     await mongodb.update_many(
                         {"_id": {"$in": [account["_id"], character.rid]}},
@@ -393,8 +393,7 @@ async def duel_battle(callback: CallbackQuery):
                 await send_round_photo()
     except AttributeError as e:
         # Обработка ошибки AttributeError
-        await callback.message.answer("❖ 🔂 Идёт разработка бота связи с чем битва была остановлена",
-                                      reply_markup=menu_button())
+        await callback.message.answer("❖ 🔂 Идёт разработка бота связи с чем битва была остановлена")
         await mongodb.update_many(
             {"_id": {"$in": [account["_id"]]}},
             {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}

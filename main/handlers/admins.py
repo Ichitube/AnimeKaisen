@@ -82,3 +82,11 @@ async def chats_count(message: Message):
         await message.reply(f"📦 New Promo: {promo_code}")
     else:
         await message.reply("❖ ✖️ Ты не админ")
+
+
+@router.message(Command("del_emoji"))
+async def chats_count(message: Message):
+    if message.from_user.id in admins:
+        await mongodb.remove_emojis()
+    else:
+        await message.reply("❖ ✖️ Ты не админ")
