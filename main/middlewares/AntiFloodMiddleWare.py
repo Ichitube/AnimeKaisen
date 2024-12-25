@@ -5,7 +5,7 @@ from cachetools import TTLCache
 
 
 class AntiFloodMiddleware(BaseMiddleware):
-    def __init__(self, time_limit: int = 4) -> None:
+    def __init__(self, time_limit: int = 3) -> None:
         # Кэшируем как чат, так и пользователя для предотвращения флуда
         self.limit = TTLCache(maxsize=10_000, ttl=time_limit)
 

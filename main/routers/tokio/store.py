@@ -14,13 +14,14 @@ from keyboards.builders import inline_builder
 from ..slaves import slave_info
 from data import mongodb, character_photo
 from keyboards import builders
+from filters.chat_type import ChatTypeFilter
 
 router = Router()
 
 
+@router.message(ChatTypeFilter(chat_type=["private"]), F.text == "🏪 Рынок")
 @router.callback_query(F.data == "store")
-async def store(callback: CallbackQuery):
-    inline_id = callback.inline_message_id
+async def store(callback: CallbackQuery | Message):
     user_id = callback.from_user.id
     account = await mongodb.get_user(user_id)
 
@@ -50,8 +51,12 @@ async def store(callback: CallbackQuery):
     media_id = "CgACAgIAAx0CfstymgACIBlnE7j9A6EltliDF5gpy4mJSQHuQQAC01gAAqiJoEiAQXKi8JylYDYE"
     # "CgACAgIAAxkBAAIVAmXMvH4t4RtOQzePYbQgdnNEbFEeAAKOOwACeyZoSiAP4_7nfuBVNAQ"
     media = InputMediaAnimation(media=media_id)
-    await callback.message.edit_media(media, inline_id)
-    await callback.message.edit_caption(inline_id, **pattern)
+    if isinstance(callback, CallbackQuery):
+        inline_id = callback.inline_message_id
+        await callback.message.edit_media(media, inline_id)
+        await callback.message.edit_caption(inline_id, **pattern)
+    else:
+        await callback.answer_animation(media_id, **pattern)
 
 
 @router.callback_query(F.data == "buy_common")

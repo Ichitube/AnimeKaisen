@@ -1,16 +1,17 @@
 from aiogram import Router, F
 from aiogram.enums import ParseMode
-from aiogram.types import CallbackQuery, InputMediaAnimation
+from aiogram.types import CallbackQuery, InputMediaAnimation, Message
 from data import mongodb
 from keyboards.builders import inline_builder
 from routers import gacha
+from filters.chat_type import ChatTypeFilter
 
 router = Router()
 
 
+@router.message(ChatTypeFilter(chat_type=["private"]), F.text == "🎐 Баннеры")
 @router.callback_query(F.data == "banner")
-async def banner(callback: CallbackQuery):
-    inline_id = callback.inline_message_id
+async def banner(callback: CallbackQuery | Message):
     user_id = callback.from_user.id
     account = await mongodb.get_user(user_id)
 
@@ -18,12 +19,12 @@ async def banner(callback: CallbackQuery):
         caption=f"❖  🎐  <b>Баннеры</b>"
                 f"\n── •✧✧• ────────────"
                 f"\n❇️ <b><i>Текущие баннеры:</i></b>"
-                f"\n\n ☆ • 👻 <b>Хэллоуин</b>"
-                f"\n ☆ • 🔮 <b>Стандартный баннер</b>",
+                # f"\n\n ☆ • 👻 <b>Хэллоуин</b>"
+                f"\n\n ☆ • 🔮 <b>Стандартный баннер</b>",
         parse_mode=ParseMode.HTML,
         reply_markup=inline_builder(
-            ["👻 Хэллоуин", "🔮 Ст. баннер", " 🔙 Назад"],
-            ["halloween_banner", "standard", "tokio"],
+            ["🔮 Ст. баннер", " 🔙 Назад"],
+            ["standard", "tokio"],
             row_width=[1, 1, 1]
             )
     )
@@ -35,8 +36,12 @@ async def banner(callback: CallbackQuery):
     else:
         media_id = "CgACAgIAAx0CfstymgACEnpmnUiYllQQPMNY7B3y44Okelr6UgACsVEAApQD6UhAS-MzjVWVxTUE"
     media = InputMediaAnimation(media=media_id)
-    await callback.message.edit_media(media, inline_id)
-    await callback.message.edit_caption(inline_id, **pattern)
+    if isinstance(callback, CallbackQuery):
+        inline_id = callback.inline_message_id
+        await callback.message.edit_media(media, inline_id)
+        await callback.message.edit_caption(inline_id, **pattern)
+    else:
+        await callback.answer_animation(media_id, **pattern)
 
 
 @router.callback_query(F.data == "halloween_banner")

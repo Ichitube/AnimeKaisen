@@ -43,7 +43,7 @@ async def main_menu(message: Message | CallbackQuery):
             # Проверяем, истек ли пасс
             if current_datetime > pass_expires:
                 # Обновляем статус prime на False
-                await mongodb.update_value(user_id, {'account.prime': False})
+                await mongodb.update_user(user_id, {'account.prime': False})
         else:
             emoji = ""
 
@@ -207,8 +207,3 @@ async def form_name(message: Message, state: FSMContext):
         await message.answer("❖ ✖️ Промокод не найден")
         await state.clear()
         return
-
-
-@router.message(ChatTypeFilter(chat_type=["private"]), Command("menu_button"))
-async def call_button(message: Message):
-    await message.answer(text='˗ˋˏ💮 Кнопки восстановленыˎˊ˗', reply_markup=menu_button())

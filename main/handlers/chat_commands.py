@@ -1,11 +1,16 @@
 import re
 
-from aiogram import Router, F
-from aiogram.enums import ParseMode
-from aiogram.types import Message
-from data import mongodb, character_photo
 from keyboards.builders import start_button, goto_bot
+
+from aiogram import Router, F, Bot
+from aiogram.enums import ParseMode
+from aiogram.filters import Command
+from aiogram.types import Message
+from data import characters, character_photo
+from data import mongodb
+from keyboards.builders import reply_builder, inline_builder, menu_button, Ability, rm
 from recycling import profile
+from filters.chat_type import ChatTypeFilter
 
 router = Router()
 
@@ -260,6 +265,24 @@ async def balance(message: Message):
     else:
         await message.answer("❖ ✖️ Ты не зарегистрирован", reply_markup=start_button())
 
+
+@router.message(Command("rm"))
+async def fill_profile(message: Message):
+    await bot.send_message(message.chat.id, '❖ ✖️ Кнопки удалены', reply_markup=rm())
+
+
+@router.message(Command("help"))
+async def fill_profile(message: Message):
+    await bot.send_message(message.chat.id, '❖ 📋 <a href="https://teletype.in/@dire_hazard/x1">Руководство</a>',
+                           reply_markup=inline_builder(
+                               ["☑️"],
+                               ["delete"], row_width=[1])
+                           )
+
+
+@router.message(ChatTypeFilter(chat_type=["private"]), Command("menu_button"))
+async def call_button(message: Message):
+    await message.answer(text='˗ˋˏ💮 Кнопки восстановленыˎˊ˗', reply_markup=menu_button())
 
 
 """

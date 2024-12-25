@@ -5,13 +5,16 @@ from aiogram.types import Message, CallbackQuery
 from data import mongodb, character_photo
 from keyboards.builders import inline_builder
 from utils.states import Name
+from filters.chat_type import ChatTypeFilter
 
 router = Router()
 
 
+@router.message(ChatTypeFilter(chat_type=["private"]), F.text == "⚙️ Настройки")
 @router.callback_query(F.data == "settings")
 async def settings(message: Message | CallbackQuery):
     account = await mongodb.get_user(message.from_user.id)
+
     pattern = dict(
         caption=f"❖  ⚙️ <b>Настройки</b>"
                 f"\n── •✧✧• ────────────"
@@ -28,9 +31,15 @@ async def settings(message: Message | CallbackQuery):
     if isinstance(message, CallbackQuery):
         await message.message.edit_caption(**pattern)
     else:
-        media_id = character_photo.get_stats(account['universe'], account['character'][account['universe']], 'avatar')
+        universe = account['universe']
+        character = account['character'][account['universe']]
+        avatar = character_photo.get_stats(universe, character, 'avatar')
+        avatar_type = character_photo.get_stats(universe, character, 'type')
 
-        await message.answer_animation(media_id, **pattern)
+        if avatar_type == 'photo':
+            await message.answer_photo(avatar, **pattern)
+        else:
+            await message.answer_animation(avatar, **pattern)
 
 
 @router.callback_query(F.data == "change_name")
@@ -61,8 +70,8 @@ async def change_name(user_id: int, name: str):
 async def change_universe(callback: CallbackQuery):
     await callback.message.edit_caption(caption="❖  🗺 Выбери вселенную: ",
                                         reply_markup=inline_builder(
-                                            ['🗡 Bleach', '🍥 Naruto', '🌟 Allstars', '⭐️ Allstars(old)'],
-                                            ['Bleach', 'Naruto', 'Allstars', 'Allstars(old)'],
+                                            ['🗡 Bleach', '🍥 Naruto', '⭐️ Allstars'],
+                                            ['Bleach', 'Naruto', 'Allstars'],
                                             row_width=1))
 
 

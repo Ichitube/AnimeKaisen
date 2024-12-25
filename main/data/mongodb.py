@@ -1,5 +1,4 @@
 import re
-from datetime import datetime, timedelta
 
 from motor.motor_asyncio import AsyncIOMotorClient
 from recycling import profile
@@ -140,8 +139,15 @@ async def find_opponent():
     return status
 
 
+async def find_card_opponent():
+    status = await db.users.find_one({"battle.battle.status": 3})
+    return status
+
+
 async def in_battle():
     status = await db.users.count_documents({"battle.battle.status": 2})
+    card = await db.users.count_documents({"battle.battle.status": 4})
+    status += card
     return status
 
 
@@ -340,3 +346,39 @@ async def install_zero():
     current_date_minus_one = current_date - timedelta(days=1)
     current_datetime = datetime.combine(current_date_minus_one, datetime.time(datetime.now()))
     await db.users.update_many({}, {"$set": {"last_call_time": current_datetime}})
+
+
+async def migrate_characters():
+    async for user in db.users.find():
+        inventory = user.get("inventory", {})
+        characters = inventory.get("characters", {})
+
+        # Если "Allstars(old)" существует в персонажах
+        if "Allstars(old)" in characters:
+            old_allstars = characters["Allstars(old)"]
+
+            # Перебор редкостей
+            for rarity, char_list in old_allstars.items():
+                if rarity not in characters.get("Allstars", {}):
+                    characters.setdefault("Allstars", {})[rarity] = []
+
+                # Добавляем персонажей, которых ещё нет в "Allstars"
+                for char in char_list:
+                    if char not in characters["Allstars"][rarity]:
+                        characters["Allstars"][rarity].append(char)
+
+            # Удаляем "Allstars(old)"
+            del characters["Allstars(old)"]
+
+            # Обновляем инвентарь
+            await db.users.update_one(
+                {"_id": user["_id"]},
+                {"$set": {"inventory.characters": characters}}
+            )
+
+        # Обновление значения "universe"
+        if user.get("universe") == "Allstars(old)":
+            await db.users.update_one(
+                {"_id": user["_id"]},
+                {"$set": {"universe": "Allstars"}}
+            )

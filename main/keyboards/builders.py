@@ -26,12 +26,22 @@ def profile(text: str | list):
 def menu_button():
     kb = [
         [
+            KeyboardButton(text='🪪 〢 Профиль'),
+            KeyboardButton(text='💮 Меню')
+        ],
+        [
+            KeyboardButton(text='🎐 Баннеры'),
             KeyboardButton(text='🏟️ Арена'),
-            KeyboardButton(text='🪪 〢 Профиль')
+            KeyboardButton(text='🏪 Рынок'),
         ],
         [
             KeyboardButton(text='🎴 Grab'),
-            KeyboardButton(text='🥡 Инвентарь')
+            KeyboardButton(text='📜 Квесты'),
+            KeyboardButton(text='⛩️ Подземелье')
+        ],
+        [
+            KeyboardButton(text='🥡 Инвентарь'),
+            KeyboardButton(text='⚙️ Настройки')
         ]
     ]
     keyboard = ReplyKeyboardMarkup(
@@ -246,6 +256,36 @@ def pagination_group(page: int = 0):
     )
     builder.row(
         InlineKeyboardButton(text='🔙 Назад', callback_data="g_inventory")
+    )
+    return builder.as_markup()
+
+
+def pagination_card(page: int = 0):
+    builder = InlineKeyboardBuilder()
+    builder.row(
+        InlineKeyboardButton(text='⬅️', callback_data=Pagination(action="d_prev", page=page).pack()),
+        InlineKeyboardButton(text='➡️', callback_data=Pagination(action="d_next", page=page).pack())
+    )
+    builder.row(
+        InlineKeyboardButton(text='✅ Выбрать', callback_data='d_choice_card')
+    )
+    builder.row(
+        InlineKeyboardButton(text='🔙 Назад', callback_data="deck")
+    )
+    return builder.as_markup()
+
+
+def pagination_dungeon(page: int = 0):
+    builder = InlineKeyboardBuilder()
+    builder.row(
+        InlineKeyboardButton(text='⬅️', callback_data=Pagination(action="dg_prev", page=page).pack()),
+        InlineKeyboardButton(text='➡️', callback_data=Pagination(action="dg_next", page=page).pack())
+    )
+    builder.row(
+        InlineKeyboardButton(text='✅ Выбрать', callback_data='dg_choice_card')
+    )
+    builder.row(
+        InlineKeyboardButton(text='🔙 Назад', callback_data="dungeon")
     )
     return builder.as_markup()
 

@@ -234,7 +234,7 @@ async def card_gacha(user_id, callback):
 
     pattern = dict(
         caption=f"\n ── •✧✧• ────────────"
-                f"\n  🃏  〢 {character} "
+                f"\n  🃏  〢 <tg-spoiler>{character}</tg-spoiler>"
                 f"\n ── •✧✧• ────────────"
                 f"{message}"
                 f"\n──❀*̥˚──◌──◌──❀*̥˚────"
@@ -278,9 +278,9 @@ async def card_gacha(user_id, callback):
     await asyncio.sleep(time)
 
     if avatar_type == 'photo':
-        media = InputMediaPhoto(media=avatar)
+        media = InputMediaPhoto(media=avatar, has_spoiler=True)
     else:
-        media = InputMediaAnimation(media=avatar)
+        media = InputMediaAnimation(media=avatar, has_spoiler=True)
 
     await callback.message.edit_media(media, inline_id)
 
@@ -327,7 +327,7 @@ async def first_summon(callback, universe):
 
     pattern = dict(
         caption=f"\n ── •✧✧• ────────────"
-                f"\n  🎴  〢 {character} "
+                f"\n  🎴  〢 <tg-spoiler>{character}</tg-spoiler>"
                 f"\n ── •✧✧• ────────────"
                 f"{msg}"
                 f"\n──❀*̥˚──◌──◌──❀*̥˚────",
@@ -336,9 +336,9 @@ async def first_summon(callback, universe):
     )
 
     if avatar_type == 'photo':
-        new_photo = InputMediaPhoto(media=avatar)
+        new_photo = InputMediaPhoto(media=avatar, has_spoiler=True)
     else:
-        new_photo = InputMediaAnimation(media=avatar)
+        new_photo = InputMediaAnimation(media=avatar, has_spoiler=True)
 
     if character_category == 'divine':
         media_id = "CgACAgIAAx0CfstymgACBiVlzikq6HGeA2exxOQQbekNg_KImAACDEIAAsuUcUpNy3ouWDG9xTQE"
@@ -446,7 +446,7 @@ async def campaign_rank(message: Message):
 
                 pattern = dict(
                     caption=f"\n ── •✧✧• ────────────"
-                            f"\n  🃏  〢 {character} "
+                            f"\n  🃏  〢 <tg-spoiler>{character}</tg-spoiler>"
                             f"\n ── •✧✧• ────────────"
                             f"{msg}"
                             f"\n──❀*̥˚──◌──◌──❀*̥˚────"
@@ -484,9 +484,9 @@ async def campaign_rank(message: Message):
                 await mongodb.update_user(user_id, {"tasks.last_free_summon": current_datetime})
 
                 if avatar_type == 'photo':
-                    new_photo = InputMediaPhoto(media=avatar)
+                    new_photo = InputMediaPhoto(media=avatar, has_spoiler=True)
                 else:
-                    new_photo = InputMediaAnimation(media=avatar)
+                    new_photo = InputMediaAnimation(media=avatar, has_spoiler=True)
 
                 await gacha_msg.edit_media(new_photo)
                 await gacha_msg.edit_caption(**pattern)

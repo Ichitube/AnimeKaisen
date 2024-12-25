@@ -70,8 +70,8 @@ async def form_name(message: Message, state: FSMContext):
                         "\n<blockquote expandable>❕Внимание: Вселенные Allstars и Allstars(old) не имеет доступ к "
                         "🏟 боевой арене!</blockquote>"
                         "\n❖ 🔄 Всегда можно сменить вселенную в ⚙️ ️настройки",
-                reply_markup=inline_builder(['🗡 Bleach', '🍥 Naruto', '🌟 Allstars', '⭐️ Allstars(old)'],
-                                            ['Bleach', 'Naruto', 'Allstars', 'Allstars(old)'], row_width=1),
+                reply_markup=inline_builder(['🗡 Bleach', '🍥 Naruto', '⭐️ Allstars'],
+                                            ['Bleach', 'Naruto', 'Allstars'], row_width=1),
             )
             await message.answer_photo(media_id, **pattern)
         else:
@@ -137,24 +137,24 @@ async def get_first_free(callback: CallbackQuery, state: FSMContext):
                                                 "персонажей</blockquote>", reply_markup=get_common())
 
 
-@router.callback_query(F.data.in_(['Allstars(old)']))
-async def get_first_free(callback: CallbackQuery, state: FSMContext):
-    account = await mongodb.get_user(callback.from_user.id)
-    if account is not None and account['_id'] == callback.from_user.id:
-        character = account.get('character', {}).get('Allstars(old)')
-        if character:
-            await mongodb.update_user(callback.from_user.id, {'universe': 'Allstars(old)'})
-            await callback.answer("❖ 🗺 Вы успешно сменили вселенную", show_alert=True)
-            return
-    await state.update_data(universe=callback.data)
-    media = InputMediaAnimation(media="CgACAgIAAx0CfstymgACEnpmnUiYllQQPMNY7B3y44Okelr6UgACsVEAApQD6UhAS-MzjVWVxTUE")
-    await callback.message.edit_media(media=media)
-    await callback.message.edit_caption(caption="❖ 🗺 Allstars(old)"
-                                        "\n── •✧✧• ────────────"
-                                        "\n<blockquote expandable>💮 Эта самая первая версия. В Этой Вселенной "
-                                                "находиться популярные персонажи из разных аниме но пока арена "
-                                                "недоступна. Вы моежете просто собрать "
-                                                "персонажей</blockquote>", reply_markup=get_common())
+# @router.callback_query(F.data.in_(['Allstars(old)']))
+# async def get_first_free(callback: CallbackQuery, state: FSMContext):
+#     account = await mongodb.get_user(callback.from_user.id)
+#     if account is not None and account['_id'] == callback.from_user.id:
+#         character = account.get('character', {}).get('Allstars(old)')
+#         if character:
+#             await mongodb.update_user(callback.from_user.id, {'universe': 'Allstars(old)'})
+#             await callback.answer("❖ 🗺 Вы успешно сменили вселенную", show_alert=True)
+#             return
+#     await state.update_data(universe=callback.data)
+#     media = InputMediaAnimation(media="CgACAgIAAx0CfstymgACEnpmnUiYllQQPMNY7B3y44Okelr6UgACsVEAApQD6UhAS-MzjVWVxTUE")
+#     await callback.message.edit_media(media=media)
+#     await callback.message.edit_caption(caption="❖ 🗺 Allstars(old)"
+#                                         "\n── •✧✧• ────────────"
+#                                         "\n<blockquote expandable>💮 Эта самая первая версия. В Этой Вселенной "
+#                                                 "находиться популярные персонажи из разных аниме но пока арена "
+#                                                 "недоступна. Вы моежете просто собрать "
+#                                                 "персонажей</blockquote>", reply_markup=get_common())
 
 
 @router.callback_query(F.data == "get_first_free")

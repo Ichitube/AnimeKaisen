@@ -2,9 +2,10 @@ import asyncio
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
-from routers import registration, battle, gacha, banner, settings, navigation, main_menu, inventory, craft, slaves
+from routers import (registration, battle, gacha, banner, settings, navigation, main_menu, inventory, craft, slaves,
+                     arena, battle_ai, card_battle, card_battle_ai)
 from data import character_photo
-from routers.tokio import tokio, dungeon, store, Pay, home
+from routers.tokio import tokio, dungeon, store, Pay, home, quests
 from handlers import chat_commands, admins
 from payments import stars
 from chat_handlers import chat_battle
@@ -39,7 +40,12 @@ async def main():
         slaves.router,
         home.router,
         admins.router,
-        stars.router
+        stars.router,
+        arena.router,
+        battle_ai.router,
+        card_battle.router,
+        card_battle_ai.router,
+        quests.router
     )
 
     dp.callback_query.middleware(AntiFloodMiddleware())

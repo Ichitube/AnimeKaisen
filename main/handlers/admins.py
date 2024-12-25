@@ -1,7 +1,7 @@
 import random
 import string
 
-from aiogram import Router
+from aiogram import Router, Bot
 
 from aiogram.types import Message
 from aiogram.filters import Command
@@ -98,3 +98,74 @@ async def chats_count(message: Message):
         await mongodb.install_zero()
     else:
         await message.reply("❖ ✖️ Ты не админ")
+
+
+@router.message(Command("post"))
+async def fill_profile(message: Message):
+    if message.from_user.id == 6946183730:
+        # Извлекаем message_id из команды
+        command_parts = message.text.split()
+        if len(command_parts) == 2 and command_parts[1].isdigit():
+            message_id = int(command_parts[1])
+
+            async def forward_post_to_all_users(channel_id, msg):
+                users = db.users.find()  # замените 'users' на имя вашей коллекции пользователей
+                async for user in users:
+                    try:
+                        await bot.forward_message(chat_id=user['_id'], from_chat_id=channel_id, message_id=msg)
+                    except Exception as e:
+                        print(f"Не удалось переслать сообщение пользователю {user['_id']}: {e}")
+
+                chats = db.chats.find()  # замените 'chats' на имя вашей коллекции чатов
+                async for chat in chats:
+                    try:
+                        await bot.forward_message(chat_id=chat['_id'], from_chat_id=channel_id, message_id=msg)
+                    except Exception as e:
+                        print(f"Не удалось переслать сообщение в чат {chat['_id']}: {e}")
+
+            await forward_post_to_all_users(channel_id=-1002042458477, msg=message_id)
+        else:
+            await message.answer("Пожалуйста, укажите корректный message_id после команды /post")
+    else:
+        await message.answer("У вас нет прав на выполнение этой команды")
+
+
+@router.message(Command("message"))
+async def send_message_to_all(message: Message):
+    if message.from_user.id == 6946183730:
+        # Извлекаем текст сообщения из команды
+        command_parts = message.text.split(maxsplit=1)
+        if len(command_parts) == 2:
+            text_message = command_parts[1]
+
+            async def send_message_to_all_users(text):
+                users = db.users.find()  # замените 'users' на имя вашей коллекции пользователей
+                async for user in users:
+                    try:
+                        await bot.send_message(chat_id=user['_id'], text=text)
+                    except Exception as e:
+                        print(f"Не удалось отправить сообщение пользователю {user['_id']}: {e}")
+
+            await send_message_to_all_users(text_message)
+        else:
+            await message.answer("Пожалуйста, укажите текст сообщения после команды /message")
+    else:
+        await message.answer("У вас нет прав на выполнение этой команды")
+
+
+@router.message(Command("chats"))
+async def fill_profile(message: Message):
+    if message.from_user.id == 6946183730:
+        chats = await mongodb.chats()
+        await message.answer(f"Всего чатов: {chats}")
+    else:
+        await message.answer("У вас нет прав на выполнение этой команды")
+
+
+@router.message(Command("migrate_characters"))
+async def fill_profile(message: Message):
+    if message.from_user.id in admins:
+        await mongodb.migrate_characters()
+        await message.answer(f"успешно")
+    else:
+        await message.answer("У вас нет прав на выполнение этой команды")
