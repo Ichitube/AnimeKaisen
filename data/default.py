@@ -22,7 +22,7 @@
         caption = (f"⚡Расенган"
                    f"\n\nМинато создал Расенган, нанося {damage} 🗡 урона и уменьшая скорость врага")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹⚡Летящий Гром Бог˼':
         mana = await calculate_mana(self, 30)
@@ -40,7 +40,7 @@
         caption = (f"⚡Летящий Гром Бог"
                    f"\n\nМинато использует Летящий Гром Бог, нанося {damage} 🗡 урона и телепортируясь за спину врага")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹⚡Барьер Летящего Грома˼':
         mana = await calculate_mana(self, 35)
@@ -58,7 +58,7 @@
         caption = (f"⚡Барьер Летящего Грома"
                    f"\n\nМинато создал барьер, усиливая свою защиту на {defense_boost} и отражая {reflect_damage} урона врагу")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹⚡Режим Отшельника˼':
         mana = await calculate_mana(self, 50)
@@ -79,7 +79,7 @@
         caption = (f"⚡Режим Отшельника"
                    f"\n\nМинато активирует Режим Отшельника, нанося {damage} 🗡 урона и усиливая свои способности")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹⚡Хирайшин: Шики Фуджин˼':
         mana = await calculate_mana(self, 60)
@@ -101,7 +101,7 @@
         caption = (f"⚡Хирайшин: Шики Фуджин"
                    f"\n\nМинато использует Хирайшин: Шики Фуджин, нанося {damage} 🗡 урона и с шансом мгновенно уничтожить врага")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
 # Hotake Kakashi
 
@@ -118,7 +118,7 @@
         caption = (f"⚡️Чидори"
                    f"\n\nКакаши использовал Чидори, нанося {damage} 🗡 урона")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🌀Камуи˼':
         mana = await calculate_mana(self, 35)
@@ -134,7 +134,7 @@
         caption = (f"🌀Камуи"
                    f"\n\nКакаши использовал Камуи, нанося {damage} 🗡 урона и выводя врага из боя на {duration} хода")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🔥Катон: Гоенко˼':
         mana = await calculate_mana(self, 25)
@@ -150,7 +150,7 @@
         caption = (f"🔥Катон: Гоенко"
                    f"\n\nКакаши использовал Катон: Гоенко, нанося {damage} 🗡 урона и накладывая ожог на {burn_duration} ходов")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹⚡️Райкири˼':
         mana = await calculate_mana(self, 30)
@@ -165,7 +165,7 @@
         caption = (f"⚡️Райкири"
                    f"\n\nКакаши использовал Райкири, нанося {damage} 🗡 урона")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹👁Шаринган˼':
         mana = await calculate_mana(self, 15)
@@ -180,7 +180,7 @@
         caption = (f"👁Шаринган"
                    f"\n\nКакаши активировал Шаринган, увеличивая шанс критического удара на {duration} ходов")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
 # Madara Uchiha
 
@@ -200,7 +200,7 @@
         caption = (f"🔥Катон: Гокакью но Дзюцу"
                    f"\n\nМадара использует Гокакью но Дзюцу, нанося {damage} 🗡 урона и поджигая врага")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🌪Сусаноо˼':
         mana = await calculate_mana(self, 40)
@@ -221,7 +221,7 @@
         caption = (f"🌪Сусаноо"
                    f"\n\nМадара активировал Сусаноо, нанося {damage} 🗡 урона и усиливая свою защиту на {defense_boost} единиц")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🌌Вечный Мангекё Шаринган˼':
         mana = await calculate_mana(self, 50)
@@ -239,7 +239,7 @@
         caption = (f"🌌Вечный Мангекё Шаринган"
                    f"\n\nМадара использует Вечный Мангекё Шаринган, нанося {genjutsu_damage} 🗡 урона с помощью гендзюцу")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🌑Инфинити Цукуёми˼':
         mana = await calculate_mana(self, 60)
@@ -261,7 +261,7 @@
         caption = (f"🌑Инфинити Цукуёми"
                    f"\n\nМадара использует Инфинити Цукуёми, нанося {genjutsu_damage} 🗡 урона и оглушая всех врагов на 1 ход")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🌪Мокутон: Дзюкай Котан˼':
         mana = await calculate_mana(self, 35)
@@ -280,7 +280,7 @@
         caption = (f"🌪Мокутон: Дзюкай Котан"
                    f"\n\nМадара использует Мокутон: Дзюкай Котан, нанося {damage} 🗡 урона и снижая скорость врага")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🌑Мудреца Шесть Путей˼':
         mana = await calculate_mana(self, 70)
@@ -299,7 +299,7 @@
         caption = (f"🌑Мудреца Шесть Путей"
                    f"\n\nМадара использует силу Мудреца Шести Путей, нанося {damage} 🗡 урона и усиливая свои способности")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
 # Konan
 
@@ -319,7 +319,7 @@
         caption = (f"📜Шикигами но Май"
                    f"\n\nКонан активировала Шикигами но Май, нанося {damage} 🗡 урона в течение {duration} ходов")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹💠Ками Буншин˼':
         mana = await calculate_mana(self, 15)
@@ -337,7 +337,7 @@
         caption = (f"💠Ками Буншин"
                    f"\n\nКонан использовала Ками Буншин, нанося {damage} 🗡 урона и поглощая урон в течение {duration} хода")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🌸Ками но Шиша но Дзюцу˼':
         mana = await calculate_mana(self, 25)
@@ -353,7 +353,7 @@
         caption = (f"🌸Ками но Шиша но Дзюцу"
                    f"\n\nКонан активировала Ками но Шиша но Дзюцу, нанося {damage} 🗡 урона в течение {duration} ходов")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹💀Бумажный Океан˼':
         mana = await calculate_mana(self, 35)
@@ -368,7 +368,7 @@
         caption = (f"💀Бумажный Океан"
                    f"\n\nКонан использовала Бумажный Океан, нанося {damage} 🗡 урона")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🌸Бумажные Крылья˼':
         mana = await calculate_mana(self, 20)
@@ -383,7 +383,7 @@
         caption = (f"🌸Бумажные Крылья"
                    f"\n\nКонан активировала Бумажные Крылья, давая себе уклонение на {duration} ход")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
 # Itachi Uchiha
 
@@ -401,7 +401,7 @@
         caption = (f"🔥Аматерасу"
                    f"\n\nИтачи использует Аматерасу, нанося {damage} 🗡 урона и вызывая горение на {burn_duration} ходов")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🛡Сусаноо˼':
         mana = await calculate_mana(self, 30)
@@ -417,7 +417,7 @@
         caption = (f"🛡Сусаноо"
                    f"\n\nИтачи использует Сусаноо, увеличивая свою защиту на {defense_boost} на {shield_duration} ходов")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹👁Цукуёми˼':
         mana = await calculate_mana(self, 40)
@@ -433,7 +433,7 @@
         caption = (f"👁Цукуёми"
                    f"\n\nИтачи использует Цукуёми, мгновенно оглушая противника на {stun_duration} ходов")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🔥Катон: Гоуюка˼':
         mana = await calculate_mana(self, 25)
@@ -448,7 +448,7 @@
         caption = (f"🔥Катон: Гоуюка"
                    f"\n\nИтачи использует Катон: Гоуюка, нанося {damage} 🗡 урона")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
 # Нагато (Пейн)
 
@@ -465,7 +465,7 @@
         caption = (f"🌀Шинра Тенсей"
                    f"\n\nНагато использовал Шинра Тенсей, нанося {damage} 🗡 урона и отталкивая врага")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🔴Чибаку Тенсей˼':
         mana = await calculate_mana(self, 40)
@@ -481,7 +481,7 @@
         caption = (f"🔴Чибаку Тенсей"
                    f"\n\nНагато использовал Чибаку Тенсей, нанося {damage} 🗡 урона и запечатывая врага на {duration} хода")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹👁Баншо Тенин˼':
         mana = await calculate_mana(self, 20)
@@ -500,7 +500,7 @@
         caption = (f"👁Баншо Тенин"
                    f"\n\nНагато использовал Баншо Тенин, нанося {damage} 🗡 урона и притягивая врага")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹⚡️Риннеган: Чакра Поглощение˼':
         mana = await calculate_mana(self, 30)
@@ -516,7 +516,7 @@
         caption = (f"⚡️Риннеган: Чакра Поглощение"
                    f"\n\nНагато использовал Риннеган для поглощения {drain_amount} чакры у врага")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🔵Наруками˼':
         mana = await calculate_mana(self, 35)
@@ -531,7 +531,7 @@
         caption = (f"🔵Наруками"
                    f"\n\nНагато использовал Наруками, нанося {damage} 🗡 урона и создавая мощный удар молнии")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
 # Sasori
 
@@ -549,7 +549,7 @@
         caption = (f"🎭Красная армия кукол"
                    f"\n\nСасори использовал свою Красную армию кукол, атакуя врага с помощью {puppet_count} кукол и нанося {damage} 🗡 урона")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🦂Ядовитая игла˼':
         mana = await calculate_mana(self, 20)
@@ -567,7 +567,7 @@
         caption = (f"🦂Ядовитая игла"
                    f"\n\nСасори выстрелил ядовитой иглой, нанося {damage} 🗡 урона и отравляя врага на {poison_duration} хода")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹💀Железный песок˼':
         mana = await calculate_mana(self, 35)
@@ -582,7 +582,7 @@
         caption = (f"💀Железный песок"
                    f"\n\nСасори использовал Железный песок, нанося {damage} 🗡 урона врагу")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🌀Техника секретного красного песка: Сотня кукол˼':
         mana = await calculate_mana(self, 50)
@@ -598,7 +598,7 @@
         caption = (f"🌀Техника секретного красного песка: Сотня кукол"
                    f"\n\nСасори использовал Секретную технику, управляя {puppet_count} куклами и нанося {damage} 🗡 урона")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🔥Техника огненного дыхания˼':
         mana = await calculate_mana(self, 25)
@@ -613,7 +613,7 @@
         caption = (f"🔥Техника огненного дыхания"
                    f"\n\nСасори использовал Технику огненного дыхания, нанося {damage} 🗡 урона и поджигая врага")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
 # Rok Li
 
@@ -633,7 +633,7 @@
         caption = (f"🥋Первый Врата Открытия"
                    f"\n\nРок Ли открыл Первые Врата, нанося {damage} 🗡 урона и увеличивая свою ловкость на {agility_boost} на 3 хода")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹💥Первичный Лотос˼':
         mana = await calculate_mana(self, 30)
@@ -651,7 +651,7 @@
         caption = (f"💥Первичный Лотос"
                    f"\n\nРок Ли использовал Лотос, нанося {damage} 🗡 урона врагу")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🥊Удар Листа˼':
         mana = await calculate_mana(self, 20)
@@ -670,7 +670,7 @@
         caption = (f"🥊Удар Листа"
                    f"\n\nРок Ли нанес Удар Листа, нанося {damage} 🗡 урона и с шансом {stun_chance}% оглушить врага на 1 ход")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🔥Удар ножницами˼':
         mana = await calculate_mana(self, 25)
@@ -685,7 +685,7 @@
         caption = (f"🔥Удар ножницами"
                    f"\n\nРок Ли нанес {damage} 🗡 урона Ударом ножницами")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
 # Obito Uchiha
 
@@ -705,7 +705,7 @@
         caption = (f"🌪Камуи"
                    f"\n\nОбито использует Камуи, нанося {damage} 🗡 урона и увеличивая шанс уклонения на {dodge_chance}% на 2 хода")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🔥Катон: Гоенка˼':
         mana = await calculate_mana(self, 25)
@@ -720,7 +720,7 @@
         caption = (f"🔥Катон: Гоенка"
                    f"\n\nОбито использует технику Катон: Гоенка, нанося {damage} 🗡 урона огненной атакой")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🌀Шаринган˼':
         mana = await calculate_mana(self, 20)
@@ -737,7 +737,7 @@
         caption = (f"🌀Шаринган"
                    f"\n\nОбито активирует Шаринган, увеличивая интеллект на {intelligence_boost} и снижая получаемый урон на {damage_reduction}% на 3 хода")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹💀Вторжение Дзюби˼':
         mana = await calculate_mana(self, 50)
@@ -755,4 +755,4 @@
         caption = (f"💀Вторжение Дзюби"
                    f"\n\nОбито использует силу Дзюби, нанося {damage} 🗡 урона")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)

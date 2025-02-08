@@ -16,24 +16,6 @@ router = Router()
 tasks = {}
 
 
-@router.callback_query(F.data == "buy_keys")
-async def buy_keys(callback: CallbackQuery):
-    await callback.message.delete()
-
-    billing = crystalpayAPI.Invoice.create(100, InvoiceType.purchase, 15)
-    billing_id = billing['id']
-    tasks[callback.from_user.id] = billing_id
-    pattern = dict(caption=f"\n── •✧✧• ────────────"
-                           f"\n<blockquote expandable>❖ 💳 Прямой донат пока недоступен</blockquote>"
-                           f"\nСвяжитесь с<a href='https://t.me/falcon_blackhawk'><b>👤 Админом</b></a>"
-                           f"\n── •✧✧• ────────────",
-                   parse_mode=ParseMode.HTML,
-                   reply_markup=inline_builder(["✖️ Отмена"], ["store"], row_width=[2, 1]))
-
-    media_id = "CgACAgIAAx0CfstymgACBQVluXo_n-FnFfBB1XW8zCIU7_Ed0QAC6TsAAtfz0Enh8jW0yBuKgzQE"
-
-    await callback.message.answer_animation(animation=media_id, **pattern)
-
 
 # @router.callback_query(F.data == "buy_keys")
 # async def buy_keys(callback: CallbackQuery):

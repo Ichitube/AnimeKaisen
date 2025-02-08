@@ -1,80 +1,141 @@
-import asyncio
+from datetime import datetime, timedelta
 
 from aiogram import Router, F
-
-from aiogram.types import CallbackQuery, InputMediaAnimation, InputMediaPhoto
+from contextlib import suppress
+from aiogram.exceptions import TelegramBadRequest
 from aiogram.enums import ParseMode
-
-from keyboards.builders import inline_builder
-from data import mongodb
+from aiogram.types import CallbackQuery, InputMediaAnimation, InputMediaPhoto, Message
+from data import mongodb, character_photo
+from data.character_photo import get_stats
+from keyboards.builders import inline_builder, Pagination, pagination_dungeon, reply_builder
 from recycling import profile
+from filters.chat_type import ChatTypeFilter, CallbackChatTypeFilter
+from data import character_photo
+from aiogram.fsm.context import FSMContext
 
 router = Router()
 
-tasks = {}
 
-
+@router.message(ChatTypeFilter(chat_type=["private"]), F.text == "⛩️ Подземелье")
 @router.callback_query(F.data == "dungeon")
-async def dungeon(callback: CallbackQuery):
-    inline_id = callback.inline_message_id
+async def dungeon(callback: CallbackQuery | Message):
     user_id = callback.from_user.id
     account = await mongodb.get_user(user_id)
+    universe = account['universe']
 
-    await profile.update_level(user_id, account["campaign"]["count"])
+    # Текущее время
+    current_datetime = datetime.now()
 
-    async def get_army_power(uid):
-        user = await mongodb.get_user(uid)
-        power = user['campaign']['power']
-        return power
+    # Последняя продажа
+    last_sell_datetime = account['tasks'].get('last_dungeon', current_datetime)
+    if isinstance(last_sell_datetime, str):  # Преобразуем строку, если нужно
+        last_sell_datetime = datetime.fromisoformat(last_sell_datetime)
 
-    nephritis_per_minute = account['campaign']['power'] // 10000 * account['campaign']['level']
-    gold_per_minute = account['campaign']['power'] // 2500 * account['campaign']['level']
-    silver_per_minute = account['campaign']['power'] // 500 * account['campaign']['level']
+    # Рассчитываем прошедшее время в секундах
+    elapsed_seconds = int((current_datetime - last_sell_datetime).total_seconds())
 
-    async def increase_resources(uid, power):
-        nephritis = power // 10000
-        gold = power // 2500
-        silver = power // 500
+    if "deck_dungeon" not in account:
+        await mongodb.update_user(user_id, {"deck_dungeon": {
+            "dg1": "empty",
+            "dg2": "empty",
+            "dg3": "empty",
+            "dg4": "empty",
+            "dg5": "empty",
+            "dg6": "empty"
+        }})
+        account = await mongodb.get_user(user_id)
 
-        await mongodb.update_value(uid, {'campaign.nephritis': nephritis})
-        await mongodb.update_value(uid, {'campaign.gold': gold})
-        await mongodb.update_value(uid, {'campaign.silver': silver})
+    deck_data = account["deck_dungeon"]
+    first = deck_data["dg1"]
+    second = deck_data["dg2"]
+    third = deck_data["dg3"]
+    fourth = deck_data["dg4"]
+    fifth = deck_data["dg5"]
+    sixth = deck_data["dg6"]
 
-    async def resource_increase_loop(uid):
-        while True:
-            power = await get_army_power(uid)
-            await increase_resources(uid, power)
-            await asyncio.sleep(60)
+    if first == "empty":
+        first = 0
+    else:
+        p = get_stats(universe, first, 'arena')
+        first = p.get('power')
+    if second == "empty":
+        second = 0
+    else:
+        p = get_stats(universe, second, 'arena')
+        second = p.get('power')
+    if third == "empty":
+        third = 0
+    else:
+        p = get_stats(universe, third, 'arena')
+        third = p.get('power')
+    if fourth == "empty":
+        fourth = 0
+    else:
+        p = get_stats(universe, fourth, 'arena')
+        fourth = p.get('power')
+    if fifth == "empty":
+        fifth = 0
+    else:
+        p = get_stats(universe, fifth, 'arena')
+        fifth = p.get('power')
+    if sixth == "empty":
+        sixth = 0
+    else:
+        p = get_stats(universe, sixth, 'arena')
+        sixth = p.get('power')
+
+    power = first + second + third + fourth + fifth + sixth
+
+    # Прирост ресурсов за час
+    nephritis_per_hour = power // 1000
+    gold_per_hour = power // 200
+    silver_per_hour = power // 40
+
+    # Рассчитываем прирост ресурсов с момента последней продажи
+    current_nephritis = max(0, int(account['campaign']['nephritis'] + (nephritis_per_hour * (elapsed_seconds // 60 // 60))))
+    current_gold = max(0, int(account['campaign']['gold'] + (gold_per_hour * (elapsed_seconds // 60 // 60))))
+    current_silver = max(0, int(account['campaign']['silver'] + (silver_per_hour * (elapsed_seconds // 60 // 60))))
+
+    if current_nephritis < 1:
+        current_nephritis = "0.~"
+
+    if nephritis_per_hour < 1:
+        nephritis_per_hour = "0.~"
 
     level = await profile.level(account['campaign']['level'])
     pattern = dict(
         caption=f"❖  ⛩️  <b>Подземелье</b>"
                 f"\n── •✧✧• ────────────"
-                f"\n❖  Очищаем подземелье от монстров и получаем ресурсы 💰. . ."
-                f"\n\n ⚜️ Сила карты: {account['campaign']['power']}"
-                f"\n ⛩️ {level}"
-                f"\n\n   💠 Нефрит: {account['campaign']['nephritis']}"
-                f"\n   📀 Золото: {account['campaign']['gold']}"
-                f"\n   💿 Серебро: {account['campaign']['silver']}"
-                f"\n\n── •✧✧• ────────────"
-                f"\n💠/м: {nephritis_per_minute}"
-                f" 📀/м: {gold_per_minute}"
-                f" 💿/м: {silver_per_minute}",
-        parse_mode=ParseMode.HTML,
+                f"\n❖ Очищаем подземелье от монстров и собираем ресурсы 💰. . ."
+                f"\n\n⛩️ {level}"
+                f"\n\n💰 Ресурсы:"
+                f"\n   💠 Нефрит: {current_nephritis}"
+                f"\n   📀 Золото: {current_gold}"
+                f"\n   💿 Серебро: {current_silver}"
+                f"\n\n⚖️ Цены за ресурсы на рынке: "
+                f"\n💠 = 26 ¥"
+                f" 📀 = 10 ¥"
+                f" 💿 = 4 ¥"
+                f"\n\n⚜️ Сила 🏴отряда: {power}🗡"
+                f"\n── •✧✧• ────────────"
+                f"\n💠 в час: {nephritis_per_hour}"
+                f" 📀 в час: {gold_per_hour}"
+                f" 💿 в час: {silver_per_hour}",
         reply_markup=inline_builder(
-            ["💰 Продать 💴", "👾 Босс", "⚜️ Рейтинг", "📋 Правила", "🔙 Назад"],
-            ["sell_resources", "boss", "campaign_rank", "campaign_rules", "main_page"],
+            ["🗡🗡 🏴Отряд", "💰 Продать 💴", "👾 Босс", "⚜️ Рейтинг", "📋 Правила", "🔙 Назад"],
+            ["deck_dungeon", "sell_resources", "boss", "campaign_rank", "campaign_rules", "main_page"],
             row_width=[2, 2, 1]
-            )
+        )
     )
 
     media_id = "AgACAgIAAx0CfstymgACGttmw1rY8-Urz0Hyjku-8S34cRDuMgACk-ExG8b4GEr9GXvbgCanOgEAAwIAA3kAAzUE"
     media = InputMediaPhoto(media=media_id)
-    await callback.message.edit_media(media, inline_id)
-    await callback.message.edit_caption(inline_id, **pattern)
 
-    if user_id not in tasks or tasks[user_id].done():
-        tasks[user_id] = asyncio.create_task(resource_increase_loop(user_id))
+    if isinstance(callback, CallbackQuery):
+        await callback.message.edit_media(media)
+        await callback.message.edit_caption(**pattern)
+    else:
+        await callback.answer_photo(photo=media_id, **pattern)
 
 
 @router.callback_query(F.data == "sell_resources")
@@ -82,22 +143,128 @@ async def sell_resources(callback: CallbackQuery):
     user_id = callback.from_user.id
     account = await mongodb.get_user(user_id)
 
-    nephritis = account['campaign']['nephritis']
-    gold = account['campaign']['gold'] // 25
-    silver = account['campaign']['silver'] // 100
+    universe = account['universe']
 
-    await mongodb.update_user(user_id, {'account.money': account['account']['money'] + nephritis + gold + silver})
+    # Текущее время
+    current_datetime = datetime.now()
 
-    await mongodb.update_user(user_id, {'campaign.nephritis': 0})
-    await mongodb.update_user(user_id, {'campaign.gold': 0})
-    await mongodb.update_user(user_id, {'campaign.silver': 0})
+    # Рассчитываем прошедшее время
+    last_sell_datetime = account['tasks'].get('last_dungeon', current_datetime)
+    if isinstance(last_sell_datetime, str):  # Преобразуем строку, если нужно
+        last_sell_datetime = datetime.fromisoformat(last_sell_datetime)
 
-    await callback.answer(f"❖  💰 Ресупсы проданы за 💴 {nephritis + gold + silver} ¥", show_alert=True)
+    elapsed_seconds = int((current_datetime - last_sell_datetime).total_seconds())
 
+    deck_data = account["deck_dungeon"]
+    first = deck_data["dg1"]
+    second = deck_data["dg2"]
+    third = deck_data["dg3"]
+    fourth = deck_data["dg4"]
+    fifth = deck_data["dg5"]
+    sixth = deck_data["dg6"]
 
-@router.callback_query(F.data == "boss")
-async def boss(callback: CallbackQuery):
-    await callback.answer("❖  👾 Босс еще не появился", show_alert=True)
+    if first == "empty":
+        first = 0
+    else:
+        p = get_stats(universe, first, 'arena')
+        first = p.get('power')
+    if second == "empty":
+        second = 0
+    else:
+        p = get_stats(universe, second, 'arena')
+        second = p.get('power')
+    if third == "empty":
+        third = 0
+    else:
+        p = get_stats(universe, third, 'arena')
+        third = p.get('power')
+    if fourth == "empty":
+        fourth = 0
+    else:
+        p = get_stats(universe, fourth, 'arena')
+        fourth = p.get('power')
+    if fifth == "empty":
+        fifth = 0
+    else:
+        p = get_stats(universe, fifth, 'arena')
+        fifth = p.get('power')
+    if sixth == "empty":
+        sixth = 0
+    else:
+        p = get_stats(universe, sixth, 'arena')
+        sixth = p.get('power')
+
+    power = first + second + third + fourth + fifth + sixth
+
+    # Прирост ресурсов за час
+    nephritis_per_hour = power // 1000
+    gold_per_hour = power // 200
+    silver_per_hour = power // 40
+
+    # Рассчитываем прирост ресурсов
+    nephritis_earned = max(0, int(account['campaign']['nephritis'] + (nephritis_per_hour * (elapsed_seconds // 60 // 60))))
+    gold_earned = max(0, int(account['campaign']['gold'] + (gold_per_hour * (elapsed_seconds // 60 // 60))))
+    silver_earned = max(0, int(account['campaign']['silver'] + (silver_per_hour * (elapsed_seconds // 60 // 60))))
+
+    # Проверяем минимальные значения для продажи
+    if nephritis_earned < 1 and gold_earned < 1 and silver_earned < 1:
+        await callback.answer("❖ ✖️ Недостаточно ресурсов для продажи", show_alert=True)
+        return
+
+    nephritis = 0
+    gold = 0
+    silver = 0
+
+    if nephritis_earned < 1:
+        nephritis = nephritis_earned
+        nephritis_earned = 0
+    if gold_earned < 1:
+        gold = gold_earned
+        gold_earned = 0
+    if silver_earned < 1:
+        silver = silver_earned
+        silver_earned = 0
+
+    # Считаем общую сумму
+    total_money = nephritis_earned * 26 + gold_earned * 10 + silver_earned * 4
+
+    # Обновляем ресурсы и деньги
+    await mongodb.update_user(
+        user_id, {
+            'campaign.nephritis': nephritis,  # Оставляем остаток
+            'campaign.gold': gold,
+            'campaign.silver': silver,
+            'tasks.last_dungeon': current_datetime.isoformat()
+        }
+    )
+
+    await mongodb.update_user(user_id, {'account.money': total_money})
+
+    level = await profile.level(account['campaign']['level'])
+
+    caption = (f"❖  ⛩️  <b>Подземелье</b>"
+               f"\n── •✧✧• ────────────"
+               f"\n❖ Очищаем подземелье от монстров и собираем ресурсы 💰. . ."
+               f"\n\n⛩️ {level}"
+               f"\n\n💰 Ресурсы:"
+               f"\n   💠 Нефрит: {nephritis}"
+               f"\n   📀 Золото: {gold}"
+               f"\n   💿 Серебро: {silver}"
+               f"\n\n⚖️ Цены за ресурсы на рынке: "
+               f"\n💠 = 26 ¥"
+               f" 📀 = 10 ¥"
+               f" 💿 = 4 ¥"
+               f"\n\n⚜️ Сила 🏴отряда: {power}🗡"
+               f"\n── •✧✧• ────────────"
+               f"\n💠 в час: {nephritis_per_hour}"
+               f" 📀 в час: {gold_per_hour}"
+               f" 💿 в час: {silver_per_hour}")
+
+    await callback.message.edit_caption(inline_message_id=callback.inline_message_id, caption=caption, reply_markup=inline_builder(
+            ["🗡🗡 🏴Отряд", "💰 Продать 💴", "👾 Босс", "⚜️ Рейтинг", "📋 Правила", "🔙 Назад"],
+            ["deck_dungeon", "sell_resources", "boss", "campaign_rank", "campaign_rules", "main_page"],
+            row_width=[2, 2, 1]))
+    await callback.answer(f"❖ 💰 Ресурсы проданы за {total_money}¥ 💴!", show_alert=True)
 
 
 @router.callback_query(F.data == "campaign_rank")
@@ -131,3 +298,308 @@ async def campaign_rules(callback: CallbackQuery):
         reply_markup=inline_builder(["☑️"], ["delete"], row_width=[1]))
 
     await callback.answer()
+
+
+def deck_text(character, universe):
+    strength = character_photo.get_stats(universe, character, 'arena')['strength']
+    agility = character_photo.get_stats(universe, character, 'arena')['agility']
+    intelligence = character_photo.get_stats(universe, character, 'arena')['intelligence']
+    clas = character_photo.get_stats(universe, character, 'arena')['class']
+    hp = strength * 75
+    attack = strength * 5 + agility * 5 + intelligence * 5
+    defense = (strength + agility + (intelligence // 2)) // 4
+
+    text = (f" • 🎴 {character} "
+            f"\n ┗➤ • ♥️{hp} • ⚔️{attack} • 🛡️{defense}"
+            f"\n     ┗➤ • ✊{strength} • 👣{agility} • 🧠{intelligence} ✧ {clas}")
+    return text
+
+
+@router.callback_query(F.data == "deck_dungeon")
+async def choose_card(callback: CallbackQuery):
+    user_id = callback.from_user.id
+    account = await mongodb.get_user(user_id)
+    universe = account['universe']
+
+    deck = account.get("deck_dungeon", {})
+
+    required_fields = {
+        "dg1": "empty",
+        "dg2": "empty",
+        "dg3": "empty",
+        "dg4": "empty",
+        "dg5": "empty",
+        "dg6": "empty"
+    }
+
+    for field, value in required_fields.items():
+        if field not in deck:
+            deck[field] = value
+
+    await mongodb.update_user(user_id, {"deck_dungeon": deck})
+    account = await mongodb.get_user(user_id)
+
+    deck_data = account["deck_dungeon"]
+    first = deck_data["dg1"]
+    second = deck_data["dg2"]
+    third = deck_data["dg3"]
+    fourth = deck_data["dg4"]
+    fifth = deck_data["dg5"]
+    sixth = deck_data["dg6"]
+
+    cards = [first, second, third, fourth, fifth, sixth]
+    messages = []
+    icons = []
+    powers = []
+
+    for card in cards:
+        if card == "empty":
+            messages.append(" • 🎴 <i> Пустое место </i>")
+            icons.append("ℹ️")
+            powers.append(0)
+        else:
+            messages.append(deck_text(card, universe))
+            icons.append("✅")
+            arena = get_stats(universe, card, 'arena')
+            powers.append(arena.get('power') if arena else 0)
+
+    # Доступ к результатам
+    f1_msg, f2_msg, f3_msg, f4_msg, f5_msg, f6_msg = messages
+    f1_icon, f2_icon, f3_icon, f4_icon, f5_icon, f6_icon = icons
+    first, second, third, fourth, fifth, sixth = powers
+
+    power = first + second + third + fourth + fifth + sixth
+
+    if "empty" in deck_data.values():
+        msg = "❃ ℹ️ Есть пустые места в отряде"
+    else:
+        msg = "❃ ✅ Ваш отряд готов к походу"
+
+    pattern = dict(
+        caption=f"❖ 🗡🗡 🏴<b>Ваш отряд в подземелье:</b>"
+                f"\n✧•───────────────────────•✧"
+                f"\n<blockquote expandable>"
+                f"{f1_msg}"
+                f"\n\n{f2_msg}"
+                f"\n\n{f3_msg}"
+                f"\n\n{f4_msg}"
+                f"\n\n{f5_msg}"
+                f"\n\n{f6_msg}"
+                f"</blockquote>"
+                f"\n ⚜️ Сила 🏴отряда: {power}🗡"
+                f"\n✧•───────────────────────•✧"
+                f"\n{msg}",
+        reply_markup=inline_builder(
+            [f"{f1_icon}", f"{f2_icon}", f"{f3_icon}",
+             f"{f4_icon}", f"{f5_icon}", f"{f6_icon}",
+             "🔙 Назад"],
+            ["dg1", "dg2", "dg3",
+             "dg4", "dg5", "dg6",
+             "dungeon"],
+            row_width=[3, 3, 1]
+        )
+    )
+
+    media_id = InputMediaPhoto(media='AgACAgIAAx0CfstymgACPb1nWiwJUdQC-37DUnytEI6vUZd25wACMvQxG_bt0Epw17D9NcuZQAEAAwIAA3kAAzYE')
+
+    inline_id = callback.inline_message_id
+    await callback.message.edit_media(media_id, inline_id)
+    await callback.message.edit_caption(inline_id, **pattern)
+
+
+async def get_inventory(user_id, rarity):
+    account = await mongodb.get_user(user_id)
+    universe = account['universe']
+    invent = account['inventory']['characters'][universe]
+    if rarity == "dg_divine":
+        rarity = "divine"
+    elif rarity == "dg_mythical":
+        rarity = "mythical"
+    elif rarity == "dg_legendary":
+        rarity = "legendary"
+    elif rarity == "dg_epic":
+        rarity = "epic"
+    elif rarity == "dg_rare":
+        rarity = "rare"
+    elif rarity == "dg_common":
+        rarity = "common"
+    elif rarity == "dg_halloween":
+        rarity = "halloween"
+    elif rarity == "dg_soccer":
+        rarity = "soccer"
+    return invent[rarity], universe
+
+
+@router.callback_query(F.data.in_(['dg1', 'dg2', 'dg3', 'dg4', 'dg5', 'dg6']))
+async def inventory(callback: CallbackQuery | Message, state: FSMContext):
+    await state.update_data(deck=callback.data)
+    media_id = "CgACAgIAAxkBAAIVCmXMvbzs7hde-fvY9_4JCwU8W6HpAAKgOwACeyZoSuedvZenkxDNNAQ"
+    user_id = callback.from_user.id
+    account = await mongodb.get_user(user_id)
+    universe = account['universe']
+    total_divine = len(account['inventory']['characters'][universe].get('divine', {}))
+    total_mythical = len(account['inventory']['characters'][universe].get('mythical', {}))
+    total_legendary = len(account['inventory']['characters'][universe].get('legendary', {}))
+    total_epic = len(account['inventory']['characters'][universe].get('epic', {}))
+    total_rare = len(account['inventory']['characters'][universe].get('rare', {}))
+    total_common = len(account['inventory']['characters'][universe].get('common', {}))
+    total_elements = 0
+    for sublist in account['inventory']['characters'][universe].values():
+        for item in sublist:
+            if isinstance(item, str):
+                total_elements += 1
+    msg = (f"\n❖ 🃏 Количество карт: {total_elements}"
+           f"\n\n❖ 🌠 Божественные 🌟 {total_divine}"
+           f"\n❖ 🌌 Мифические ⭐️ {total_mythical}"
+           f"\n❖ 🌅 Легендарные ⭐️ {total_legendary}"
+           f"\n❖ 🎆 Эпические ⭐️ {total_epic}"
+           f"\n❖ 🎇 Редкие ⭐️ {total_rare}"
+           f"\n❖ 🌁 Обычные ⭐️ {total_common}")
+    buttons = [f"🌠 Божественные 🌟 {total_divine}", f"🌌 Мифические ⭐️ {total_mythical}", f"🌅 Легендарные ⭐️ {total_legendary}",
+               f"🎆 Эпические ⭐️ {total_epic}", f"🎇 Редкие ⭐️ {total_rare}", f"🌁 Обычные ⭐️ {total_common}", "🔙 Назад"]
+    callbacks = ["dg_divine", "dg_mythical", "dg_legendary", "dg_epic", "dg_rare", "dg_common", f"deck_dungeon"]
+
+    if universe == "Allstars":
+        if "halloween" in account['inventory']['characters']['Allstars']:
+            total_halloween = len(account['inventory']['characters']['Allstars'].get('halloween', {}))
+            buttons.insert(0, f"👻 Halloween 🎃 {total_halloween}")
+            callbacks.insert(0, "halloween")
+        # if "soccer" not in account['inventory']['characters']['Allstars']:
+        #     account = await mongodb.get_user(user_id)
+        #     await mongodb.update_user(user_id, {"inventory.characters.Allstars.soccer": []})
+        #     total_soccer = len(account['inventory']['items'].get('soccer', {}))
+        #     buttons.insert(0, f"⚽️ Soccer {total_soccer}")
+        #     callbacks.insert(0, "soccer")
+
+    pattern = dict(caption=f"🥡 Инвентарь"
+                           f"\n── •✧✧• ────────────"
+                           f"\n❖ Здесь вы можете увидеть все ваши 🃏 карты "
+                           f"и выбрать 🎴 персонажа к 🏴отряду в подземелья"
+                           f"\n\n❖ Выберите ✨ редкость карты, чтобы выбрать персонажа"
+                           f"\n── •✧✧• ────────────"
+                           f"\n❖ 🃏 Количество карт: {total_elements}",
+                   reply_markup=inline_builder(
+                       buttons,
+                       callbacks, row_width=[1]))
+    if isinstance(callback, CallbackQuery):
+        inline_id = callback.inline_message_id
+        media = InputMediaAnimation(media=media_id)
+        await callback.message.edit_media(media, inline_id)
+        await callback.message.edit_caption(inline_id, **pattern)
+    else:
+        await callback.answer_animation(animation=media_id, **pattern)
+
+
+@router.callback_query(F.data.in_(['dg_soccer', 'dg_halloween', 'dg_common', 'dg_rare',
+                                   'dg_epic', 'dg_legendary', 'dg_mythical', 'dg_divine']))
+async def inventory(callback: CallbackQuery, state: FSMContext):
+    await state.update_data(rarity=callback.data)
+    inline_id = callback.inline_message_id
+    user_id = callback.from_user.id
+    invent, universe = await get_inventory(user_id, callback.data)
+    if invent == []:
+        await callback.answer("❖ ✖️ У вас нет карт данной редкости", show_alert=True)
+        return
+    await state.update_data(character=invent[0])
+    await state.update_data(universe=universe)
+    avatar = character_photo.get_stats(universe, invent[0], 'avatar')
+    avatar_type = character_photo.get_stats(universe, invent[0], 'type')
+    if avatar_type == 'photo':
+        photo = InputMediaPhoto(media=avatar)
+    else:
+        photo = InputMediaAnimation(media=avatar)
+    rarity = character_photo.get_stats(universe, invent[0], 'rarity')
+    msg = f"\n❖ ✨ Редкость: {rarity}"
+    if universe not in ['Allstars', 'Allstars(old)']:
+        strength = character_photo.get_stats(universe, invent[0], 'arena')['strength']
+        agility = character_photo.get_stats(universe, invent[0], 'arena')['agility']
+        intelligence = character_photo.get_stats(universe, invent[0], 'arena')['intelligence']
+        power = character_photo.get_stats(universe, invent[0], 'arena')['power']
+        msg = (f"\n❖ ✨ Редкость: {rarity}"
+               f"\n❖ 🗺 Вселенная: {universe}"
+               f"\n\n   ✊🏻 Сила: {strength}"
+               f"\n   👣 Ловкость: {agility}"
+               f"\n   🧠 Интелект: {intelligence}"
+               f"\n   ⚜️ Мощь: {power}")
+    await callback.message.edit_media(photo, inline_id)
+    await callback.message.edit_caption(inline_id, caption=f"🎴 {invent[0]}"
+                                                           f"\n ── •✧✧• ────────────"
+                                                           f"{msg}"
+                                                           f"\n──❀*̥˚──◌──◌──❀*̥˚────"
+                                                           f"\n❖ 🔖 1 из {len(invent)}",
+                                        reply_markup=pagination_dungeon())
+
+
+@router.callback_query(Pagination.filter(F.action.in_(["dg_prev", "dg_next"])))
+async def inventory(callback: CallbackQuery, callback_data: Pagination, state: FSMContext):
+    try:
+        inline_id = callback.inline_message_id
+        page_num = int(callback_data.page)
+        user_data = await state.get_data()
+        invent, universe = await get_inventory(callback.from_user.id, user_data['rarity'])
+
+        if callback_data.action == "dg_next":
+            page_num = (page_num + 1) % len(invent)
+        elif callback_data.action == "dg_prev":
+            page_num = (page_num - 1) % len(invent)
+
+        with suppress(TelegramBadRequest):
+            await state.update_data(character=invent[page_num])
+            avatar = character_photo.get_stats(universe, invent[page_num], 'avatar')
+            avatar_type = character_photo.get_stats(universe, invent[page_num], 'type')
+            if avatar_type == 'photo':
+                photo = InputMediaPhoto(media=avatar)
+            else:
+                photo = InputMediaAnimation(media=avatar)
+            rarity = character_photo.get_stats(universe, invent[page_num], 'rarity')
+            msg = f"\n❖ ✨ Редкость: {rarity}"
+            if universe not in ['Allstars', 'Allstars(old)']:
+                strength = character_photo.get_stats(universe, invent[page_num], 'arena')['strength']
+                agility = character_photo.get_stats(universe, invent[page_num], 'arena')['agility']
+                intelligence = character_photo.get_stats(universe, invent[page_num], 'arena')['intelligence']
+                power = character_photo.get_stats(universe, invent[page_num], 'arena')['power']
+                msg = (f"\n❖ ✨ Редкость: {rarity}"
+                       f"\n❖ 🗺 Вселенная: {universe}"
+                       f"\n\n   ✊🏻 Сила: {strength}"
+                       f"\n   👣 Ловкость: {agility}"
+                       f"\n   🧠 Интелект: {intelligence}"
+                       f"\n   ⚜️ Мощь: {power}")
+
+            await callback.message.edit_media(photo, inline_id)
+            await callback.message.edit_caption(
+                inline_id,
+                caption=f"🎴 {invent[page_num]}"
+                        f"\n ── •✧✧• ────────────"
+                        f"{msg}"
+                        f"\n──❀*̥˚──◌──◌──❀*̥˚────"
+                        f"\n❖ 🔖 {page_num + 1} из {len(invent)}",
+                reply_markup=pagination_dungeon(page=page_num)
+            )
+        await callback.answer()
+    except KeyError:
+        await callback.answer("❖ 🔂 Идёт разработка бота связи с чем сессия была остановлена, вызовите "
+                              "🥡 Инвентарь еще раз", show_alert=True)
+
+
+@router.callback_query(F.data == "dg_choice_card")
+async def change_ch(callback: CallbackQuery, state: FSMContext):
+    try:
+        user_id = callback.from_user.id
+        account = await mongodb.get_user(user_id)
+        deck = account["deck_dungeon"]
+        data = await state.get_data()
+        if data.get('character') in deck.values():
+            await callback.answer("❖ 🔂 Этот персонаж уже есть в колоде", show_alert=True)
+            return
+        else:
+            await mongodb.update_user(user_id, {f"deck_dungeon.{data.get('deck')}": data.get('character')})
+            await callback.answer("🎴 Вы успешно выбрали персонажа", show_alert=True)
+            await choose_card(callback)
+    except KeyError:
+        await callback.answer("❖ 🔂 Идёт разработка бота связи с чем сессия была остановлена, вызовите "
+                              "🥡 Инвентарь еще раз", show_alert=True)
+
+
+@router.callback_query(F.data == "boss")
+async def boss(callback: CallbackQuery):
+    await callback.answer("❖  👾 Босс еще не появился", show_alert=True)

@@ -1,13 +1,18 @@
-import random
 import asyncio
 import inspect
+import random
+
 from data import character_photo
 
 
-async def send_action(bot, self, enemy, chat_id, gif, text):
+async def send_action(bot, self, enemy, chat_id, gif, text, ai=None):
     if self.chat_id == 0:
-        await bot.send_animation(chat_id=self.ident, animation=gif, caption=text)
-        await bot.send_animation(chat_id=enemy.ident, animation=gif, caption=text)
+        if not ai:
+            await bot.send_animation(chat_id=self.ident, animation=gif, caption=text)
+            if enemy.ident != self.ident * 10:
+                await bot.send_animation(chat_id=enemy.ident, animation=gif, caption=text)
+        else:
+            await bot.send_animation(chat_id=enemy.ident, animation=gif, caption=text)
     else:
         await bot.send_animation(chat_id=chat_id, animation=gif, caption=text)
 
@@ -103,6 +108,11 @@ def decrease_hp(player, points):
 def return_hp(player, _):
     hp = player.pre_hp - player.health
     player.health += hp
+
+
+def return_half_hp(player, _):
+    hp = player.pre_hp - player.health
+    player.health += hp // 2
 
 
 def block_hp(player, _points):
@@ -296,7 +306,7 @@ class Character:
             self.passives = [p for p in self.passives if p.duration > 0]
 
 
-async def turn(self, bot, action, enemy, chat_id):
+async def turn(self, bot, action, enemy, chat_id, ai=None):
 
     self.crit_dmg = self.strength + self.attack - (enemy.strength // 4) + (self.intelligence // 4)
     self.crit_ch = self.agility - (enemy.agility + enemy.intelligence // 4) + (self.intelligence // 4)
@@ -309,8 +319,12 @@ async def turn(self, bot, action, enemy, chat_id):
         calculate_shield(enemy, damage)
 
         if chat_id == 0:
-            await bot.send_message(self.ident, f"˹{self.name} нанес(ла) {damage} {msg} 🗡 урона˼")
-            await bot.send_message(enemy.ident, f"˹{self.name} нанес(ла) {damage} {msg} 🗡 урона˼")
+            if not ai:
+                await bot.send_message(self.ident, f"˹{self.name} нанес(ла) {damage} {msg} 🗡 урона˼")
+                if enemy.ident != self.ident * 10:
+                    await bot.send_message(enemy.ident, f"˹{self.name} нанес(ла) {damage} {msg} 🗡 урона˼")
+            else:
+                await bot.send_message(enemy.ident, f"˹{self.name} нанес(ла) {damage} {msg} 🗡 урона˼")
         else:
             await bot.send_message(chat_id, f"˹{self.name} нанес(ла) {damage} {msg} 🗡 урона˼")
 
@@ -328,7 +342,7 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"▫️Слэш"
                    f"\n<blockquote expandable>Ичиго нанес {damage} 🗡 урона</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹◽️Поступь˼':
         mana = await calculate_mana(self, 15)
@@ -345,7 +359,7 @@ async def turn(self, bot, action, enemy, chat_id):
                    f"\n<blockquote expandable>Ичиго нанес {damage} 🗡 урона"
                    f"\n + {self.strength}❤️ hp</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹◻️Гецуга Теншоу˼':
         mana = await calculate_mana(self, 20)
@@ -363,7 +377,7 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"◻️Гецуга Теншоу"
                    f"\n<blockquote expandable>Ичиго нанес {damage} 🗡 урона</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹◾️Тенса࿖Зангецу˼':
         mana = await calculate_mana(self, 50)
@@ -384,7 +398,7 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"Банкай ࿖: Tensa Zangetsu"
                    f"\n<blockquote expandable>🗡Урон +200 8⏳</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🟥Гецуга◼️Теншоу˼':
         mana = await calculate_mana(self, 30)
@@ -399,7 +413,7 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"Гецуга Теншоу"
                    f"\n<blockquote expandable>Ичиго нанес {damage} 🗡 урона</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹💀Пустой˼':
         mana = await calculate_mana(self, 45)
@@ -428,7 +442,7 @@ async def turn(self, bot, action, enemy, chat_id):
                    f"\n  👣Лвк +100 5⏳"
                    f"\n🗡Автоатака 100🗡 5⏳</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🟥Гецуга Теншоу˼':
         mana = await calculate_mana(self, 35)
@@ -442,10 +456,10 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"Гецуга Теншоу"
                    f"\n<blockquote expandable>Ичиго нанес {damage} 🗡 урона</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹◾️Финал⛓Гецуга◾️˼':
-        energy = await calculate_energy(self, 70)
+        energy = await calculate_energy(self, 55)
         if not energy:
             return True, False
 
@@ -467,7 +481,7 @@ async def turn(self, bot, action, enemy, chat_id):
                    f"\n<blockquote expandable>🗡Атака +1000 2⏳"
                    f"\n🛡Защита +900 2⏳</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹◾️⛓Мугецу⛓◾️˼':
         damage = self.attack * 4
@@ -478,7 +492,7 @@ async def turn(self, bot, action, enemy, chat_id):
                    f"\n<blockquote expandable>Ичиго нанес {damage} 🗡 чистого урона"
                    f"\n💥невосприимчивый контроли</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🌙Гецуга⊛Теншоу˼':
         mana = await calculate_mana(self, 20)
@@ -494,7 +508,7 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"Гецуга Теншоу"
                    f"\n<blockquote expandable>Ичиго нанес {damage} 🗡 урона</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹☄️Гран Рей Серо˼':
         damage = self.attack * 3 + self.intelligence + self.strength + self.agility
@@ -504,7 +518,7 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"Гран Рей Серо"
                    f"\n<blockquote expandable>Ичиго нанес {damage} 🗡 урона</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
 # Toshiro Hitsugaya
 
@@ -512,6 +526,9 @@ async def turn(self, bot, action, enemy, chat_id):
         mana = await calculate_mana(self, 15)
         if not mana:
             return False, True
+        energy = await calculate_energy(self, 15)
+        if not energy:
+            return True, False
 
         damage = self.attack // 2 + self.intelligence + self.strength + self.agility
 
@@ -526,12 +543,15 @@ async def turn(self, bot, action, enemy, chat_id):
                    f"\n<blockquote expandable>Тоширо нанес {damage} 🗡 урона"
                    f"\n❄️Замарозка 1⏳</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹❄️Рокуи Хёкецу˼':
         mana = await calculate_mana(self, 25)
         if not mana:
             return False, True
+        energy = await calculate_energy(self, 20)
+        if not energy:
+            return True, False
 
         stun = Passive("❄️Заморозка", bash, undo_bash, 3, 1, apply_once=True)
 
@@ -541,7 +561,7 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"❄️Рокуи Хёкецу "
                    f"\n<blockquote expandable>❄️Замарозка 1⏳</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🌫Тенсо Джурин˼':
         mana = await calculate_mana(self, 30)
@@ -562,7 +582,7 @@ async def turn(self, bot, action, enemy, chat_id):
                    f"\n<blockquote expandable>⇩🛡⇩ -10 защ. противника 20⏳"
                    f"\n⇩👣⇩ -5 лвк. противника 20⏳</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🐉Хёринмару˼':
         mana = await calculate_mana(self, 35)
@@ -580,13 +600,13 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"🐉Хёринмару"
                    f"\n<blockquote expandable>🐉Ледяной дракон ─ 🗡{self.intelligence * 3} 3⏳</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹❄️Синку но Кори˼':
         mana = await calculate_mana(self, 25)
         if not mana:
             return False, True
-        energy = await calculate_energy(self, 10)
+        energy = await calculate_energy(self, 20)
         if not energy:
             return True, False
 
@@ -606,7 +626,7 @@ async def turn(self, bot, action, enemy, chat_id):
                    f"\n❄️Замарозка 3⏳"
                    f"\n⇩🛡⇩ -25 защ. противника 3⏳</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🧊Рёджин Хёхеки˼':
         mana = await calculate_mana(self, 40)
@@ -622,7 +642,7 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"🧊Рёджин Хёхеки"
                    f"\n<blockquote expandable>🧊 Ледяная стена ─ +{self.intelligence * 10}🌐 Щит</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹❆Дайгурен🪽Хёринмару˼':
         mana = await calculate_mana(self, 65)
@@ -644,7 +664,7 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"Банкай ❆: Дайгурен Хёринмару"
                    f"\n<blockquote expandable>🗡Урон +200 5⏳</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹❤️‍🩹Лечение🪽˼':
         mana = await calculate_mana(self, 30)
@@ -662,7 +682,7 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"Восстановление"
                    f"\n<blockquote expandable>+{healing}❤️ hp</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🧊Рюсенька˼':
         mana = await calculate_mana(self, 30)
@@ -680,7 +700,7 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"Рюсенька"
                    f"\n<blockquote expandable>Тоширо нанес {damage} 🗡 урона</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🧊Сеннен Хёро˼':
         mana = await calculate_mana(self, 25)
@@ -703,7 +723,7 @@ async def turn(self, bot, action, enemy, chat_id):
                    f"\n<blockquote expandable>Тоширо нанес {damage} 🗡 урона"
                    f"\n🧊Дизейбл 4⏳</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹❄️Гунчо Цурара˼':
         mana = await calculate_mana(self, 25)
@@ -721,7 +741,7 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"Синку но Кори"
                    f"\n<blockquote expandable>Тоширо нанес {damage} 🗡 урона</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🌫Хётен🪽Хяккасо˼':
         mana = await calculate_mana(self, 25)
@@ -746,7 +766,7 @@ async def turn(self, bot, action, enemy, chat_id):
                    f"\n<blockquote expandable>🧊Дизейбл 5⏳"
                    f"\n❄️Хётен Хяккасо {damage}🗡 5⏳</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹❄️Хёрю Сенби˼':
         mana = await calculate_mana(self, 30)
@@ -764,7 +784,7 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"Хёрю Сенби Зекку"
                    f"\n<blockquote expandable>Тоширо нанес {damage} 🗡 урона</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
 # Aizen Sousuke
 
@@ -782,7 +802,7 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"Хадо #81 Данку"
                    f"\n<blockquote expandable>Айзен блокировал {hp} 🗡 урона</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹⚡️Райхоко˼':
         mana = await calculate_mana(self, 20)
@@ -796,7 +816,7 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"Хадо #63 ⚡️Райхоко"
                    f"\n<blockquote expandable>Айзен нанес {damage} 🗡 урона</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🔶Мильон Эскудо˼':
         mana = await calculate_mana(self, 30)
@@ -810,13 +830,13 @@ async def turn(self, bot, action, enemy, chat_id):
         block = Passive("🪞", block_hp, fix_effects, 1, hp, apply_once=True)
         self.add_passive(block)
 
-        calculate_shield(enemy, hp)
+        calculate_shield(enemy, hp // 2)
 
         gif = 'CgACAgIAAx0CfstymgACD8BmHz9000pc48CLJIiGlTCTa_WpswACrTcAAkXDAAFJ9MpYhplmZGw0BA'
         caption = (f"🔶Мильон Эскудо"
-                   f"\n<blockquote expandable>Айзен блокировал и нанес {hp} 🗡 урона</blockquote>")
+                   f"\n<blockquote expandable>Айзен блокировал и нанес {hp // 2} 🗡 урона</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹◼️Курохицуги˼':
         mana = await calculate_mana(self, 30)
@@ -830,7 +850,7 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"Хадо #90 ◼️Курохицуги"
                    f"\n<blockquote expandable>Айзен нанес {damage} 🗡 урона</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🐉Горьюу Теммецу˼':
         mana = await calculate_mana(self, 35)
@@ -848,7 +868,7 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"Хадо #99 Горьюу Теммецу"
                    f"\n<blockquote expandable>🐉Вихревые драконы ─ 🗡{self.intelligence * 6} 5⏳</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹⬛️Курохицуги˼':
         mana = await calculate_mana(self, 30)
@@ -862,7 +882,7 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"Хадо #90 ⬛️Курохицуги"
                    f"\n<blockquote expandable>Айзен нанес {damage} 🗡 урона</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🟣Фрагор˼':
         damage = self.attack * 50 + self.intelligence + self.strength + self.agility
@@ -872,7 +892,7 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"🟣Фрагор"
                    f"\n<blockquote expandable>Айзен нанес {damage} 🗡 урона</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
 # Urahara Kisuke
 
@@ -891,7 +911,7 @@ async def turn(self, bot, action, enemy, chat_id):
                    f"\n<blockquote expandable>Урахара нанес {damage} 🗡 урона"
                    f"💫Оглушение 1⏳</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹Цурибоши˼':
         mana = await calculate_mana(self, 15)
@@ -908,7 +928,7 @@ async def turn(self, bot, action, enemy, chat_id):
                    f"\n<blockquote expandable>Урахара нанес {damage} 🗡 урона"
                    f"💫Оглушение 1⏳</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹Саджо Сабаку˼':
         mana = await calculate_mana(self, 15)
@@ -925,7 +945,7 @@ async def turn(self, bot, action, enemy, chat_id):
                    f"\n<blockquote expandable>Урахара нанес {damage} 🗡 урона"
                    f"💫Оглушение 1⏳</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹Гочью Теккан˼':
         mana = await calculate_mana(self, 15)
@@ -942,7 +962,7 @@ async def turn(self, bot, action, enemy, chat_id):
                    f"\n<blockquote expandable>Урахара нанес {damage} 🗡 урона"
                    f"💫Оглушение 2⏳</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹Джугеки Бьякурай˼':
         mana = await calculate_mana(self, 20)
@@ -955,7 +975,7 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"Джугеки Бьякурай"
                    f"\n<blockquote expandable>Урахара нанес {damage} 🗡 урона</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹Окасен˼':
         mana = await calculate_mana(self, 30)
@@ -968,7 +988,7 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"Хадо #32 Окасен"
                    f"\n<blockquote expandable>Урахара нанес {damage} 🗡 урона</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹Хайхен˼':
         mana = await calculate_mana(self, 15)
@@ -981,7 +1001,7 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"Хадо #54 Хайхен"
                    f"\n<blockquote expandable>Урахара нанес {damage} 🗡 урона</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹Фусатсу Какеи˼':
         mana = await calculate_mana(self, 50)
@@ -1000,7 +1020,7 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"Фусатсу Какеи"
                    f"\n<blockquote expandable>🔥Жжение изнутри ─ 🗡{damage} 5⏳</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹Какафумецу˼':
         mana = await calculate_mana(self, 40)
@@ -1016,7 +1036,7 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"Кьюджюроккей Какафумецу"
                    f"\n<blockquote expandable>Печать 5⏳</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹Данку ˼':
         mana = await calculate_mana(self, 20)
@@ -1032,7 +1052,7 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"Хадо #81 Данку"
                    f"\n<blockquote expandable>Урахара блокировал {hp} 🗡 урона</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹Бенхиме˼':
         mana = await calculate_mana(self, 50)
@@ -1054,7 +1074,7 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"Шикай: Бенхиме"
                    f"\n<blockquote expandable>🗡Урон +200 10⏳</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹Наке Бенхиме˼':
         mana = await calculate_mana(self, 15)
@@ -1067,7 +1087,7 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"Наке Бенхиме"
                    f"\n<blockquote expandable>Урахара нанес {damage} 🗡 урона</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹Чикасуми но тате˼':
         mana = await calculate_mana(self, 30)
@@ -1087,7 +1107,7 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"Чикасуми но тате"
                    f"\n<blockquote expandable>Урахара блокировал и нанес {hp} 🗡 урона</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹Шинтен Райхо˼':
         mana = await calculate_mana(self, 30)
@@ -1100,7 +1120,7 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"Хадо #88 Хирю Гекузоку Шинтен Райхо"
                    f"\n<blockquote expandable>Урахара нанес {damage} 🗡 урона</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹Котен Тайхо˼':
         mana = await calculate_mana(self, 40)
@@ -1113,7 +1133,7 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"Хадо #91 Сенджу Котен Тайхо"
                    f"\n<blockquote expandable>Урахара нанес {damage} 🗡 урона</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹Камисори Бенхиме˼':
         mana = await calculate_mana(self, 25)
@@ -1126,7 +1146,7 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"Камисори Бенхиме"
                    f"\n<blockquote expandable>Урахара нанес {damage} 🗡 урона</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹Шибари Бенхиме˼':
         mana = await calculate_mana(self, 40)
@@ -1139,7 +1159,7 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"Шибари Бенхиме"
                    f"\n<blockquote expandable>Урахара нанес {damage} 🗡 урона</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🪡Бенхиме Аратаме˼':
         mana = await calculate_mana(self, 35)
@@ -1165,7 +1185,7 @@ async def turn(self, bot, action, enemy, chat_id):
                    f"\n🪡Постоянно перекраиваеть тела противника вскрывая его 5⏳"
                    f"\n💥невосприимчивый контроли 5⏳</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
 # Unohana Retsu
 
@@ -1184,7 +1204,7 @@ async def turn(self, bot, action, enemy, chat_id):
                    f"\n<blockquote expandable>Унохана нанесла {damage} 🗡 урона"
                    f"💫Оглушение 1⏳</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹Саджосабаку˼':
         mana = await calculate_mana(self, 15)
@@ -1201,7 +1221,7 @@ async def turn(self, bot, action, enemy, chat_id):
                    f"\n<blockquote expandable>Унохана нанесла {damage} 🗡 урона"
                    f"💫Оглушение 1⏳</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹Гочью Теккан ˼':
         mana = await calculate_mana(self, 15)
@@ -1218,7 +1238,7 @@ async def turn(self, bot, action, enemy, chat_id):
                    f"\n<blockquote expandable>Унохана нанесла {damage} 🗡 урона"
                    f"💫Оглушение 2⏳</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹ Данку ˼':
         mana = await calculate_mana(self, 20)
@@ -1234,7 +1254,7 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"Хадо #81 Данку"
                    f"\n<blockquote expandable>Унохана блокировала {hp} 🗡 урона</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🐋 Миназуки˼':
         mana = await calculate_mana(self, 30)
@@ -1254,7 +1274,7 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"Шикай: Миназуки"
                    f"\n<blockquote expandable>🐋 Лечение ─ ❤️{hp} 5⏳</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🧊 Щит ˼':
         mana = await calculate_mana(self, 40)
@@ -1271,7 +1291,7 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"🧊 Щит"
                    f"\n<blockquote expandable>🧊 ─ {shield}🌐 Щит</blockquote >")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹Шинтен Райхо ˼':
         mana = await calculate_mana(self, 30)
@@ -1284,7 +1304,7 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"Хадо 88 Хирю Гекузоку Шинтен Райхо"
                    f"\n<blockquote expandable>Унохана нанесла {damage} 🗡 урона</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹Миназуки 🩸˼':
         mana = await calculate_mana(self, 40)
@@ -1311,7 +1331,7 @@ async def turn(self, bot, action, enemy, chat_id):
                    f"\n👣Ловкость +200 10⏳"
                    f"\n✊🏻Сила +200 10⏳</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹Лечение🩸˼':
         mana = await calculate_mana(self, 20)
@@ -1327,7 +1347,7 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"Восстановление"
                    f"\n<blockquote expandable>❤️Лечение ─ + ❤️{hp}</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹Лезвие🩸˼':
         mana = await calculate_mana(self, 30)
@@ -1343,7 +1363,7 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"Лезвие🩸"
                    f"\n<blockquote expandable>Унохана нанесла {damage}x3 🗡 урона</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹Защитная сфера🩸˼':
         mana = await calculate_mana(self, 30)
@@ -1365,7 +1385,7 @@ async def turn(self, bot, action, enemy, chat_id):
                    f"\n<blockquote expandable>Унохана блокировала {hp} 🗡 урона"
                    f"\nИ нанесла {attack} 🗡 урона</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
 # Ulquiorra scifer
 
@@ -1380,7 +1400,7 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"Серо"
                    f"\n<blockquote expandable>Улькиорра нанес {damage} 🗡 урона</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹Мурсьелаго 🦇˼':
         mana = await calculate_mana(self, 30)
@@ -1407,7 +1427,7 @@ async def turn(self, bot, action, enemy, chat_id):
                    f"\n👣Ловкость +100 10⏳"
                    f"\n✊🏻Сила +100 10⏳</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹Гран Рей Серо˼':
         mana = await calculate_mana(self, 30)
@@ -1420,7 +1440,7 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"Гран Рей Серо"
                    f"\n<blockquote expandable>Улькиорра нанес {damage} 🗡 урона</blockquote >")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹Луз дэ ла Луна˼':
         mana = await calculate_mana(self, 40)
@@ -1433,7 +1453,7 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"Луз дэ ла Луна"
                    f"\n<blockquote expandable>Улькиорра нанес {damage} 🗡 урона</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹Сэгунда Этапа 🦇˼':
         mana = await calculate_mana(self, 50)
@@ -1460,7 +1480,7 @@ async def turn(self, bot, action, enemy, chat_id):
                    f"\n👣Ловкость +200 10⏳"
                    f"\n✊🏻Сила +200 10⏳</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹Латиго˼':
         mana = await calculate_mana(self, 20)
@@ -1473,7 +1493,7 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"Латиго"
                    f"\n<blockquote expandable>Улькиорра нанес {damage} 🗡 урона</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹Серо Оскурас˼':
         mana = await calculate_mana(self, 30)
@@ -1486,7 +1506,7 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"Серо Оскурас"
                    f"\n<blockquote expandable>Улькиорра нанес {damage} 🗡 урона</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹Ланза дэль Рэлампаго˼':
         mana = await calculate_mana(self, 50)
@@ -1502,7 +1522,7 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"Ланза дэль Рэлампаго"
                    f"\n<blockquote expandable>Улькиорра нанес {damage} 🗡 урона</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹Лечение ˼':
         mana = await calculate_mana(self, 30)
@@ -1518,7 +1538,7 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"Восстановление"
                    f"\n<blockquote expandable>❤️Лечение ─ + ❤️{hp}</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
 # NarutoS
 
@@ -1537,12 +1557,15 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"💥Расенган"
                    f"\n<blockquote expandable>Наруто использовал Расенган, нанося {damage} 🗡 урона противнику</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹👥Каге Буншин но дзюцу˼':
         mana = await calculate_mana(self, 10)
         if not mana:
             return False, True
+        energy = await calculate_energy(self, 5)
+        if not energy:
+            return True, False
 
         dragon = Passive("👥", decrease_hp, fix_effects, 3, (self.agility + self.strength) * 3)
 
@@ -1552,12 +1575,15 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"👥Каге Буншин но дзюцу"
                    f"\n<blockquote expandable>👥Клоны наносят урон ─ 🗡{(self.agility + self.strength) * 3} 3⏳</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🌀Рассен-сурикен˼':
         mana = await calculate_mana(self, 10)
         if not mana:
             return False, True
+        energy = await calculate_energy(self, 15)
+        if not energy:
+            return True, False
 
         damage = self.attack * 3 + self.intelligence * 2
         bleed_effect = 50  # добавление эффекта кровотечения
@@ -1571,13 +1597,13 @@ async def turn(self, bot, action, enemy, chat_id):
                    f"\n<blockquote expandable>Наруто нанес {damage} "
                    f"🗡 урона и применил 🩸кровотечение на 3 хода</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🌐Ультра Расенган˼':
         mana = await calculate_mana(self, 25)
         if not mana:
             return False, True
-        energy = await calculate_energy(self, 10)
+        energy = await calculate_energy(self, 15)
         if not energy:
             return True, False
 
@@ -1591,7 +1617,7 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"🌐Ультра Расенган"
                    f"\n<blockquote expandable>Наруто нанес {damage} 🗡 урона и оглушил врага на 1 ход</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🍃Режим Мудреца˼':
         mana = await calculate_mana(self, 25)
@@ -1613,7 +1639,7 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"🍃Режим Мудреца"
                    f"\n<blockquote expandable>Наруто активировал Режим Мудреца</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🍥Расенган˼':
         mana = await calculate_mana(self, 15)
@@ -1632,7 +1658,7 @@ async def turn(self, bot, action, enemy, chat_id):
                    f"\n<blockquote expandable>Наруто использовал Расенган, "
                    f"нанося {damage} 🗡 урона противнику</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🪐Рассен-сурикен˼':
         mana = await calculate_mana(self, 20)
@@ -1654,7 +1680,7 @@ async def turn(self, bot, action, enemy, chat_id):
                    f"\n<blockquote expandable>Наруто нанес {damage} "
                    f"🗡 урона и применил 🩸кровотечение на 3 хода</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹👥Каге꙳Буншин но дзюцу˼':
         mana = await calculate_mana(self, 20)
@@ -1673,7 +1699,7 @@ async def turn(self, bot, action, enemy, chat_id):
                    f"\n<blockquote expandable>👥Клоны наносят урон ─ "
                    f"🗡{(self.agility + self.strength) * 3} 3⏳</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🐸Кучиёсо но дзюцу˼':
         mana = await calculate_mana(self, 35)
@@ -1694,7 +1720,7 @@ async def turn(self, bot, action, enemy, chat_id):
                    f"\n<blockquote expandable>🐸🐸🐸 три жабы наносят урон ─ "
                    f"🗡{(self.agility + self.strength)} х3 3⏳</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🦊Кьюби Чакра˼':
         mana = await calculate_mana(self, 30)
@@ -1717,7 +1743,7 @@ async def turn(self, bot, action, enemy, chat_id):
                    f"\n<blockquote expandable>Наруто активировал усиленный режим, "
                    f"усиливая атаки и получая новые навыки 8⏳</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹⛬Расен Расенган˼':
         mana = await calculate_mana(self, 20)
@@ -1736,7 +1762,7 @@ async def turn(self, bot, action, enemy, chat_id):
                    f"\n<blockquote expandable>Наруто использовал множество расенганов, нанося {damage} х6 "
                    f"🗡 урона противнику</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹⚡️Усиление˼':
         mana = await calculate_mana(self, 25)
@@ -1760,7 +1786,7 @@ async def turn(self, bot, action, enemy, chat_id):
                    f"\n+ 👣 300 "
                    f"\n+ 🗡 300 </blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🌔Расен Ренган˼':
         mana = await calculate_mana(self, 25)
@@ -1779,7 +1805,7 @@ async def turn(self, bot, action, enemy, chat_id):
                    f"\n<blockquote expandable>Наруто использовал Расен Ренган, нанося {damage} "
                    f"🗡 урона противнику</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🌘Расен Таренган˼':
         mana = await calculate_mana(self, 35)
@@ -1798,17 +1824,17 @@ async def turn(self, bot, action, enemy, chat_id):
                    f"\n<blockquote expandable>Наруто использовал Расен Таренган, нанося {damage} "
                    f"🗡 урона противнику</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🦊Биджу модо˼':
         mana = await calculate_mana(self, 40)
         if not mana:
             return False, True
-        energy = await calculate_energy(self, 25)
+        energy = await calculate_energy(self, 15)
         if not energy:
             return True, False
 
-        new_skills = ["˹🌀Тайкьёку Расенган˼"]
+        new_skills = ["˹🗡Атака˼", "˹🌀Тайкьёку Расенган˼"]
         skills_change = Passive("🦊", change_skills, undo_change_skills, 3, new_skills)
         sage_boost = Passive("⇪🗡⇪", increase_attack, decrease_attack, 3, 500, apply_once=True)
 
@@ -1820,13 +1846,13 @@ async def turn(self, bot, action, enemy, chat_id):
                    f"\n<blockquote expandable>Наруто активировал режим курамы, "
                    f"усиливая атаки и получая новые навыки 3⏳</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🌀Тайкьёку Расенган˼':
         mana = await calculate_mana(self, 25)
         if not mana:
             return False, True
-        energy = await calculate_energy(self, 20)
+        energy = await calculate_energy(self, 15)
         if not energy:
             return True, False
 
@@ -1841,13 +1867,13 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"🌀Тайкьёку Расенган"
                    f"\n<blockquote expandable>Наруто нанес {damage} 🗡 урона и 🔥поджог врага на 3⏳</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🌑Биджу Дама˼':
         mana = await calculate_mana(self, 50)
         if not mana:
             return False, True
-        energy = await calculate_energy(self, 25)
+        energy = await calculate_energy(self, 10)
         if not energy:
             return True, False
 
@@ -1859,7 +1885,7 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"🌑Биджу Дама"
                    f"\n<blockquote expandable>Наруто использовал Биджу Даму, нанося {damage} 🗡 урона</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
 # Sasuke Uchiha
 
@@ -1877,7 +1903,7 @@ async def turn(self, bot, action, enemy, chat_id):
                    f"\n<blockquote expandable>Саске использует Райтон: Чидори, нанося {damage} "
                    f"🗡 урона с помощью ⚡ молнии</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹⚡Чидори Нагаши˼':
         mana = await calculate_mana(self, 40)
@@ -1886,7 +1912,6 @@ async def turn(self, bot, action, enemy, chat_id):
         energy = await calculate_energy(self, 15)
         if not energy:
             return True, False
-
 
         damage = self.attack + self.intelligence
 
@@ -1901,7 +1926,7 @@ async def turn(self, bot, action, enemy, chat_id):
                    f"🗡 урона с помощью ⚡ молнии и парпализуя врага"
                    f"\n⚡Паралич 💫 на 2⏳</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹⚡Чидори Катана˼':
         mana = await calculate_mana(self, 20)
@@ -1920,7 +1945,7 @@ async def turn(self, bot, action, enemy, chat_id):
                    f"\n<blockquote expandable>Саске использует Райтон: Чидори Катана, нанося {damage} "
                    f"чистого урона с помощью ⚡молнии и 🗡меча</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹⚡Кирин˼':
         mana = await calculate_mana(self, 20)
@@ -1936,7 +1961,7 @@ async def turn(self, bot, action, enemy, chat_id):
                    f"\n<blockquote expandable>Саске использует Райтон: Кирин, нанося {damage} "
                    f"🗡 урона с помощью ⚡ молнии</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🔥Хосенка но Дзюцу˼':
         mana = await calculate_mana(self, 10)
@@ -1953,7 +1978,7 @@ async def turn(self, bot, action, enemy, chat_id):
                    f"\n<blockquote expandable>Саске использует Катон: Хосенка но Дзюцу, "
                    f"нанося {self.intelligence} x6 🗡 урона</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🔥Гокакью но Дзюцу˼':
         mana = await calculate_mana(self, 15)
@@ -1973,7 +1998,7 @@ async def turn(self, bot, action, enemy, chat_id):
                    f"нанося {damage} 🗡 урона и поджигая врага"
                    f"\n\n🔥Ожог {burn_effect} 💔 на 5⏳</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🔥Рьюйка но Дзюцу˼':
         mana = await calculate_mana(self, 20)
@@ -1996,7 +2021,7 @@ async def turn(self, bot, action, enemy, chat_id):
                    f"🗡 урона и поджигая врага"
                    f"\n\n🔥Ожог {burn_effect} 💔 на 5⏳</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹👁Мангекьё❟❛❟Шаринган⚛˼':
         mana = await calculate_mana(self, 25)
@@ -2009,16 +2034,16 @@ async def turn(self, bot, action, enemy, chat_id):
         new_skills = ["˹🗡Атака˼", '˹⚡Чидори Катана˼', '˹🔥Рьюйка но Дзюцу˼',
                       "˹👁Гендзюцу❟❛❟˼", "˹◼️Аматэрасу˼", "˹❛☉❟Риннеган˼", "˹🩻Сусаноо˼"]
         skills_change = Passive("❟❛❟", change_skills, undo_change_skills, 10, new_skills)
-        re_hp = Passive("❟❛❟Шаринган", return_hp, fix_effects, 9, 0)
+        re_hp = Passive("❟❛❟Шаринган", return_half_hp, fix_effects, 6, 0)
         self.add_passive(re_hp)
         self.add_passive(skills_change)
 
         gif = 'CgACAgIAAx0CfstymgACHVlm3Wk8eo-qgJOqprGm5azXamBa1gACrE0AAg_z6EpEoT5_7NNoIjYE'
         caption = (f"👁Мангекьё❟❛❟Шаринган⚛"
                    f"\n<blockquote expandable>❟❛❟Шаринган - Саске предвидит атаку "
-                   f"врага и уклоняается на 5⏳</blockquote>")
+                   f"врага и уклоняается от половины на 3⏳</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹👁Гендзюцу❟❛❟˼':
         mana = await calculate_mana(self, 20)
@@ -2045,7 +2070,7 @@ async def turn(self, bot, action, enemy, chat_id):
                    f"и получает урон от иллюзии уколотых 🪡 колов. Иллюзия не наноят урон но истощает силу врага"
                    f"\n\n👁 - Саске контролируя органы чувств врага снимает его защиту 🛡</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹◼️Аматэрасу˼':
         mana = await calculate_mana(self, 25)
@@ -2068,7 +2093,7 @@ async def turn(self, bot, action, enemy, chat_id):
                    f"🗡 урона и поджигая врага"
                    f"\n\n♨️Ожог {burn_effect}</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹❛☉❟Риннеган˼':
         mana = await calculate_mana(self, 30)
@@ -2086,13 +2111,13 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"❛☉❟Риннеган"
                    f"\n<blockquote expandable>❛☉❟ - Саске получает новые навыки и возможности на 10⏳</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹❛☉❟Аменотеджикара˼':
         mana = await calculate_mana(self, 20)
         if not mana:
             return False, True
-        energy = await calculate_energy(self, 15)
+        energy = await calculate_energy(self, 20)
         if not energy:
             return True, False
 
@@ -2103,7 +2128,7 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"❛☉❟Аменотеджикара"
                    f"\n<blockquote expandable>Телепорт - Саске избежал {hp}🗡 урона</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🌑Чибаку Тенсей˼':
         mana = await calculate_mana(self, 20)
@@ -2122,7 +2147,7 @@ async def turn(self, bot, action, enemy, chat_id):
                    f"\n<blockquote expandable>Саске использовал Чибаку Тенсей, нанося {damage} "
                    f"🗡 урона противнику</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🩻Сусаноо˼':
         mana = await calculate_mana(self, 40)
@@ -2143,7 +2168,7 @@ async def turn(self, bot, action, enemy, chat_id):
                    f"\n<blockquote expandable>🩻Сусаноо - дает Саске {self.intelligence * 20}🌐 щит "
                    f"и навыки Сусаноо на 10⏳</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🗡Кагутсучи но Тсуруги˼':
         mana = await calculate_mana(self, 20)
@@ -2162,7 +2187,7 @@ async def turn(self, bot, action, enemy, chat_id):
                    f"\n<blockquote expandable>Саске использовал 🗡Кагутсучи но Тсуруги, нанося "
                    f"{damage}🗡 урона</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🏹Сусаноо Кагутсучи˼':
         mana = await calculate_mana(self, 20)
@@ -2176,12 +2201,12 @@ async def turn(self, bot, action, enemy, chat_id):
 
         calculate_shield(enemy, damage)
 
-        gif = 'CgACAgIAAx0CfstymgACHXVm30ek0l34CPfHivmZjNBy1hPgJwAClV4AAgfJ-EqC4kqVw4K_FDYE'
+        gif = 'CgACAgIAAx0CfstymgACHSxnE3vrHPWFEynrZlxRDbOFnYg6qQACBFMAAg_z4Eocrl60txtztjYE'
         caption = (f"🏹Сусаноо Кагутсучи"
                    f"\n<blockquote expandable>Саске использовал 🏹Сусаноо Кагутсучи, нанося "
                    f"{damage}🗡 урона</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹🌑Ясака🌑но🌑Магатама🌑˼':
         mana = await calculate_mana(self, 50)
@@ -2199,7 +2224,7 @@ async def turn(self, bot, action, enemy, chat_id):
         caption = (f"🌑Ясака🌑но🌑Магатама🌑"
                    f"\n<blockquote expandable>Саске использовал Ясака но Магатама, нанося {damage}🗡 урона</blockquote>")
 
-        await send_action(bot, self, enemy, chat_id, gif, caption)
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     # After death
 
@@ -2223,7 +2248,7 @@ async def turn(self, bot, action, enemy, chat_id):
                        f"\n<blockquote expandable>+ 10000❤️ hp 5⏳"
                        f"\n💥невосприимчивый контроли 5⏳</blockquote>")
 
-            await send_action(bot, self, enemy, chat_id, gif, caption)
+            await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
         # Aizen Sousuke
 
@@ -2241,7 +2266,7 @@ async def turn(self, bot, action, enemy, chat_id):
                        f"\n+ 300🗡 атаки"
                        f"\n💥невосприимчивый контроли</blockquote>")
 
-            await send_action(bot, self, enemy, chat_id, gif, caption)
+            await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
         elif self.name.startswith('Aizen Sosuke') and self.immortal == 1:
             self.immortal += 1
@@ -2257,7 +2282,7 @@ async def turn(self, bot, action, enemy, chat_id):
                        f"\n<blockquote expandable>+ 10000❤️ hp 5⏳"
                        f"\n💥невосприимчивый контроли</blockquote>")
 
-            await send_action(bot, self, enemy, chat_id, gif, caption)
+            await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     # Naruto
 
@@ -2276,14 +2301,18 @@ async def turn(self, bot, action, enemy, chat_id):
                        f"\n<blockquote expandable>+ 10000❤️ hp 5⏳"
                        f"\n💥невосприимчивый контроли</blockquote>")
 
-            await send_action(bot, self, enemy, chat_id, gif, caption)
+            await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
 
 # Slaves effect
-
     if self.slave:
-        self.passive_names.append(self.slave)
+        # Проверяем, добавлена ли пассивка
+        if self.slave not in self.passive_names:
+            self.passive_names.append(self.slave)
+
         result = character_photo.slaves_stats(self.slave)
         clas = result[3]
+
         if clas == 'heal':
             if self.health > 0:
                 self.health += result[2]

@@ -1,8 +1,9 @@
 import random
+from datetime import datetime, timedelta
 
 from aiogram import Router, F
 
-from aiogram.types import CallbackQuery, InputMediaAnimation, Message
+from aiogram.types import CallbackQuery, InputMediaAnimation, InputMediaPhoto, Message
 from aiogram.enums import ParseMode
 
 from keyboards.builders import inline_builder
@@ -24,7 +25,14 @@ menu = ["CgACAgIAAxkBAAIVCWXMvbya7qFOU8F85SXUu24hM5wgAAKfOwACeyZoShH4z6iUPi8kNAQ
         "CgACAgIAAxkBAAIVA2XMyQ7c7bzjIhd4ecf9W6TGWm6eAAKPOwACeyZoSsm5IEXYiJoKNAQ",
         "CgACAgIAAx0CfstymgACBd5lzO0zU05NJEIDdrzbQNLwSMi_XgACbUkAAsywaUqtbVk4cEzxrzQE",
         "CgACAgIAAx0CfstymgACBd1lzO0zAm8ov_iX9BAY7_QVIkf3NQACbEkAAsywaUoWn4BRgx1huTQE",
-        "CgACAgIAAx0CfstymgACBdxlzO0yxbOLTRm_B0ttpbA7WYEFdgACa0kAAsywaUoVOJ0ILUcy3jQE"]
+        "CgACAgIAAx0CfstymgACBdxlzO0yxbOLTRm_B0ttpbA7WYEFdgACa0kAAsywaUoVOJ0ILUcy3jQE",
+        "CgACAgIAAx0CfstymgACIB5nE7mXOOMrHrWyLobEDbk85ehs7QAC6FgAAqiJoEg5NN5yufK0QzYE",
+        "CgACAgIAAx0CfstymgACIBRnE7ipKamfva-CfgqsiZJ-EKMGxwACxFgAAqiJoEijvBsGD_fnpjYE",
+        "CgACAgIAAx0CfstymgACIBJnE7ih9KNvH8o3P1Yy1rTY4o7YVQACwlgAAqiJoEiVpQSxmKi5sjYE",
+        "CgACAgIAAx0CfstymgACIBBnE7ibsUe_hxrML0hwjTHC0jWZXQACwVgAAqiJoEhlPEBRZo_wlTYE",
+        "CgACAgIAAx0CfstymgACIA5nE7iRTMe8cH8bBZgvI8ZbeAW0tAACv1gAAqiJoEi3kcjjLHSleDYE",
+        "CgACAgIAAx0CfstymgACIAxnE7iJXL7xxL4a5vmYVhL3zTuYZwACvVgAAqiJoEgvOYe5dmhxFjYE",
+        "CgACAgIAAx0CfstymgACIApnE7h9jBb9jkmJNh_KJ792kiapEAACu1gAAqiJoEjYTH71QJA-TjYE"]
 
 
 @router.message(
@@ -50,8 +58,8 @@ async def tokio(callback: CallbackQuery | Message):
                 f"\n❃ 💴 {money} ¥",
         parse_mode=ParseMode.HTML,
         reply_markup=inline_builder(
-            ["🔮 Призыв", "🪪 Профиль", "🏪 Рынок", "🃏 Битва", "🏯 Клан", "🏠 Дом", "📜 Задании"],
-            ["banner", "main_page", "store", "card_battle", "clan", "home", "quests"],
+            ["🎐 Баннеры", "🪪 Профиль", "🏪 Рынок", "🏠 Дом", "📜 Квесты", "🃏 Битва", "🏯 Клан"],
+            ["banner", "main_page", "store", "home", "quests", "card_battle", "clan"],
             row_width=[1, 2, 2]
             )
     )
@@ -84,8 +92,3 @@ async def clan(callback: CallbackQuery):
 @router.callback_query(F.data == "card_battle")
 async def card_battle(callback: CallbackQuery):
     await callback.answer(f"❖  🃏 Карточная битва в разработке", show_alert=True)
-
-
-@router.callback_query(F.data == "quests")
-async def requisites(callback: CallbackQuery):
-    await callback.answer(f"❖  📜 Задании в разработке", show_alert=True)

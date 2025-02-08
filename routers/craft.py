@@ -1,13 +1,11 @@
-import random
 import asyncio
+import random
 
 from aiogram import Router, F
-
-from aiogram.types import CallbackQuery, InputMediaAnimation, InputMediaPhoto
 from aiogram.enums import ParseMode
-
-from keyboards.builders import inline_builder, Ability
+from aiogram.types import CallbackQuery, InputMediaAnimation, InputMediaPhoto
 from data import mongodb, character_photo
+from keyboards.builders import inline_builder, Ability
 from routers.gacha import characters
 
 router = Router()
@@ -44,7 +42,7 @@ async def craft_menu(callback: CallbackQuery):
     )
 
     media_id = "AgACAgIAAx0CfstymgACGthmw1rLV0WxGrbzW3MkaOQIfIaRXwACkuExG8b4GEq8rJRTnK_PFQEAAwIAA3kAAzUE"
-    media = InputMediaPhoto(media=media_id)
+    media = InputMediaPhoto(media=media_id, has_spoiler=True)
     await callback.message.edit_media(media, inline_id)
     await callback.message.edit_caption(inline_id, **pattern)
 
@@ -78,9 +76,9 @@ async def craft_card(callback: CallbackQuery):
     await asyncio.sleep(4)
 
     if avatar_type == 'photo':
-        media = InputMediaPhoto(media=avatar)
+        media = InputMediaPhoto(media=avatar, has_spoiler=True)
     else:
-        media = InputMediaAnimation(media=avatar)
+        media = InputMediaAnimation(media=avatar, has_spoiler=True)
 
     async def is_in_inventory():
         get_account = await mongodb.get_user(user_id)
@@ -93,7 +91,7 @@ async def craft_card(callback: CallbackQuery):
 
     if await is_in_inventory():
         msg = (f"\n❖ ✖️ Вам попалась повторка"
-               f"\n❖ 🧩 Оскольки не потрачены")
+               f"\n❖ 🧩 Осколки не потрачены")
     else:
         await mongodb.update_user(user_id, {"account.fragments": fragments})
         await mongodb.push(universe, rarity_ch, character, user_id)

@@ -1,14 +1,14 @@
 import asyncio
+
 from aiogram import Router, F
-
-from aiogram.types import CallbackQuery, Message, ChatMemberUpdated
-from aiogram.filters import Command, ChatMemberUpdatedFilter, JOIN_TRANSITION
 from aiogram.enums import ParseMode
-
-from keyboards.builders import inline_builder, menu_button
-from filters.chat_type import ChatTypeFilter, CallbackChatTypeFilter
+from aiogram.filters import Command, ChatMemberUpdatedFilter, JOIN_TRANSITION
+from aiogram.types import CallbackQuery, Message, ChatMemberUpdated
 from data import characters, character_photo
 from data import mongodb
+from filters.chat_type import ChatTypeFilter, CallbackChatTypeFilter
+from keyboards.builders import inline_builder, menu_button
+
 from main import bot
 
 router = Router()
@@ -22,7 +22,6 @@ request_data = {}
 
 @router.my_chat_member(ChatMemberUpdatedFilter(JOIN_TRANSITION))
 async def on_bot_join(event: ChatMemberUpdated):
-    print(event)
     chat_id = event.chat.id
     title = event.chat.title
     link = event.chat.username
@@ -263,131 +262,146 @@ async def duel_battle(callback: CallbackQuery):
     user_id = callback.from_user.id
     chat_id = callback.message.chat.id
     account = await mongodb.get_user(user_id)
-    rival = await mongodb.get_user(account["battle"]["battle"]["rid"])
+    try:
+        rival = await mongodb.get_user(account["battle"]["battle"]["rid"])
 
-    chat_data = duel_battle_data.get(chat_id, {})
-    character = chat_data.get(account["_id"])
-    r_character = chat_data.get(character.rid)
+        chat_data = duel_battle_data.get(chat_id, {})
+        character = chat_data.get(account["_id"])
+        r_character = chat_data.get(character.rid)
 
-    if account["battle"]["battle"]["status"] == 2:
-        if user_id != character.ident:
-            return await callback.answer("✖️ Не ваш ход!", show_alert=True)
-        if character.b_turn:
-            return await callback.answer("✖️ Не ваш ход!", show_alert=True)
+        if account["battle"]["battle"]["status"] == 2:
+            if user_id != character.ident:
+                return await callback.answer("✖️ Не ваш ход!", show_alert=True)
+            if character.b_turn:
+                return await callback.answer("✖️ Не ваш ход!", show_alert=True)
 
-        mana, energy = await characters.turn(character, bot, action, r_character, chat_id)
+            mana, energy = await characters.turn(character, bot, action, r_character, chat_id)
 
-        if not mana:
-            await callback.answer("✖️ Недостаточно маны 🧪", show_alert=True)
-            return
+            if not mana:
+                await callback.answer("✖️ Недостаточно маны 🧪", show_alert=True)
+                return
 
-        if not energy:
-            await callback.answer("✖️ Недостаточно энергии 🪫", show_alert=True)
-            return
+            if not energy:
+                await callback.answer("✖️ Недостаточно энергии 🪫", show_alert=True)
+                return
 
-        await bot.edit_message_reply_markup(chat_id=chat_id, message_id=callback.message.message_id)
+            await bot.edit_message_reply_markup(chat_id=chat_id, message_id=callback.message.message_id)
 
-        duel_battle_data[chat_id][character.ident] = character
-        duel_battle_data[chat_id][r_character.ident] = r_character
+            duel_battle_data[chat_id][character.ident] = character
+            duel_battle_data[chat_id][r_character.ident] = r_character
 
-        async def send_round_photo():
-            if r_character.stun == 0:
-                duel_battle_data[chat_id][r_character.ident].b_turn = False
-                duel_battle_data[chat_id][character.ident].b_turn = True
+            async def send_round_photo():
+                if r_character.stun == 0:
+                    duel_battle_data[chat_id][r_character.ident].b_turn = False
+                    duel_battle_data[chat_id][character.ident].b_turn = True
+                    if character.b_round != r_character.b_round:
+                        await bot.send_message(chat_id,
+                                               text=f".        ˗ˋˏ💮 Раунд {r_character.b_round}ˎˊ˗"
+                                                    f"\n✧•────────────────•✧"
+                                                    f"\n<blockquote expandable>{duel_text(r_character)}"
+                                                    f"\n✧•────────────────•✧"
+                                                    f"\n{duel_text(character)}</blockquote>"
+                                                    f"\n✧•────────────────•✧")
+                    mes = await bot.send_message(chat_id,
+                                                 text=f"🔸 Ход {r_character.name}:",
+                                                 reply_markup=inline_builder(r_character.ability, r_character.ability,
+                                                                             row_width=[2, 2]),
+                                                 parse_mode=ParseMode.HTML)
+                    character.b_round += 1
+                    duel_user_data[chat_id][user_id][character.b_round - 1] = True  # Обновляем состояние
+                    # Инициализируем состояние пользователя
+                    duel_user_data[chat_id][r_character.ident][r_character.b_round] = False
+                    # Запускаем таймер
+                    await duel_timeout(chat_id, r_character.ident, r_character.b_round, mes)
+                else:
+                    duel_battle_data[chat_id][character.rid].b_turn = True
+                    duel_battle_data[chat_id][character.ident].b_turn = False
+                    mes = await bot.send_message(chat_id,
+                                                 text=f"🔸 Ход {character.name}:",
+                                                 reply_markup=inline_builder(character.ability, character.ability,
+                                                                             row_width=[2, 2]),
+                                                 parse_mode=ParseMode.HTML)
+                    character.b_round += 1
+                    r_character.b_round += 1
+                    duel_user_data[chat_id][r_character.ident][r_character.b_round - 1] = True  # Обновляем состояние
+                    duel_user_data[chat_id][character.ident][character.b_round - 1] = True  # Обновляем состояние
+                    # Инициализируем состояние пользователя
+                    duel_user_data[chat_id][user_id][character.b_round] = False
+                    # Запускаем таймер
+                    await duel_timeout(chat_id, character.ident, character.b_round, mes)
+
+            if character.health <= 0 and r_character.health <= 0:
+                del request_data[chat_id]
+                end_animation = 'CgACAgQAAx0CfstymgACDfFmFCIV11emoqYRlGWGZRTtrA46oQACAwMAAtwWDVNLf3iCB-QL9jQE'
+
+                await bot.send_animation(chat_id=chat_id, animation=end_animation,
+                                         caption=f"☠️ Ничья")
+
+                await mongodb.update_many(
+                    {"_id": {"$in": [account["_id"], character.rid]}},
+                    {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
+                )
+
+            elif character.health <= 0:
                 if character.b_round != r_character.b_round:
-                    await bot.send_message(chat_id,
-                                           text=f".        ˗ˋˏ💮 Раунд {r_character.b_round}ˎˊ˗"
-                                                f"\n✧•────────────────•✧"
-                                                f"\n<blockquote expandable>{duel_text(r_character)}"
-                                                f"\n✧•────────────────•✧"
-                                                f"\n{duel_text(character)}</blockquote>"
-                                                f"\n✧•────────────────•✧")
-                mes = await bot.send_message(chat_id,
-                                             text=f"🔸 Ход {r_character.name}:",
-                                             reply_markup=inline_builder(r_character.ability, r_character.ability,
-                                                                         row_width=[2, 2]),
-                                             parse_mode=ParseMode.HTML)
-                character.b_round += 1
-                duel_user_data[chat_id][user_id][character.b_round - 1] = True  # Обновляем состояние
-                # Инициализируем состояние пользователя
-                duel_user_data[chat_id][r_character.ident][r_character.b_round] = False
-                # Запускаем таймер
-                await duel_timeout(chat_id, r_character.ident, r_character.b_round, mes)
-            else:
-                duel_battle_data[chat_id][character.rid].b_turn = True
-                duel_battle_data[chat_id][character.ident].b_turn = False
-                mes = await bot.send_message(chat_id,
-                                             text=f"🔸 Ход {character.name}:",
-                                             reply_markup=inline_builder(character.ability, character.ability,
-                                                                         row_width=[2, 2]),
-                                             parse_mode=ParseMode.HTML)
-                character.b_round += 1
-                r_character.b_round += 1
-                duel_user_data[chat_id][r_character.ident][r_character.b_round - 1] = True  # Обновляем состояние
-                duel_user_data[chat_id][character.ident][character.b_round - 1] = True  # Обновляем состояние
-                # Инициализируем состояние пользователя
-                duel_user_data[chat_id][user_id][character.b_round] = False
-                # Запускаем таймер
-                await duel_timeout(chat_id, character.ident, character.b_round, mes)
+                    del request_data[chat_id]
+                    universe = rival['universe']
+                    character = rival['character'][rival['universe']]
+                    avatar = character_photo.get_stats(universe, character, 'avatar')
+                    avatar_type = character_photo.get_stats(universe, character, 'type')
+                    if avatar_type == 'photo':
+                        await bot.send_photo(chat_id=chat_id, photo=avatar,
+                                             caption=f"👑 {r_character.name} Победил")
+                    else:
+                        await bot.send_animation(chat_id=chat_id, animation=avatar,
+                                                 caption=f"👑 {r_character.name} Победил")
 
-        if character.health <= 0 and r_character.health <= 0:
-            del request_data[chat_id]
-            end_animation = 'CgACAgQAAx0CfstymgACDfFmFCIV11emoqYRlGWGZRTtrA46oQACAwMAAtwWDVNLf3iCB-QL9jQE'
+                    await mongodb.insert_win(rival["_id"], rival["_id"], r_character.p_name)
 
-            await bot.send_animation(chat_id=chat_id, animation=end_animation,
-                                     caption=f"☠️ Ничья", reply_markup=menu_button())
+                    await mongodb.update_many(
+                        {"_id": {"$in": [account["_id"], character.rid]}},
+                        {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
+                    )
 
-            await mongodb.update_many(
-                {"_id": {"$in": [account["_id"], character.rid]}},
-                {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
-            )
-
-        elif character.health <= 0:
-            if character.b_round != r_character.b_round:
-                del request_data[chat_id]
-                universe = rival['universe']
-                character = rival['character'][rival['universe']]
-                avatar = character_photo.get_stats(universe, character, 'avatar')
-                avatar_type = character_photo.get_stats(universe, character, 'type')
-                if avatar_type == 'photo':
-                    await bot.send_photo(chat_id=chat_id, photo=avatar,
-                                         caption=f"👑 {r_character.name} Победил", reply_markup=menu_button())
                 else:
-                    await bot.send_animation(chat_id=chat_id, animation=avatar,
-                                             caption=f"👑 {r_character.name} Победил", reply_markup=menu_button())
+                    await send_round_photo()
 
-                await mongodb.insert_win(rival["_id"], rival["_id"], r_character.p_name)
+            elif r_character.health <= 0:
+                if character.b_round != r_character.b_round:
+                    del request_data[chat_id]
+                    universe = account['universe']
+                    character = account['character'][account['universe']]
+                    avatar = character_photo.get_stats(universe, character, 'avatar')
+                    avatar_type = character_photo.get_stats(universe, character, 'type')
+                    if avatar_type == 'photo':
+                        await bot.send_photo(chat_id=chat_id, photo=avatar,
+                                             caption=f"👑 {character.name} Победил")
+                    else:
+                        await bot.send_animation(chat_id=user_id, animation=avatar,
+                                                 caption=f"👑 {character.name} Победил")
 
-                await mongodb.update_many(
-                    {"_id": {"$in": [account["_id"], character.rid]}},
-                    {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
-                )
+                    await mongodb.update_many(
+                        {"_id": {"$in": [account["_id"], character.rid]}},
+                        {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
+                    )
 
+                    await mongodb.insert_win(rival["_id"], account["_id"], character.p_name)
+
+                else:
+                    await send_round_photo()
             else:
                 await send_round_photo()
+    except AttributeError as e:
+        # Обработка ошибки AttributeError
+        await callback.message.answer("❖ 🔂 Идёт разработка бота связи с чем битва была остановлена")
+        await mongodb.update_many(
+            {"_id": {"$in": [account["_id"]]}},
+            {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
+        )
 
-        elif r_character.health <= 0:
-            if character.b_round != r_character.b_round:
-                del request_data[chat_id]
-                universe = account['universe']
-                character = account['character'][account['universe']]
-                avatar = character_photo.get_stats(universe, character, 'avatar')
-                avatar_type = character_photo.get_stats(universe, character, 'type')
-                if avatar_type == 'photo':
-                    await bot.send_photo(chat_id=chat_id, photo=avatar,
-                                         caption=f"👑 {character.name} Победил", reply_markup=menu_button())
-                else:
-                    await bot.send_animation(chat_id=user_id, animation=avatar,
-                                             caption=f"👑 {character.name} Победил", reply_markup=menu_button())
-
-                await mongodb.update_many(
-                    {"_id": {"$in": [account["_id"], character.rid]}},
-                    {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
-                )
-
-                await mongodb.insert_win(rival["_id"], account["_id"], character.p_name)
-
-            else:
-                await send_round_photo()
-        else:
-            await send_round_photo()
+        await bot.send_message(account["battle"]["battle"]["rid"],
+                               "❖ 🔂 Идёт разработка бота связи с чем битва была остановлена")
+        await mongodb.update_many(
+            {"_id": {"$in": [account["battle"]["battle"]["rid"]]}},
+            {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
+        )

@@ -1,16 +1,16 @@
 import re
-from contextlib import suppress
-from aiogram import Router, F
-from typing import Match
 
-from aiogram.types import Message, CallbackQuery, InputMediaAnimation, InputMediaPhoto
-from aiogram.exceptions import TelegramBadRequest
-from aiogram.fsm.context import FSMContext
+from keyboards.builders import start_button, goto_bot
+
+from aiogram import Router, F, Bot
 from aiogram.enums import ParseMode
-
-from keyboards.builders import start_button, goto_bot, inline_builder, Pagination, pagination_group
-from data import mongodb, character_photo
+from aiogram.filters import Command
+from aiogram.types import Message
+from data import characters, character_photo
+from data import mongodb
+from keyboards.builders import reply_builder, inline_builder, menu_button, Ability, rm
 from recycling import profile
+from filters.chat_type import ChatTypeFilter
 
 router = Router()
 
@@ -113,10 +113,35 @@ async def give_money(message: Message):
             if account is not None and account['_id'] == user_id:
                 if friend is not None and friend['_id'] == friend_id:
                     if account['account']['money'] >= amount:
-                        await mongodb.update_user(user_id, {'account.money': account['account']['money'] - amount})
-                        await mongodb.update_user(friend_id, {'account.money': friend['account']['money'] + amount})
-                        await message.reply(f"❖ ✨ {account['name']} отправил {amount} 💴 ¥ пользователю {friend['name']}",
-                                            disable_web_page_preview=True)
+                        if account['account']['prime']:
+                            if amount <= 1000:
+                                await mongodb.update_user(user_id, {'account.money': account['account']['money'] - amount})
+                                await mongodb.update_user(friend_id, {'account.money': friend['account']['money'] + amount})
+                                await message.reply(
+                                    f"❖ ✨ {account['name']} отправил {amount} 💴 ¥ пользователю {friend['name']}",
+                                    disable_web_page_preview=True)
+                            else:
+                                await message.reply("❖ ✖️ Максимальная сумма перевода 1000 💴 ¥")
+                        else:
+                            await message.reply("❖ ✖️ Для перевода денег необходимо иметь 💮Pass")
+                        # if amount <= 5000:
+                        #     if account['account']['prime']:
+                        #
+                        #         await mongodb.update_user(user_id,
+                        #                                   {'account.money': account['account']['money'] - amount})
+                        #         await mongodb.update_user(friend_id,
+                        #                                   {'account.money': friend['account']['money'] + amount})
+                        #         await message.reply(
+                        #             f"❖ ✨ {account['name']} отправил {amount} 💴 ¥ пользователю {friend['name']}",
+                        #             disable_web_page_preview=True)
+                        #     else:
+                        #         await message.reply("❖ ✖️ Максимальная сумма перевода 250 💴 ¥"
+                        #                             "\n❖ Получите 💮Pass, чтобы увеличить лимит")
+                        # else:
+                        #     await mongodb.update_user(user_id, {'account.money': account['account']['money'] - amount})
+                        #     await mongodb.update_user(friend_id, {'account.money': friend['account']['money'] + amount})
+                        #     await message.reply(f"❖ ✨ {account['name']} отправил {amount} 💴 ¥ пользователю {friend['name']}",
+                        #                         disable_web_page_preview=True)
                     else:
                         await message.reply(f"❖ ✖️ Недостаточно средст. \nБаланс: {account['account']['money']} 💴 ¥")
                 else:
@@ -209,23 +234,25 @@ async def give_character(message: Message):
     elif rarity == 'Божественная':
         rarity = 'divine'
 
-    # Обновляем инвентари
-    await mongodb.push(universe, rarity, character, friend_id)
-    await mongodb.pull(universe, rarity, character, user_id)
-
     # Отправляем сообщение с информацией о передаче персонажа
-    if avatar_type == 'photo':
-        await message.reply_photo(
-            avatar,
-            caption=f"❖ ✨ {account['name']} отправил персонажа {character} пользователю {friend['name']} на 🗺 вселенную {ch_universe}",
-            disable_web_page_preview=True
-        )
+    if account['account']['prime']:
+        # Обновляем инвентари
+        await mongodb.push(universe, rarity, character, friend_id)
+        await mongodb.pull(universe, rarity, character, user_id)
+        if avatar_type == 'photo':
+            await message.reply_photo(
+                avatar,
+                caption=f"❖ ✨ {account['name']} отправил персонажа {character} пользователю {friend['name']} на 🗺 вселенную {ch_universe}",
+                disable_web_page_preview=True
+            )
+        else:
+            await message.reply_animation(
+                avatar,
+                caption=f"❖ ✨ {account['name']} отправил персонажа {character} пользователю {friend['name']} на 🗺 вселенную {ch_universe}",
+                disable_web_page_preview=True
+            )
     else:
-        await message.reply_animation(
-            avatar,
-            caption=f"❖ ✨ {account['name']} отправил персонажа {character} пользователю {friend['name']} на 🗺 вселенную {ch_universe}",
-            disable_web_page_preview=True
-        )
+        await message.reply("❖ ✖️ Для передачи персонажа необходимо иметь 💮 Pass")
 
 
 @router.message(F.text.lower().in_(['баланс', 'б']))
@@ -238,6 +265,24 @@ async def balance(message: Message):
     else:
         await message.answer("❖ ✖️ Ты не зарегистрирован", reply_markup=start_button())
 
+
+@router.message(Command("rm"))
+async def fill_profile(message: Message, bot: Bot):
+    await bot.send_message(message.chat.id, '❖ ✖️ Кнопки удалены', reply_markup=rm())
+
+
+@router.message(Command("help"))
+async def fill_profile(message: Message, bot: Bot):
+    await bot.send_message(message.chat.id, '❖ 📋 <a href="https://teletype.in/@dire_hazard/x1">Руководство</a>',
+                           reply_markup=inline_builder(
+                               ["☑️"],
+                               ["delete"], row_width=[1])
+                           )
+
+
+@router.message(ChatTypeFilter(chat_type=["private"]), Command("menu_button"))
+async def call_button(message: Message):
+    await message.answer(text='˗ˋˏ💮 Кнопки восстановленыˎˊ˗', reply_markup=menu_button())
 
 
 """

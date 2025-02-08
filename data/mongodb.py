@@ -1,5 +1,6 @@
-from motor.motor_asyncio import AsyncIOMotorClient
+import re
 
+from motor.motor_asyncio import AsyncIOMotorClient
 from recycling import profile
 
 client = AsyncIOMotorClient("mongodb+srv://dire:1243qwtr@animekaisen.8r7or8e.mongodb.net/?retryWrites=true&w=majority&appName=AnimeKaisen")  #mongodb+srv://dire:1243qwtr@animekaisen.8r7or8e.mongodb.net/?retryWrites=true&w=majority,
@@ -8,6 +9,22 @@ db = client["AnimeKaisen"]
 
 collection = db["users"]
 chat_collection = db["chats"]
+promo_collection = db["promo"]
+
+
+emoji_pattern = re.compile(
+    "[\U0001F600-\U0001F64F"  # emoticons
+    "\U0001F300-\U0001F5FF"  # symbols & pictographs
+    "\U0001F680-\U0001F6FF"  # transport & map symbols
+    "\U0001F700-\U0001F77F"  # alchemical symbols
+    "\U0001F780-\U0001F7FF"  # Geometric Shapes Extended
+    "\U0001F800-\U0001F8FF"  # Supplemental Arrows-C
+    "\U0001F900-\U0001F9FF"  # Supplemental Symbols and Pictographs
+    "\U0001FA00-\U0001FA6F"  # Chess Symbols
+    "\U0001FA70-\U0001FAFF"  # Symbols and Pictographs Extended-A
+    "\U00002702-\U000027B0"  # Dingbats
+    "\U000024C2-\U0001F251" 
+    "]+", flags=re.UNICODE)
 
 
 async def input_user(user_id: int, name, universe, character, power):
@@ -122,8 +139,15 @@ async def find_opponent():
     return status
 
 
+async def find_card_opponent():
+    status = await db.users.find_one({"battle.battle.status": 3})
+    return status
+
+
 async def in_battle():
     status = await db.users.count_documents({"battle.battle.status": 2})
+    card = await db.users.count_documents({"battle.battle.status": 4})
+    status += card
     return status
 
 
@@ -260,3 +284,101 @@ async def chat_rating(chat_id, icon):
 
 async def update_get_card(user_id, date):
     db.users.update_one({'_id': user_id}, {'$set': {'last_call_time': date}}, upsert=True)
+
+
+async def update_time(user_id, data, date):
+    db.users.update_one({'_id': user_id}, {'$set': {data: date}}, upsert=True)
+
+
+async def clear_slaves_for_all_users():
+    await db.users.update_many(
+        {},  # Пустой фильтр означает обновление всех документов
+        {"$set": {"inventory.slaves": []}}  # Устанавливаем пустой массив для всех
+    )
+
+
+async def clear_slave_for_all_users():
+    await db.users.update_many(
+        {},  # Пустой фильтр означает обновление всех документов
+        {"$set": {"inventory.slave": []}}  # Устанавливаем пустой массив для всех
+    )
+
+
+async def find_promo(promo_code):
+    promo = await db.promo_collection.find_one({"code": promo_code})
+    return promo
+
+
+async def update_promo(promo_code, user_id):
+    await db.promo_collection.update_one(
+        {"code": promo_code},
+        {"$push": {"used_by": user_id}}
+    )
+
+
+async def add_promo_code(promo_code, reward):
+    await db.promo_collection.insert_one({
+        "code": promo_code,
+        "reward": reward,
+        "used_by": []
+    })
+
+
+async def give_to_all(data, message):
+    await db.users.update_many({}, {"$inc": data})
+    await message.answer("❖ ✅ Всем выдано")
+
+
+async def remove_emojis():
+    cursor = db.users.find({})
+    async for document in cursor:
+        name = document.get('name', '')
+        if name:
+            # Удаление эмодзи из name
+            new_name = emoji_pattern.sub(r'', name)
+            if new_name != name:
+                # Обновление документа
+                await db.users.update_one({'_id': document['_id']}, {'$set': {'name': new_name}})
+
+
+async def install_zero():
+    current_date = datetime.today().date()
+    current_date_minus_one = current_date - timedelta(days=1)
+    current_datetime = datetime.combine(current_date_minus_one, datetime.time(datetime.now()))
+    await db.users.update_many({}, {"$set": {"last_call_time": current_datetime}})
+
+
+async def migrate_characters():
+    async for user in db.users.find():
+        inventory = user.get("inventory", {})
+        characters = inventory.get("characters", {})
+
+        # Если "Allstars(old)" существует в персонажах
+        if "Allstars(old)" in characters:
+            old_allstars = characters["Allstars(old)"]
+
+            # Перебор редкостей
+            for rarity, char_list in old_allstars.items():
+                if rarity not in characters.get("Allstars", {}):
+                    characters.setdefault("Allstars", {})[rarity] = []
+
+                # Добавляем персонажей, которых ещё нет в "Allstars"
+                for char in char_list:
+                    if char not in characters["Allstars"][rarity]:
+                        characters["Allstars"][rarity].append(char)
+
+            # Удаляем "Allstars(old)"
+            del characters["Allstars(old)"]
+
+            # Обновляем инвентарь
+            await db.users.update_one(
+                {"_id": user["_id"]},
+                {"$set": {"inventory.characters": characters}}
+            )
+
+        # Обновление значения "universe"
+        if user.get("universe") == "Allstars(old)":
+            await db.users.update_one(
+                {"_id": user["_id"]},
+                {"$set": {"universe": "Allstars"}}
+            )

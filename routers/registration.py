@@ -1,18 +1,19 @@
-from aiogram import Router, F
+import re
 
-from aiogram.types import Message, CallbackQuery, InputMediaAnimation
+from aiogram import Router, F
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
-
+from aiogram.types import Message, CallbackQuery, InputMediaAnimation
 from data import mongodb
-from utils.states import Form
+from filters.chat_type import ChatTypeFilter
+from keyboards.builders import inline_builder, profile, rm, get_common
 from routers import main_menu
 from routers.gacha import first_summon
-from keyboards.builders import inline_builder, profile, rm, get_common
-from filters.chat_type import ChatTypeFilter
-
+from utils.states import Form
 
 router = Router()
+
+EMOJI_PATTERN = re.compile("[\U0001F600-\U0001F64F\U0001F300-\U0001F5FF\U0001F680-\U0001F6FF\U0001F700-\U0001F77F\U0001F780-\U0001F7FF\U0001F800-\U0001F8FF\U0001F900-\U0001F9FF\U0001FA00-\U0001FA6F\U0001FA70-\U0001FAFF]+")
 
 
 @router.message(ChatTypeFilter(chat_type=["private"]), Command("start"))
@@ -53,27 +54,30 @@ async def fill_profile(message: Message,  state: FSMContext):
 
 @router.message(Form.name)
 async def form_name(message: Message, state: FSMContext):
-    if len(message.text) < 10:
+    if not EMOJI_PATTERN.search(message.text):
+        if len(message.text) <= 10:
 
-        await state.update_data(name=f"<a href='https://t.me/{message.from_user.username}'><b>{message.text}</b></a>")
-        await state.set_state(Form.universe)
-        media_id = "AgACAgIAAx0CfstymgACCxNl4ie8goZjHQ1rAV5rxcz2a9XLnQACBs8xG7-XGUsGHmby9061bgEAAwIAA3kAAzQE"
-        await message.answer(f"\n\n ❖ ⚙️ Чтобы бот работал корректно и динамично, включите автозагрузку фото "
-                             f"и видео в настройках телеграм и автовоспроизведение видео в настройках чата телеграм",
-                             reply_markup=rm())
-        pattern = dict(
-            caption="❖ 🗺 Выбирайте вселенную"
-                    "\n── •✧✧• ────────────"
-                    "\n❖ 🗺 Вселенные постепенно будут добавляться и дополняться"
-                    "\n<blockquote expandable>❕Внимание: Вселенные Allstars и Allstars(old) не имеет доступ к "
-                    "🏟 боевой арене!</blockquote>"
-                    "\n❖ 🔄 Всегда можно сменить вселенную в ⚙️ ️настройки",
-            reply_markup=inline_builder(['🗡 Bleach', '🍥 Naruto', '🌟 Allstars', '⭐️ Allstars(old)'],
-                                        ['Bleach', 'Naruto', 'Allstars', 'Allstars(old)'], row_width=1),
-        )
-        await message.answer_photo(media_id, **pattern)
+            await state.update_data(name=f"<a href='https://t.me/{message.from_user.username}'><b>{message.text}</b></a>")
+            await state.set_state(Form.universe)
+            media_id = "AgACAgIAAx0CfstymgACCxNl4ie8goZjHQ1rAV5rxcz2a9XLnQACBs8xG7-XGUsGHmby9061bgEAAwIAA3kAAzQE"
+            await message.answer(f"\n\n ❖ ⚙️ Чтобы бот работал корректно и динамично, включите автозагрузку фото "
+                                 f"и видео в настройках телеграм и автовоспроизведение видео в настройках чата телеграм",
+                                 reply_markup=rm())
+            pattern = dict(
+                caption="❖ 🗺 Выбирайте вселенную"
+                        "\n── •✧✧• ────────────"
+                        "\n❖ 🗺 Вселенные постепенно будут добавляться и дополняться"
+                        "\n<blockquote expandable>❕Внимание: Вселенные Allstars и Allstars(old) не имеет доступ к "
+                        "🏟 боевой арене!</blockquote>"
+                        "\n❖ 🔄 Всегда можно сменить вселенную в ⚙️ ️настройки",
+                reply_markup=inline_builder(['🗡 Bleach', '🍥 Naruto', '⭐️ Allstars'],
+                                            ['Bleach', 'Naruto', 'Allstars'], row_width=1),
+            )
+            await message.answer_photo(media_id, **pattern)
+        else:
+            await message.answer("✖️ Ник слишком длинный. Введите вручную с помощью клавиатуры: ")
     else:
-        await message.answer("✖️ Ник слишком длинный. Введи вручную: ")
+        await message.answer("✖️ Ник не должен содержать эмодзи. Введите вручную с помощью клавиатуры: ")
 
 
 @router.callback_query(F.data.in_(['Bleach']))
@@ -133,24 +137,24 @@ async def get_first_free(callback: CallbackQuery, state: FSMContext):
                                                 "персонажей</blockquote>", reply_markup=get_common())
 
 
-@router.callback_query(F.data.in_(['Allstars(old)']))
-async def get_first_free(callback: CallbackQuery, state: FSMContext):
-    account = await mongodb.get_user(callback.from_user.id)
-    if account is not None and account['_id'] == callback.from_user.id:
-        character = account.get('character', {}).get('Allstars(old)')
-        if character:
-            await mongodb.update_user(callback.from_user.id, {'universe': 'Allstars(old)'})
-            await callback.answer("❖ 🗺 Вы успешно сменили вселенную", show_alert=True)
-            return
-    await state.update_data(universe=callback.data)
-    media = InputMediaAnimation(media="CgACAgIAAx0CfstymgACEnpmnUiYllQQPMNY7B3y44Okelr6UgACsVEAApQD6UhAS-MzjVWVxTUE")
-    await callback.message.edit_media(media=media)
-    await callback.message.edit_caption(caption="❖ 🗺 Allstars(old)"
-                                        "\n── •✧✧• ────────────"
-                                        "\n<blockquote expandable>💮 Эта самая первая версия. В Этой Вселенной "
-                                                "находиться популярные персонажи из разных аниме но пока арена "
-                                                "недоступна. Вы моежете просто собрать "
-                                                "персонажей</blockquote>", reply_markup=get_common())
+# @router.callback_query(F.data.in_(['Allstars(old)']))
+# async def get_first_free(callback: CallbackQuery, state: FSMContext):
+#     account = await mongodb.get_user(callback.from_user.id)
+#     if account is not None and account['_id'] == callback.from_user.id:
+#         character = account.get('character', {}).get('Allstars(old)')
+#         if character:
+#             await mongodb.update_user(callback.from_user.id, {'universe': 'Allstars(old)'})
+#             await callback.answer("❖ 🗺 Вы успешно сменили вселенную", show_alert=True)
+#             return
+#     await state.update_data(universe=callback.data)
+#     media = InputMediaAnimation(media="CgACAgIAAx0CfstymgACEnpmnUiYllQQPMNY7B3y44Okelr6UgACsVEAApQD6UhAS-MzjVWVxTUE")
+#     await callback.message.edit_media(media=media)
+#     await callback.message.edit_caption(caption="❖ 🗺 Allstars(old)"
+#                                         "\n── •✧✧• ────────────"
+#                                         "\n<blockquote expandable>💮 Эта самая первая версия. В Этой Вселенной "
+#                                                 "находиться популярные персонажи из разных аниме но пока арена "
+#                                                 "недоступна. Вы моежете просто собрать "
+#                                                 "персонажей</blockquote>", reply_markup=get_common())
 
 
 @router.callback_query(F.data == "get_first_free")
