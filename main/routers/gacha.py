@@ -234,7 +234,7 @@ async def card_gacha(user_id, callback):
 
     pattern = dict(
         caption=f"\n ── •✧✧• ────────────"
-                f"\n  🃏  〢 <tg-spoiler>{character}</tg-spoiler>"
+                f"\n  🎴  〢 <tg-spoiler>{character}</tg-spoiler>"
                 f"\n ── •✧✧• ────────────"
                 f"{message}"
                 f"\n──❀*̥˚──◌──◌──❀*̥˚────"
@@ -446,7 +446,7 @@ async def campaign_rank(message: Message):
 
                 pattern = dict(
                     caption=f"\n ── •✧✧• ────────────"
-                            f"\n  🃏  〢 <tg-spoiler>{character}</tg-spoiler>"
+                            f"\n  🎴  〢 <tg-spoiler>{character}</tg-spoiler>"
                             f"\n ── •✧✧• ────────────"
                             f"{msg}"
                             f"\n──❀*̥˚──◌──◌──❀*̥˚────"

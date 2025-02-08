@@ -1,20 +1,19 @@
 import asyncio
 import random
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from aiogram import Router, F
 from aiogram.enums import ParseMode
 from aiogram.filters import Command
 from routers.arena import arena
-from aiogram.types import CallbackQuery, Message, InputMediaPhoto
+from aiogram.types import CallbackQuery, Message
 from chat_handlers.chat_battle import bot
 from data import characters, character_photo
 from data import mongodb
-from data.mongodb import db
 from filters.chat_type import ChatTypeFilter, CallbackChatTypeFilter
-from keyboards.builders import reply_builder, inline_builder, menu_button, Ability, rm
-from recycling import profile
-from routers import main_menu, gacha
+from keyboards.builders import reply_builder, inline_builder, menu_button
+from routers import main_menu
+from battle_ai import ai
 
 router = Router()
 
@@ -98,40 +97,40 @@ async def surrender_f(user_id, r, mes):
                                     text=f"✖️ Время вышло 🕘", reply_markup=None)
 
 
-@router.callback_query(F.data == "battle_arena")
-async def b_arena(callback: CallbackQuery | Message):
-    account = await mongodb.get_user(callback.from_user.id)
-    if account['universe'] in ['Allstars', 'Allstars(old)']:
-        await callback.answer(
-            text="💢 Пока не доступно в вашой вселеноой!",
-            show_alert=True
-        )
-        return
-    await profile.update_rank(callback.from_user.id, account["battle"]["stats"]['wins'])
-    in_battle = await mongodb.in_battle()
-
-    buttons = ["⚔️ PvP 🎃", "✨ AI", "🔙 Назад", "📜 Правила",]
-    calls = ["search_opponent", "ai_battle", "arena", "battle_rules",]
-
-    pattern = dict(
-        caption=f"❖  🏟️ <b>Арена</b>  ⚔️"
-                f"\n── •✧✧• ────────────"
-                f"\n❖⚔️ PvP - Битва против реального игрока который так же ищет соперника"
-                f"\n\n❖✨ AI - Битва против Искуственного Интелекта. Удобно для тренировок "
-                f"\n\n── •✧✧• ────────────"
-                f"\n<i>🌊 В битве ⚔️ {in_battle} игроков</i> 🌊",
-        parse_mode=ParseMode.HTML,
-        reply_markup=inline_builder(
-            buttons,
-            calls,
-            row_width=[2, 2])
-    )
-
-    media = InputMediaPhoto(
-        media='AgACAgIAAxkBAAEBGppm6oI246rBQNH-lZFRiZFD6TbJlgACeuUxG1fhUEt5QK8VqfcCQQEAAwIAA3gAAzYE'
-    )
-    await callback.message.edit_media(media)
-    await callback.message.edit_caption(**pattern)
+# @router.callback_query(F.data == "battle_arena")
+# async def b_arena(callback: CallbackQuery | Message):
+#     account = await mongodb.get_user(callback.from_user.id)
+#     if account['universe'] in ['Allstars', 'Allstars(old)']:
+#         await callback.answer(
+#             text="💢 Пока не доступно в вашой вселеноой!",
+#             show_alert=True
+#         )
+#         return
+#     await profile.update_rank(callback.from_user.id, account["battle"]["stats"]['wins'])
+#     in_battle = await mongodb.in_battle()
+#
+#     buttons = ["⚔️ PvP 🎃", "✨ AI", "🔙 Назад", "📜 Правила",]
+#     calls = ["search_opponent", "ai_battle", "arena", "battle_rules",]
+#
+#     pattern = dict(
+#         caption=f"❖  🏟️ <b>Арена</b>  ⚔️"
+#                 f"\n── •✧✧• ────────────"
+#                 f"\n❖⚔️ PvP - Битва против реального игрока который так же ищет соперника"
+#                 f"\n\n❖✨ AI - Битва против Искуственного Интелекта. Удобно для тренировок "
+#                 f"\n\n── •✧✧• ────────────"
+#                 f"\n<i>🌊 В битве ⚔️ {in_battle} игроков</i> 🌊",
+#         parse_mode=ParseMode.HTML,
+#         reply_markup=inline_builder(
+#             buttons,
+#             calls,
+#             row_width=[2, 2])
+#     )
+#
+#     media = InputMediaPhoto(
+#         media='AgACAgIAAxkBAAEBGppm6oI246rBQNH-lZFRiZFD6TbJlgACeuUxG1fhUEt5QK8VqfcCQQEAAwIAA3gAAzYE'
+#     )
+#     await callback.message.edit_media(media)
+#     await callback.message.edit_caption(**pattern)
 
 
 @router.message(ChatTypeFilter(chat_type=["private"]), Command("search"))

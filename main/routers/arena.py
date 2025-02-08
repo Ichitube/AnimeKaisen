@@ -72,11 +72,13 @@ async def arena(callback: CallbackQuery | Message, stop=0):
 async def b_arena(callback: CallbackQuery | Message):
     account = await mongodb.get_user(callback.from_user.id)
     if account['universe'] in ['Allstars', 'Allstars(old)']:
-        buttons = ["⚔️ PvP 🎃", "✨ AI", "🃏 Колода", "📜 Правила", "🔙 Назад"]
-        calls = ["card_opponent", "ai_card_battle", "deck", "card_battle_rules", "arena"]
+        buttons = ["⚔️ PvP 🎃", "✨ AI", "🃏 Колода", "🔙 Назад", "📜 Правила"]
+        calls = ["card_opponent", "ai_card_battle", "deck", "arena", "battle_rules"]
+        rows = [2, 1, 2]
     else:
-        buttons = ["⚔️ PvP 🎃", "✨ AI", "📜 Правила", "🔙 Назад"]
-        calls = ["search_opponent", "ai_battle", "battle_rules", "arena"]
+        buttons = ["⚔️ PvP 🎃", "✨ AI", "🔙 Назад", "📜 Правила"]
+        calls = ["search_opponent", "ai_battle", "arena", "battle_rules"]
+        rows = [2, 2]
     await profile.update_rank(callback.from_user.id, account["battle"]["stats"]['wins'])
     in_battle = await mongodb.in_battle()
 
@@ -91,11 +93,11 @@ async def b_arena(callback: CallbackQuery | Message):
         reply_markup=inline_builder(
             buttons,
             calls,
-            row_width=[2, 2])
+            rows)
     )
 
     media = InputMediaPhoto(
-        media='AgACAgIAAx0CfstymgACNJhnRZTPz9fTnkUVLgH-dSorSmJ6pQAC5OcxG4ISMUqFAsZTkEY1cAEAAwIAA3gAAzYE'
+        media='AgACAgIAAxkBAAEBGppm6oI246rBQNH-lZFRiZFD6TbJlgACeuUxG1fhUEt5QK8VqfcCQQEAAwIAA3gAAzYE'
     )
     await callback.message.edit_media(media)
     await callback.message.edit_caption(**pattern)

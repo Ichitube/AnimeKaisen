@@ -132,7 +132,7 @@ async def fill_profile(message: Message):
 
 @router.message(Command("message"))
 async def send_message_to_all(message: Message):
-    if message.from_user.id == 6946183730:
+    if message.from_user.id in admins:
         # Извлекаем текст сообщения из команды
         command_parts = message.text.split(maxsplit=1)
         if len(command_parts) == 2:
@@ -155,7 +155,7 @@ async def send_message_to_all(message: Message):
 
 @router.message(Command("chats"))
 async def fill_profile(message: Message):
-    if message.from_user.id == 6946183730:
+    if message.from_user.id in admins:
         chats = await mongodb.chats()
         await message.answer(f"Всего чатов: {chats}")
     else:
@@ -167,5 +167,24 @@ async def fill_profile(message: Message):
     if message.from_user.id in admins:
         await mongodb.migrate_characters()
         await message.answer(f"успешно")
+    else:
+        await message.answer("У вас нет прав на выполнение этой команды")
+
+
+@router.message(Command("res"))
+async def fill_profile(message: Message):
+    if message.from_user.id in admins:
+        args = message.text.split()
+        if len(args) != 2 or not args[1].isdigit():
+            await message.reply("Используйте: /res <user_id>")
+            return
+
+        user_id = int(args[1])
+        try:
+            await mongodb.update_user(user_id, {"battle.battle.status": 0})
+
+            await message.reply(f"Статус пользователя {user_id} успешно сброшен!")
+        except Exception as e:
+            await message.reply(f"Пользователь {user_id} не найден в базе. Error: {e}")
     else:
         await message.answer("У вас нет прав на выполнение этой команды")

@@ -267,12 +267,12 @@ async def balance(message: Message):
 
 
 @router.message(Command("rm"))
-async def fill_profile(message: Message):
+async def fill_profile(message: Message, bot: Bot):
     await bot.send_message(message.chat.id, '❖ ✖️ Кнопки удалены', reply_markup=rm())
 
 
 @router.message(Command("help"))
-async def fill_profile(message: Message):
+async def fill_profile(message: Message, bot: Bot):
     await bot.send_message(message.chat.id, '❖ 📋 <a href="https://teletype.in/@dire_hazard/x1">Руководство</a>',
                            reply_markup=inline_builder(
                                ["☑️"],

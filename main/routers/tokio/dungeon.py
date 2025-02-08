@@ -121,7 +121,6 @@ async def dungeon(callback: CallbackQuery | Message):
                 f"\n💠 в час: {nephritis_per_hour}"
                 f" 📀 в час: {gold_per_hour}"
                 f" 💿 в час: {silver_per_hour}",
-        parse_mode=ParseMode.HTML,
         reply_markup=inline_builder(
             ["🗡🗡 🏴Отряд", "💰 Продать 💴", "👾 Босс", "⚜️ Рейтинг", "📋 Правила", "🔙 Назад"],
             ["deck_dungeon", "sell_resources", "boss", "campaign_rank", "campaign_rules", "main_page"],
@@ -142,6 +141,7 @@ async def dungeon(callback: CallbackQuery | Message):
 @router.callback_query(F.data == "sell_resources")
 async def sell_resources(callback: CallbackQuery):
     user_id = callback.from_user.id
+    account = await mongodb.get_user(user_id)
 
     universe = account['universe']
 
@@ -240,12 +240,31 @@ async def sell_resources(callback: CallbackQuery):
 
     await mongodb.update_user(user_id, {'account.money': total_money})
 
+    level = await profile.level(account['campaign']['level'])
+
+    caption = (f"❖  ⛩️  <b>Подземелье</b>"
+               f"\n── •✧✧• ────────────"
+               f"\n❖ Очищаем подземелье от монстров и собираем ресурсы 💰. . ."
+               f"\n\n⛩️ {level}"
+               f"\n\n💰 Ресурсы:"
+               f"\n   💠 Нефрит: {nephritis}"
+               f"\n   📀 Золото: {gold}"
+               f"\n   💿 Серебро: {silver}"
+               f"\n\n⚖️ Цены за ресурсы на рынке: "
+               f"\n💠 = 26 ¥"
+               f" 📀 = 10 ¥"
+               f" 💿 = 4 ¥"
+               f"\n\n⚜️ Сила 🏴отряда: {power}🗡"
+               f"\n── •✧✧• ────────────"
+               f"\n💠 в час: {nephritis_per_hour}"
+               f" 📀 в час: {gold_per_hour}"
+               f" 💿 в час: {silver_per_hour}")
+
+    await callback.message.edit_caption(inline_message_id=callback.inline_message_id, caption=caption, reply_markup=inline_builder(
+            ["🗡🗡 🏴Отряд", "💰 Продать 💴", "👾 Босс", "⚜️ Рейтинг", "📋 Правила", "🔙 Назад"],
+            ["deck_dungeon", "sell_resources", "boss", "campaign_rank", "campaign_rules", "main_page"],
+            row_width=[2, 2, 1]))
     await callback.answer(f"❖ 💰 Ресурсы проданы за {total_money}¥ 💴!", show_alert=True)
-
-
-@router.callback_query(F.data == "boss")
-async def boss(callback: CallbackQuery):
-    await callback.answer("❖  👾 Босс еще не появился", show_alert=True)
 
 
 @router.callback_query(F.data == "campaign_rank")
@@ -438,7 +457,7 @@ async def inventory(callback: CallbackQuery | Message, state: FSMContext):
            f"\n❖ 🌁 Обычные ⭐️ {total_common}")
     buttons = [f"🌠 Божественные 🌟 {total_divine}", f"🌌 Мифические ⭐️ {total_mythical}", f"🌅 Легендарные ⭐️ {total_legendary}",
                f"🎆 Эпические ⭐️ {total_epic}", f"🎇 Редкие ⭐️ {total_rare}", f"🌁 Обычные ⭐️ {total_common}", "🔙 Назад"]
-    callbacks = ["dg_divine", "dg_mythical", "dg_legendary", "dg_epic", "dg_rare", "dg_common", f"{callback.data}"]
+    callbacks = ["dg_divine", "dg_mythical", "dg_legendary", "dg_epic", "dg_rare", "dg_common", f"deck_dungeon"]
 
     if universe == "Allstars":
         if "halloween" in account['inventory']['characters']['Allstars']:
@@ -579,3 +598,8 @@ async def change_ch(callback: CallbackQuery, state: FSMContext):
     except KeyError:
         await callback.answer("❖ 🔂 Идёт разработка бота связи с чем сессия была остановлена, вызовите "
                               "🥡 Инвентарь еще раз", show_alert=True)
+
+
+@router.callback_query(F.data == "boss")
+async def boss(callback: CallbackQuery):
+    await callback.answer("❖  👾 Босс еще не появился", show_alert=True)

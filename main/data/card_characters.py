@@ -8,7 +8,8 @@ from data.mongodb import db
 
 
 class CardCharacters:
-    def __init__(self, ident, p_name, universe, name, slave, rid, data):
+    def __init__(self, ident, p_name, universe, cb, name, slave, rid, data):
+        status = "🗡"
         avatar = character_photo.get_stats(universe, name, 'avatar')
         avatar_type = character_photo.get_stats(universe, name, 'type')
         rarity = character_photo.get_stats(universe, name, 'rarity')
@@ -17,11 +18,11 @@ class CardCharacters:
         intelligence = character_photo.get_stats(universe, name, 'arena')['intelligence']
         clas = character_photo.get_stats(universe, name, 'arena')['class']
 
+        self.status = status
         self.ident = ident
         self.p_name = p_name
         self.universe = universe
-        self.avatar = avatar
-        self.avatar_type = avatar_type
+        self.cb = cb
         self.rarity = rarity
         self.name = name
         self.strength = strength

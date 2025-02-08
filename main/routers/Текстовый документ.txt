@@ -1,4 +1,5 @@
 import asyncio
+import random
 from datetime import datetime
 
 from aiogram import Router, F, Bot
@@ -44,19 +45,6 @@ time_out_text = ("👑 Победа: 🕘Время вышло"
                  "\n  + 200💴 ¥</blockquote>")
 
 
-def round_text(side, character, faze, rd):
-    text = (f"        『{side}』"
-            f"\n༺ Фаза: {faze} Раунд: {rd} ༻"
-            f"\n\n ⟬{character.name}⟭"
-            f"\n\n❤️{character.health}"
-            f" 🗡{character.attack}"
-            f" 🛡{character.defense}"
-            f"\n\n✊🏻Сила: {character.strength}"
-            f" 👣Лов.: {character.agility}"
-            f" 🧠Инт.: {character.intelligence}")
-    return text
-
-
 def account_text(ident):
     nested_dict = user_data[ident]  # Получаем вложенный словарь
     key = list(nested_dict.keys())[0]
@@ -90,7 +78,7 @@ def account_text(ident):
             f"\n     ┗➤ • ✊{d6.strength} • 👣{d6.agility} • 🧠{d6.intelligence} ✧ {d6.clas}</blockquote>"
             f"\n✧•───────────────────────•✧")
     status = [d1.status, d2.status, d3.status, d4.status, d5.status, d6.status]
-    user_cb = [f"{d1.cb}", f"{d2.cb}", f"{d3.cb}", f"{d4.cb}", f"{d5.cb}", f"{d6.cb}"]
+    user_cb = ["d1", "d2", "d3", "d4", "d5", "d6"]
     return text, status, user_cb, key
 
 
@@ -224,6 +212,19 @@ async def choose_card(callback: CallbackQuery):
     await callback.message.edit_caption(inline_id, **pattern)
 
 
+# @router.callback_query(F.data == "card_opponent")
+# async def chose_card(callback: CallbackQuery):
+#     if players_data[player_id]["current_card"] is not None:
+#         await callback.answer("Вы уже выбрали карту!", show_alert=True)
+#         return
+#
+#     players_data[player_id]["current_card"] = players_data[player_id]["deck"].pop(card_index)
+#
+#     if all(p["current_card"] is not None for p in players_data.values()):
+#         round_data["waiting_for_choices"] = False
+#         await execute_round(callback.message.chat.id)
+
+
 async def get_inventory(user_id, rarity):
     account = await mongodb.get_user(user_id)
     universe = account['universe']
@@ -265,6 +266,13 @@ async def inventory(callback: CallbackQuery | Message, state: FSMContext):
         for item in sublist:
             if isinstance(item, str):
                 total_elements += 1
+    msg = (f"\n❖ 🃏 Количество карт: {total_elements}"
+           f"\n\n❖ 🌠 Божественные 🌟 {total_divine}"
+           f"\n❖ 🌌 Мифические ⭐️ {total_mythical}"
+           f"\n❖ 🌅 Легендарные ⭐️ {total_legendary}"
+           f"\n❖ 🎆 Эпические ⭐️ {total_epic}"
+           f"\n❖ 🎇 Редкие ⭐️ {total_rare}"
+           f"\n❖ 🌁 Обычные ⭐️ {total_common}")
     buttons = [f"🌠 Божественные 🌟 {total_divine}", f"🌌 Мифические ⭐️ {total_mythical}", f"🌅 Легендарные ⭐️ {total_legendary}",
                f"🎆 Эпические ⭐️ {total_epic}", f"🎇 Редкие ⭐️ {total_rare}", f"🌁 Обычные ⭐️ {total_common}", "🔙 Назад"]
     callbacks = ["d_divine", "d_mythical", "d_legendary", "d_epic", "d_rare", "d_common", f"{callback.data}"]
@@ -475,28 +483,23 @@ async def search_opponent(callback: CallbackQuery | Message, bot: Bot):
             if account['inventory']['slaves']:
                 slave = account['inventory']['slaves'][0]
 
-            u1_character = card_characters.CardCharacters(ident, name, universe, f"┋{u_deck["d1"]}┋", u_deck["d1"], slave, rival["_id"], "d1")
-            u2_character = card_characters.CardCharacters(ident, name, universe, f"┋{u_deck["d2"]}┋", u_deck["d2"], slave, rival["_id"], "d2")
-            u3_character = card_characters.CardCharacters(ident, name, universe, f"┋{u_deck["d3"]}┋", u_deck["d3"], slave, rival["_id"], "d3")
-            u4_character = card_characters.CardCharacters(ident, name, universe, f"┋{u_deck["d4"]}┋", u_deck["d4"], slave, rival["_id"], "d4")
-            u5_character = card_characters.CardCharacters(ident, name, universe, f"┋{u_deck["d5"]}┋", u_deck["d5"], slave, rival["_id"], "d5")
-            u6_character = card_characters.CardCharacters(ident, name, universe, f"┋{u_deck["d6"]}┋", u_deck["d6"], slave, rival["_id"], "d6")
+            u1_character = card_characters.CardCharacters(ident, name, universe, u_deck["d1"], slave, rival["_id"], "d1")
+            u2_character = card_characters.CardCharacters(ident, name, universe, u_deck["d2"], slave, rival["_id"], "d2")
+            u3_character = card_characters.CardCharacters(ident, name, universe, u_deck["d3"], slave, rival["_id"], "d3")
+            u4_character = card_characters.CardCharacters(ident, name, universe, u_deck["d4"], slave, rival["_id"], "d4")
+            u5_character = card_characters.CardCharacters(ident, name, universe, u_deck["d5"], slave, rival["_id"], "d5")
+            u6_character = card_characters.CardCharacters(ident, name, universe, u_deck["d6"], slave, rival["_id"], "d6")
 
             battle_data[ident] = {
                 "deck": {"d1": u1_character,
-                         "d2": u2_character,
-                         "d3": u3_character,
-                         "d4": u4_character,
-                         "d5": u5_character,
-                         "d6": u6_character,
-                         },
+                         "d2": f"┋{u2_character}┋",
+                         "d3": f"┋{u3_character}┋",
+                         "d4": f"┋{u4_character}┋",
+                         "d5": f"┋{u5_character}┋",
+                         "d6": f"┋{u6_character}┋"},
                 "rival": rival["_id"],
                 "round": 1,
-                "faze": 1,
-                "turn": False,
-                "last_win": False,
-                "current": None,
-                "current_cb": None
+                "turn": True
             }
 
             user_data[user_id] = {1: True}
@@ -511,27 +514,23 @@ async def search_opponent(callback: CallbackQuery | Message, bot: Bot):
             if rival['inventory']['slaves']:
                 r_slave = rival['inventory']['slaves'][0]
 
-            r1_character = card_characters.CardCharacters(r_ident, r_name, r_universe, f"┋{ru_deck["d1"]}┋", ru_deck["d1"], r_slave, ident, "d1")
-            r2_character = card_characters.CardCharacters(r_ident, r_name, r_universe, f"┋{ru_deck["d2"]}┋", ru_deck["d2"], r_slave, ident, "d2")
-            r3_character = card_characters.CardCharacters(r_ident, r_name, r_universe, f"┋{ru_deck["d3"]}┋", ru_deck["d3"], r_slave, ident, "d3")
-            r4_character = card_characters.CardCharacters(r_ident, r_name, r_universe, f"┋{ru_deck["d4"]}┋", ru_deck["d4"], r_slave, ident, "d4")
-            r5_character = card_characters.CardCharacters(r_ident, r_name, r_universe, f"┋{ru_deck["d5"]}┋", ru_deck["d5"], r_slave, ident, "d5")
-            r6_character = card_characters.CardCharacters(r_ident, r_name, r_universe, f"┋{ru_deck["d6"]}┋", ru_deck["d6"], r_slave, ident, "d6")
+            r1_character = card_characters.CardCharacters(r_ident, r_name, r_universe, ru_deck["d1"], r_slave, ident, "d1")
+            r2_character = card_characters.CardCharacters(r_ident, r_name, r_universe, ru_deck["d2"], r_slave, ident, "d2")
+            r3_character = card_characters.CardCharacters(r_ident, r_name, r_universe, ru_deck["d3"], r_slave, ident, "d3")
+            r4_character = card_characters.CardCharacters(r_ident, r_name, r_universe, ru_deck["d4"], r_slave, ident, "d4")
+            r5_character = card_characters.CardCharacters(r_ident, r_name, r_universe, ru_deck["d5"], r_slave, ident, "d5")
+            r6_character = card_characters.CardCharacters(r_ident, r_name, r_universe, ru_deck["d6"], r_slave, ident, "d6")
 
             battle_data[r_ident] = {
-                "deck": {"d1": r1_character,
-                         "d2": r2_character,
-                         "d3": r3_character,
-                         "d4": r4_character,
-                         "d5": r5_character,
-                         "d6": r6_character
-                         },
+                "deck": {"d1": f"┋{r1_character}┋",
+                         "d2": f"┋{r2_character}┋",
+                         "d3": f"┋{r3_character}┋",
+                         "d4": f"┋{r4_character}┋",
+                         "d5": f"┋{r5_character}┋",
+                         "d6": f"┋{r6_character}┋"},
                 "rival": ident,
                 "round": 1,
-                "faze": 1,
-                "turn": False,
-                "current": None,
-                "current_cb": None
+                "turn": True
             }
 
             user_data[rival["_id"]] = {1: True}
@@ -565,21 +564,19 @@ async def search_opponent(callback: CallbackQuery | Message, bot: Bot):
                 await bot.send_animation(chat_id=rival["_id"], caption=rival_text, animation=avatar,
                                          reply_markup=reply_builder("🏳️ Сдаться"))
 
-            await bot.send_messa
+            user_text, user_status, user_cb, u_round = account_text(ident)
+            await bot.send_message(account["_id"], text=f"{user_text}"
+                                                        f"\n🔸 Слепой ход:",
+                                   reply_markup=inline_builder(user_status, user_cb, row_width=[3, 3]),
+                                   )
 
-            # user_text, user_status, user_cb, u_round = account_text(ident)
-            # await bot.send_message(account["_id"], text=f"{user_text}"
-            #                                             f"\n🔸 Слепой ход:",
-            #                        reply_markup=inline_builder(user_status, user_cb, row_width=[3, 3]),
-            #                        )
-            #
-            # rival_text, rival_status, rival_cb, r_round = account_text(r_ident)
-            # mes = await bot.send_message(rival["_id"], text=f"{rival_text}"
-            #                                                 f"\n🔸 Слепой ход:",
-            #                              reply_markup=inline_builder(rival_status, rival_cb, row_width=[3, 3]),
-            #                              )
+            rival_text, rival_status, rival_cb, r_round = account_text(r_ident)
+            mes = await bot.send_message(rival["_id"], text=f"{rival_text}"
+                                                            f"\n🔸 Слепой ход:",
+                                         reply_markup=inline_builder(rival_status, rival_cb, row_width=[3, 3]),
+                                         )
 
-            await surrender_f(rival["_id"], 1, mes, bot)
+            await surrender_f(rival["_id"], r_round, mes, bot)
 
     elif account["battle"]["battle"]["status"] == 1 or account["battle"]["battle"]["status"] == 3:
         if isinstance(callback, CallbackQuery):
@@ -600,37 +597,130 @@ async def search_opponent(callback: CallbackQuery | Message, bot: Bot):
             await callback.answer(text="💢 Вы уже находитесь в битве!")
 
 
+round_data = {
+    "current_round": 1,
+    "waiting_for_choices": True,
+    "last_winner": None,
+}
+
+
+class Character:
+    def __init__(self, name, attack, defense, health, char_class):
+        self.name = name
+        self.attack = attack
+        self.defense = defense
+        self.health = health
+        self.char_class = char_class  # "Strength", "Agility", "Intelligence"
+
+    def is_alive(self):
+        return self.health > 0
+
+
+class_advantage = {
+    ("Strength", "Agility"): 1.5,
+    ("Agility", "Intelligence"): 1.5,
+    ("Intelligence", "Strength"): 1.5,
+}
+
+
+def calculate_damage(attacker, defender):
+    multiplier = class_advantage.get((attacker.char_class, defender.char_class), 1.0)
+    damage = (attacker.attack * multiplier) - defender.defense
+    return max(damage, 0)
+
+
 @router.callback_query(CallbackChatTypeFilter(chat_type=["private"]), F.data.startswith("┋"))
-async def start_battle(callback: CallbackQuery, bot: Bot):
-    cb = callback.data
+async def start_battle(callback: CallbackQuery):
     player_id = callback.from_user.id
-    rival_id = battle_data[player_id]["rival"]
+    opponent_id = await find_opponent(player_id)
+    if not opponent_id:
+        await callback.message.answer("Противник не найден. Попробуйте позже.")
+        return
 
-    if battle_data[player_id]["round"] == 1:
-        char = cb.replace("┋", "")
-        battle_data[player_id]["current"] = char
+    players_data[player_id] = {
+        "deck": [
+            Character("Aizen", 40, 20, 120, "Intelligence"),
+            Character("Seishiro", 50, 30, 100, "Agility"),
+            Character("Renji", 60, 25, 110, "Strength"),
+            Character("Byakuya", 55, 35, 90, "Intelligence"),
+            Character("Gin", 50, 20, 100, "Agility"),
+        ],
+        "current_card": None,
+    }
 
-        card, char_object = None, None
-        for card_key, card_obj in battle_data[player_id]["deck"].items():
-            if getattr(card_obj, "name", None) == char:  # Проверяем имя персонажа
-                card, char_object = card_key, card_obj
-                break  # Прерываем, если нашли
+    players_data[opponent_id] = {
+        "deck": [
+            Character("Kenpachi", 60, 30, 200, "Strength"),
+            Character("Ichigo", 55, 25, 120, "Strength"),
+            Character("Rukia", 45, 20, 100, "Intelligence"),
+            Character("Toshiro", 50, 30, 110, "Agility"),
+            Character("Urahara", 50, 25, 120, "Intelligence"),
+        ],
+        "current_card": None,
+    }
 
-        user_text = round_text("Вы", char_object, battle_data[player_id]["round"], battle_data[player_id]["faze"])
-        rival_text = round_text("Соперник", char_object, battle_data[player_id]["round"], battle_data[player_id]["faze"])
+    round_data["current_round"] = 1
+    round_data["waiting_for_choices"] = True
+    round_data["last_winner"] = None
 
-        avatar = character_photo.get_stats(char_object.universe, char_object.name, 'avatar')
-        avatar_type = character_photo.get_stats(char_object.universe, char_object.name, 'type')
+    await callback.message.answer("Битва началась! Выберите первую карту.")
+    await send_card_choices(player_id)
+    await send_card_choices(opponent_id)
 
-        if avatar_type == 'photo':
-            await bot.send_photo(photo=avatar, chat_id=player_id, caption=user_text)
-        else:
-            await bot.send_animation(animation=avatar, chat_id=player_id, caption=user_text)
 
-        if avatar_type == 'photo':
-            await bot.send_photo(photo=avatar, chat_id=rival_id, caption=rival_text)
-        else:
-            await bot.send_animation(animation=avatar, chat_id=rival_id, caption=rival_text)
+async def send_card_choices(player_id):
+    player_data = players_data[player_id]
+    buttons = []
+    keyboard = types.InlineKeyboardMarkup(row_width=2).add(*buttons)
+    await bot.send_message(player_id, "Выберите карту для боя:", reply_markup=keyboard)
+
+
+async def execute_round(chat_id):
+    player_ids = list(players_data.keys())
+    player1 = players_data[player_ids[0]]
+    player2 = players_data[player_ids[1]]
+    card1 = player1["current_card"]
+    card2 = player2["current_card"]
+
+    result_message = (
+        f"Раунд {round_data['current_round']}:"
+        f"Игрок 1 выбрал {card1.name} ({card1.char_class}, {card1.health} HP)."
+        f"Игрок 2 выбрал {card2.name} ({card2.char_class}, {card2.health} HP)."
+    )
+
+    while card1.is_alive() and card2.is_alive():
+        damage_to_card2 = calculate_damage(card1, card2)
+        card2.health -= damage_to_card2
+
+        if card2.is_alive():
+            damage_to_card1 = calculate_damage(card2, card1)
+            card1.health -= damage_to_card1
+
+    if card1.is_alive():
+        winner, loser = "Игрок 1", "Игрок 2"
+        player1["deck"].append(card1)
+    else:
+        winner, loser = "Игрок 2", "Игрок 1"
+        player2["deck"].append(card2)
+
+    result_message += f"Победитель раунда: {winner}!"
+    await bot.send_message(chat_id, result_message)
+
+    # Очистка текущих карт
+    player1["current_card"] = None
+    player2["current_card"] = None
+
+    # Проверка на завершение игры
+    if not player1["deck"]:
+        await bot.send_message(chat_id, "Игрок 2 победил в игре!")
+    elif not player2["deck"]:
+        await bot.send_message(chat_id, "Игрок 1 победил в игре!")
+    else:
+        round_data["current_round"] += 1
+        round_data["waiting_for_choices"] = True
+        await bot.send_message(chat_id, "Следующий раунд! Выберите карты.")
+        await send_card_choices(player_ids[0])
+        await send_card_choices(player_ids[1])
 
 
 @router.message(ChatTypeFilter(chat_type=["private"]), Command("card_surrender"))

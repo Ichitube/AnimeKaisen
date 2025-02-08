@@ -1,3 +1,6 @@
+import sys
+import os
+
 import asyncio
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
@@ -14,6 +17,8 @@ from middlewares.AntiFloodMiddleWare import AntiFloodMiddleware, AntiFloodMiddle
 
 bot = Bot(token="6776753252:AAH4FKaWyegHYHnh_RBJINk2sEhtaebxWrk",
           default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 
 async def main():
