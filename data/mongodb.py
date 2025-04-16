@@ -3,6 +3,8 @@ import re
 from motor.motor_asyncio import AsyncIOMotorClient
 from recycling import profile
 
+from datetime import datetime, timedelta
+
 client = AsyncIOMotorClient("mongodb+srv://dire:1243qwtr@animekaisen.8r7or8e.mongodb.net/?retryWrites=true&w=majority&appName=AnimeKaisen")  #mongodb+srv://dire:1243qwtr@animekaisen.8r7or8e.mongodb.net/?retryWrites=true&w=majority,
 
 db = client["AnimeKaisen"]

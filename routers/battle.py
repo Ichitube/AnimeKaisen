@@ -1,20 +1,19 @@
 import asyncio
 import random
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from aiogram import Router, F
 from aiogram.enums import ParseMode
 from aiogram.filters import Command
 from routers.arena import arena
-from aiogram.types import CallbackQuery, Message, InputMediaPhoto
+from aiogram.types import CallbackQuery, Message
 from chat_handlers.chat_battle import bot
 from data import characters, character_photo
 from data import mongodb
-from data.mongodb import db
 from filters.chat_type import ChatTypeFilter, CallbackChatTypeFilter
-from keyboards.builders import reply_builder, inline_builder, menu_button, Ability, rm
-from recycling import profile
-from routers import main_menu, gacha
+from keyboards.builders import reply_builder, inline_builder, menu_button
+from routers import main_menu
+from routers.battle_ai import ai
 
 router = Router()
 
@@ -291,7 +290,7 @@ async def cancel_search(message: Message):
     user_id = message.from_user.id
     account = await mongodb.get_user(user_id)
 
-    if account["battle"]["battle"]["status"] == 1:
+    if account["battle"]["battle"]["status"] == 1 or 3:
         await mongodb.update_user(user_id, {"battle.battle.status": 0})
         await message.answer("✖️ Поиск отменен", reply_markup=menu_button())
         await main_menu.main_menu(message)
@@ -302,8 +301,9 @@ async def cancel_search(message: Message):
 async def surrender(message: Message):
     user_id = message.from_user.id
     account = await mongodb.get_user(user_id)
+    rival = None
 
-    if account["battle"]["battle"]["status"] == 2:
+    if account["battle"]["battle"]["status"] == 2 or 4:
         if account["battle"]["battle"]["rid"] != user_id * 10:
             rival = await mongodb.get_user(account["battle"]["battle"]["rid"])
         await bot.send_animation(chat_id=user_id, animation=lose_animation,
@@ -376,7 +376,8 @@ async def battle(callback: CallbackQuery):
                                                                                  row_width=[2, 2]),
                                                      parse_mode=ParseMode.HTML)
                     else:
-                        await ai(r_character)
+                        await ai(r_character, bot, callback, account)
+                        mes = None
                     user_data[user_id][character.b_round - 1] = True  # Обновляем состояние
                     # Инициализируем состояние пользователя
                     user_data[r_character.ident][r_character.b_round] = False

@@ -8,9 +8,9 @@ from aiogram.types import CallbackQuery, Message
 from data import characters, character_photo
 from data import mongodb
 from routers.arena import arena
-from filters.chat_type import ChatTypeFilter, CallbackChatTypeFilter
-from keyboards.builders import reply_builder, inline_builder, menu_button, Ability, rm
-from routers import main_menu, gacha
+from filters.chat_type import ChatTypeFilter
+from keyboards.builders import reply_builder, inline_builder, menu_button
+from routers import gacha
 
 router = Router()
 
@@ -61,6 +61,7 @@ def account_text(character):
 win_animation = "CgACAgQAAx0CfstymgACDfFmFCIV11emoqYRlGWGZRTtrA46oQACAwMAAtwWDVNLf3iCB-QL9jQE"
 lose_animation = "CgACAgQAAx0CfstymgACDfJmEvqMok4D9NPyOY0bevepOE4LpQAC9gIAAu-0jFK0picm9zwgKzQE"
 draw_animation = "CgACAgQAAx0CfstymgACDfFmFCIV11emoqYRlGWGZRTtrA46oQACAwMAAtwWDVNLf3iCB-QL9jQE"
+
 
 @router.message(ChatTypeFilter(chat_type=["private"]), Command("ai_battle"))
 @router.callback_query(F.data == "ai_battle")
@@ -172,7 +173,7 @@ async def search_opponent(callback: CallbackQuery | Message, bot: Bot):
         # Инициализируем состояние пользователя
         user_data[r_ident] = {rb_character.b_round: False}
         user_data[user_id] = {b_character.b_round: True}
-        await ai(rb_character, bot)
+        await ai(rb_character, bot, callback, account)
 
     elif account["battle"]["battle"]["status"] == 1:
         if isinstance(callback, CallbackQuery):
@@ -193,7 +194,7 @@ async def search_opponent(callback: CallbackQuery | Message, bot: Bot):
             await callback.answer(text="💢 Вы уже находитесь в битве!")
 
 
-async def ai(character, bot):
+async def ai(character, bot, callback, account):
     try:
         r_character = battle_data.get(character.rid)
 
@@ -255,7 +256,7 @@ async def ai(character, bot):
                 user_data[r_character.rid][character.b_round] = False
                 # Запускаем таймер
                 await bot.send_message(r_character.ident, "⏳ Ход соперника")
-                await ai(character, bot)
+                await ai(character, bot, callback, account)
 
         if character.health <= 0 and r_character.health <= 0:
             await bot.send_animation(chat_id=r_character, animation=draw_animation,

@@ -1,5 +1,4 @@
 import asyncio
-import random
 from datetime import datetime
 
 from aiogram import Router, F, Bot
@@ -12,43 +11,63 @@ from data import mongodb, character_photo, card_characters
 from filters.chat_type import ChatTypeFilter, CallbackChatTypeFilter
 from keyboards.builders import inline_builder, Pagination, pagination_card, reply_builder, menu_button
 
+# from caches.redis_ram import RedisDict
+
 router = Router()
 
-battle_data = {}
+# battle_data = RedisDict("battle_data")
+# user_data = RedisDict("user_data")
 
+battle_data = {}
 user_data = {}
 
 win_animation = "CgACAgQAAx0CfstymgACDfFmFCIV11emoqYRlGWGZRTtrA46oQACAwMAAtwWDVNLf3iCB-QL9jQE"
 lose_animation = "CgACAgQAAx0CfstymgACDfJmEvqMok4D9NPyOY0bevepOE4LpQAC9gIAAu-0jFK0picm9zwgKzQE"
 draw_animation = "CgACAgQAAx0CfstymgACDfFmFCIV11emoqYRlGWGZRTtrA46oQACAwMAAtwWDVNLf3iCB-QL9jQE"
 
-win_text = ("👑 Победа: 💀Соперник мертв"
-            "\n<blockquote expandable>── •✧✧• ────────────"
-            "\n  + 100🀄️ xp, "
-            "\n  + 200💴 ¥</blockquote>")
-lose_text = ("💀 Поражение"
-             "\n<blockquote expandable>── •✧✧• ────────────"
-             "\n  + 55🀄️ xp, "
-             "\n  + 100💴 ¥</blockquote>")
-draw_text = ("☠️ Ничья"
-             "\n<blockquote expandable>── •✧✧• ────────────"
-             "\n  + 80🀄️ xp, "
-             "\n  + 150💴 ¥</blockquote>")
+
+def end_text(user_id, rival_id, txt, sts):
+    ttext, status, cb, sound = account_text(user_id)
+    rival_text, rival_status, rival_cb, rival_round = account_text(rival_id)
+    text = (f"{txt}"
+            f"\n<blockquote expandable>── •✧✧• ────────────"
+            f"\n ❖  🃏<b> Ваша колода:</b>"
+            f"\n 「{status[0]} 「{status[1]}」「{status[2]}」"
+            f"\n 「{status[3]}」「{status[4]}」「{status[5]}」"
+            f"\n\n❖  🃏<b> Колода соперника:</b>"
+            f"\n 「{rival_status[0]}」「{rival_status[1]}」「{rival_status[2]}」"
+            f"\n 「{rival_status[3]}」「{rival_status[4]}」「{rival_status[5]}」"
+            f"\n── •✧✧• ────────────</blockquote>"
+            f"{sts}")
+    return text
+
+
+win_text = "👑 Победа: 💀Соперник мертв"
+win_sts = (f"\n  + 100🀄️ xp"
+           f"\n  + 200💴 ¥")
+
+lose_text = "💀 Поражение"
+lose_sts =("\n  + 55🀄️ xp"
+           "\n  + 100💴 ¥")
+
+draw_text = "☠️ Ничья"
+draw_sts = ("\n  + 80🀄️ xp"
+            "\n  + 150💴 ¥")
+
 surrender_text = "🏴‍☠️ Поражение"
-surrender_r_text = ("👑 Победа: 🏴‍☠️Соперник сдался"
-                    "\n<blockquote expandable>── •✧✧• ────────────"
-                    "\n  + 100🀄️ xp, "
-                    "\n  + 200💴 ¥</blockquote>")
-time_out_text = ("👑 Победа: 🕘Время вышло"
-                 "\n<blockquote expandable>── •✧✧• ────────────"
-                 "\n  + 100🀄️ xp, "
-                 "\n  + 200💴 ¥</blockquote>")
+surrender_sts = " "
+
+time_out_text = "👑 Победа: 🕘Время вышло"
+time_out_sts = ("\n  + 100🀄️ xp"
+                "\n  + 200💴 ¥")
+
+time_out_lose_text = "💀 Поражение: 🕘Время вышло"
+time_out_lose_sts = " "
 
 
-def round_text(side, character, faze, rd):
-    text = (f"        『{side}』"
-            f"\n༺ Фаза: {faze} Раунд: {rd} ༻"
-            f"\n\n ⟬{character.name}⟭"
+def round_text(side, character):
+    text = (f"     『{side}』"
+            f"\n\n༺⟬{character.name}⟭༻"
             f"\n\n❤️{character.health}"
             f" 🗡{character.attack}"
             f" 🛡{character.defense}"
@@ -68,9 +87,8 @@ def account_text(ident):
     d4 = battle_data[ident]["deck"]["d4"]
     d5 = battle_data[ident]["deck"]["d5"]
     d6 = battle_data[ident]["deck"]["d6"]
-    text = (f".                    ˗ˋˏ💮 Раунд {key}ˎˊ˗"
+    text = (f".              <b>˗ˋˏ🃏 Ваша колода:ˎˊ˗</b>"
             f"\n✧•───────────────────────•✧"
-            f"\n❖  🃏<b> Ваша колода:</b>"
             f"\n<blockquote expandable> • {d1.status}  {d1.name}"
             f"\n ┗➤ ┏➤ • ♥️{d1.health} • ⚔️{d1.attack} • 🛡️{d1.defense}"
             f"\n     ┗➤ • ✊{d1.strength} • 👣{d1.agility} • 🧠{d1.intelligence} ✧ {d1.clas}"
@@ -274,13 +292,13 @@ async def inventory(callback: CallbackQuery | Message, state: FSMContext):
         if "halloween" in account['inventory']['characters']['Allstars']:
             total_halloween = len(account['inventory']['characters']['Allstars'].get('halloween', {}))
             buttons.insert(0, f"👻 Halloween 🎃 {total_halloween}")
-            callbacks.insert(0, "halloween")
+            callbacks.insert(0, "d_halloween")
         # if "soccer" not in account['inventory']['characters']['Allstars']:
         #     account = await mongodb.get_user(user_id)
         #     await mongodb.update_user(user_id, {"inventory.characters.Allstars.soccer": []})
         #     total_soccer = len(account['inventory']['items'].get('soccer', {}))
         #     buttons.insert(0, f"⚽️ Soccer {total_soccer}")
-        #     callbacks.insert(0, "soccer")
+        #     callbacks.insert(0, "d_soccer")
 
     pattern = dict(caption=f"🥡 Инвентарь"
                            f"\n── •✧✧• ────────────"
@@ -465,7 +483,6 @@ async def search_opponent(callback: CallbackQuery | Message, bot: Bot):
                         f"\n❖ 🔎 Поиск соперника . . . . .",
                 reply_markup=reply_builder("✖️ Отмена"))
         else:
-
             ident = account["_id"]
             name = account["name"]
             u_deck = account["deck"]
@@ -483,25 +500,6 @@ async def search_opponent(callback: CallbackQuery | Message, bot: Bot):
             u5_character = card_characters.CardCharacters(ident, name, universe, f"┋{u_deck["d5"]}┋", u_deck["d5"], slave, rival["_id"], "d5")
             u6_character = card_characters.CardCharacters(ident, name, universe, f"┋{u_deck["d6"]}┋", u_deck["d6"], slave, rival["_id"], "d6")
 
-            battle_data[ident] = {
-                "deck": {"d1": u1_character,
-                         "d2": u2_character,
-                         "d3": u3_character,
-                         "d4": u4_character,
-                         "d5": u5_character,
-                         "d6": u6_character,
-                         },
-                "rival": rival["_id"],
-                "round": 1,
-                "faze": 1,
-                "turn": False,
-                "last_win": False,
-                "current": None,
-                "current_cb": None
-            }
-
-            user_data[user_id] = {1: True}
-
             r_ident = rival["_id"]
             r_universe = rival['universe']
             r_name = rival["name"]
@@ -518,24 +516,6 @@ async def search_opponent(callback: CallbackQuery | Message, bot: Bot):
             r4_character = card_characters.CardCharacters(r_ident, r_name, r_universe, f"┋{ru_deck["d4"]}┋", ru_deck["d4"], r_slave, ident, "d4")
             r5_character = card_characters.CardCharacters(r_ident, r_name, r_universe, f"┋{ru_deck["d5"]}┋", ru_deck["d5"], r_slave, ident, "d5")
             r6_character = card_characters.CardCharacters(r_ident, r_name, r_universe, f"┋{ru_deck["d6"]}┋", ru_deck["d6"], r_slave, ident, "d6")
-
-            battle_data[r_ident] = {
-                "deck": {"d1": r1_character,
-                         "d2": r2_character,
-                         "d3": r3_character,
-                         "d4": r4_character,
-                         "d5": r5_character,
-                         "d6": r6_character
-                         },
-                "rival": ident,
-                "round": 1,
-                "faze": 1,
-                "turn": False,
-                "current": None,
-                "current_cb": None
-            }
-
-            user_data[rival["_id"]] = {1: True}
 
             user_text = (f" ⚔️ Cоперник Найден! "
                          f"\n── •✧✧• ────────────"
@@ -566,21 +546,64 @@ async def search_opponent(callback: CallbackQuery | Message, bot: Bot):
                 await bot.send_animation(chat_id=rival["_id"], caption=rival_text, animation=avatar,
                                          reply_markup=reply_builder("🏳️ Сдаться"))
 
+            photo = 'AgACAgIAAx0CfstymgACPxhnpyOyMWhyizsk7AGoC0SRr47FdAACMewxG1EKQEkNebXgoiA-2wEAAwIAA3kAAzYE'
 
+            text = (f"𝅄  ⭑  ꒰ 🪨 ✂️ 📃 ꒱  ⭑  𝅄"
+                    "\n⟬Игра камень ножницы бумага⟭"
+                    "\n\n × Вы: 『....』"
+                    "\n × Соперник: 『....』"
+                    "\n\n✧ ❔ Определяем кто будеть ходить первым")
+            buttons = ["🤜", "✌️", "🫱"]
+            cb = ["stone", "shears", "paper"]
 
-            # user_text, user_status, user_cb, u_round = account_text(ident)
-            # await bot.send_message(account["_id"], text=f"{user_text}"
-            #                                             f"\n🔸 Слепой ход:",
-            #                        reply_markup=inline_builder(user_status, user_cb, row_width=[3, 3]),
-            #                        )
-            #
-            # rival_text, rival_status, rival_cb, r_round = account_text(r_ident)
-            # mes = await bot.send_message(rival["_id"], text=f"{rival_text}"
-            #                                                 f"\n🔸 Слепой ход:",
-            #                              reply_markup=inline_builder(rival_status, rival_cb, row_width=[3, 3]),
-            #                              )
+            mes = await bot.send_photo(chat_id=user_id, photo=photo, caption=text,
+                                       reply_markup=inline_builder(buttons, cb, row_width=[3]))
 
-            await surrender_f(rival["_id"], r_round, mes, bot)
+            mis = await bot.send_photo(chat_id=rival["_id"], photo=photo, caption=text,
+                                       reply_markup=inline_builder(buttons, cb, row_width=[3]))
+
+            battle_data[user_id] = {
+                "rival": rival["_id"],
+                "round": 0,
+                "faze": 1,
+                "turn": False,
+                "current": None,
+                "current_c": None,
+                "status": None,
+                "ms_id": mes.message_id,
+                "is_first": False,
+                "deck": {"d1": u1_character,
+                         "d2": u2_character,
+                         "d3": u3_character,
+                         "d4": u4_character,
+                         "d5": u5_character,
+                         "d6": u6_character,
+                         }
+            }
+
+            battle_data[r_ident] = {
+                "rival": ident,
+                "round": 0,
+                "faze": 1,
+                "turn": False,
+                "current": None,
+                "current_c": None,
+                "status": None,
+                "ms_id": mis.message_id,
+                "is_first": False,
+                "deck": {"d1": r1_character,
+                         "d2": r2_character,
+                         "d3": r3_character,
+                         "d4": r4_character,
+                         "d5": r5_character,
+                         "d6": r6_character
+                         }
+            }
+            user_data[user_id] = {battle_data[user_id]["round"]: True}
+            user_data[rival["_id"]] = {battle_data[r_ident]["round"]: True}
+
+            # await surrender_f(rival["_id"], battle_data[user_id]["round"], mis, bot)
+            # await surrender_f(rival["_id"], battle_data[r_ident]["round"], mes, bot)
 
     elif account["battle"]["battle"]["status"] == 1 or account["battle"]["battle"]["status"] == 3:
         if isinstance(callback, CallbackQuery):
@@ -601,37 +624,464 @@ async def search_opponent(callback: CallbackQuery | Message, bot: Bot):
             await callback.answer(text="💢 Вы уже находитесь в битве!")
 
 
+@router.callback_query(CallbackChatTypeFilter(chat_type=["private"]), F.data.in_(["stone", "shears", "paper"]))
+async def start_battle(callback: CallbackQuery, bot: Bot):
+    cb = callback.data
+    player_id = callback.from_user.id
+    rival_id = battle_data[player_id]["rival"]
+    battle_data[player_id]['status'] = cb
+    if cb == "stone":
+        choice = "Камень 🤜"
+    elif cb == "shears":
+        choice = "Ножницы ✌️"
+    else:
+        choice = "Бумага 🫱"
+    buttons = ["🤜", "✌️", "🫱"]
+    cb = ["stone", "shears", "paper"]
+    user_data[player_id][battle_data[player_id]["round"]] = True
+    if battle_data[rival_id]["status"] is None:
+        battle_data[player_id]["round"] += 1
+        user_data[rival_id][battle_data[rival_id]["round"]] = False
+        await bot.edit_message_caption(chat_id=player_id, message_id=battle_data[player_id]["ms_id"],
+                                       caption=f"𝅄  ⭑  ꒰ 🪨 ✂️ 📃 ꒱  ⭑  𝅄"
+                                               "\n⟬Игра камень ножницы бумага⟭"
+                                               f"\n\n × Вы: 『{choice}』"
+                                               "\n × Соперник: 『....』"
+                                               "\n\n✧ ⏳ Ожидаем соперника...")
+        mes = await bot.edit_message_caption(chat_id=rival_id, message_id=battle_data[rival_id]["ms_id"],
+                                             caption=f"𝅄  ⭑  ꒰ 🪨 ✂️ 📃 ꒱  ⭑  𝅄"
+                                                     "\n⟬Игра камень ножницы бумага⟭"
+                                                     f"\n\n × Вы: 『....』"
+                                                     f"\n × Соперник: 『<tg-spoiler>.......</tg-spoiler>』"
+                                                     "\n\n✧ ❕ Соперник сделал выбор",
+                                             reply_markup=inline_builder(buttons, cb, row_width=[3]))
+        await surrender_f(rival_id, battle_data[rival_id]["round"], mes, bot)
+    else:
+        player_tx = None
+        rival_tx = None
+        if battle_data[player_id]["status"] == battle_data[rival_id]["status"]:
+            player_tx = "💔 Ничья! Но вы выбрали после соперник, ходите первым 1️⃣"
+            rival_tx = "🎉 Ничья! Но вы выбрали раньше соперника, ходите вторым 2️⃣"
+            battle_data[player_id]["is_first"] = True
+            battle_data[rival_id]["is_first"] = False
+            battle_data[player_id]["status"] = None
+            battle_data[rival_id]["status"] = None
+        elif battle_data[player_id]["status"] == "stone" and battle_data[rival_id]["status"] == "shears":
+            player_tx = "🎉 Вы победили! 2️⃣ ходите вторым"
+            rival_tx = "💔 Вы проиграли! 1️⃣ ходите первым"
+            battle_data[player_id]["is_first"] = False
+            battle_data[rival_id]["is_first"] = True
+            battle_data[player_id]["status"] = None
+            battle_data[rival_id]["status"] = None
+        elif battle_data[player_id]["status"] == "stone" and battle_data[rival_id]["status"] == "paper":
+            player_tx = "💔 Вы проиграли! 1️⃣ ходите первым"
+            rival_tx = "🎉 Вы победили! 2️⃣ ходите вторым"
+            battle_data[player_id]["is_first"] = True
+            battle_data[rival_id]["is_first"] = False
+            battle_data[player_id]["status"] = None
+            battle_data[rival_id]["status"] = None
+        elif battle_data[player_id]["status"] == "shears" and battle_data[rival_id]["status"] == "stone":
+            player_tx = "💔 Вы проиграли! 1️⃣ ходите первым"
+            rival_tx = "🎉 Вы победили! 2️⃣ ходите вторым"
+            battle_data[player_id]["is_first"] = True
+            battle_data[rival_id]["is_first"] = False
+            battle_data[player_id]["status"] = None
+            battle_data[rival_id]["status"] = None
+        elif battle_data[player_id]["status"] == "shears" and battle_data[rival_id]["status"] == "paper":
+            player_tx = "🎉 Вы победили! 2️⃣ ходите вторым"
+            rival_tx = "💔 Вы проиграли! 1️⃣ ходите первым"
+            battle_data[player_id]["is_first"] = False
+            battle_data[rival_id]["is_first"] = True
+            battle_data[player_id]["status"] = None
+            battle_data[rival_id]["status"] = None
+        elif battle_data[player_id]["status"] == "paper" and battle_data[rival_id]["status"] == "stone":
+            player_tx = "🎉 Вы победили! 2️⃣ ходите вторым"
+            rival_tx = "💔 Вы проиграли! 1️⃣ ходите первым"
+            battle_data[player_id]["is_first"] = False
+            battle_data[rival_id]["is_first"] = True
+            battle_data[player_id]["status"] = None
+            battle_data[rival_id]["status"] = None
+        elif battle_data[player_id]["status"] == "paper" and battle_data[rival_id]["status"] == "shears":
+            player_tx = "💔 Вы проиграли! 1️⃣ ходите первым"
+            rival_tx = "🎉 Вы победили! 2️⃣ ходите вторым"
+            battle_data[player_id]["is_first"] = True
+            battle_data[rival_id]["is_first"] = False
+            battle_data[player_id]["status"] = None
+            battle_data[rival_id]["status"] = None
+
+        r_cb = battle_data[rival_id]["status"]
+        if r_cb == "stone":
+            r_choice = "Камень 🤜"
+        elif r_cb == "shears":
+            r_choice = "Ножницы ✌️"
+        else:
+            r_choice = "Бумагу 🫱"
+        await bot.edit_message_caption(chat_id=player_id, message_id=battle_data[player_id]["ms_id"],
+                                       caption=f"𝅄  ⭑  ꒰ 🪨 ✂️ 📃 ꒱  ⭑  𝅄"
+                                               "\n⟬Игра камень ножницы бумага⟭"
+                                               f"\n\n × Вы: 『{choice}』"
+                                               f"\n × Соперник: 『{r_choice}』"
+                                               f"\n\n✧ {player_tx}")
+        await bot.edit_message_caption(chat_id=rival_id, message_id=battle_data[rival_id]["ms_id"],
+                                       caption=f"𝅄  ⭑  ꒰ 🪨 ✂️ 📃 ꒱  ⭑  𝅄"
+                                               "\n⟬Игра камень ножницы бумага⟭"
+                                               f"\n\n × Вы: 『{r_choice}』"
+                                               f"\n × Соперник: 『{choice}』"
+                                               f"\n\n✧ {rival_tx}")
+        await asyncio.sleep(2)
+
+        if battle_data[player_id]["is_first"]:
+            battle_data[player_id]["round"] += 1
+            user_data[player_id][battle_data[player_id]["round"]] = False
+            user_data[rival_id][battle_data[rival_id]["round"]] = True
+            user_text, user_status, user_cb, u_round = account_text(player_id)
+            mes = await bot.send_message(chat_id=player_id, text=f"{user_text}"
+                                                                 f"\n🔸Ваш ход:",
+                                         reply_markup=inline_builder(user_status, user_cb, row_width=[3, 3]))
+            await surrender_f(player_id, battle_data[player_id]["round"], mes, bot)
+        elif battle_data[rival_id]["is_first"]:
+            user_data[player_id][battle_data[player_id]["round"]] = True
+            battle_data[rival_id]["round"] += 1
+            user_data[rival_id][battle_data[rival_id]["round"]] = False
+
+            rival_text, rival_status, rival_cb, r_round = account_text(rival_id)
+            mis = await bot.send_message(chat_id=rival_id, text=f"{rival_text}"
+                                                                f"\n🔸Ваш ход:",
+                                         reply_markup=inline_builder(rival_status, rival_cb, row_width=[3, 3]))
+            await surrender_f(rival_id, battle_data[rival_id]["round"], mis, bot)
+
+
+def calculate_damage(attacker, defender):
+    base_damage = max(attacker.attack - defender.defense, 1)  # Минимальный урон 1
+
+    # Проверяем классовое преимущество
+    class_advantage = {
+        "strength": "agility",
+        "agility": "intelligence",
+        "intelligence": "strength"
+    }
+
+    if class_advantage[attacker.clas] == defender.clas:
+        base_damage = int(base_damage * 1.4)  # 1.4x урон
+
+    return base_damage
+
+
+async def win_lose(bot, char1, char2):
+    user_id = char1.ident
+    rival_id = char2.ident
+    user_statuses = [
+        battle_data[char1.ident]["deck"]["d1"].status,
+        battle_data[char1.ident]["deck"]["d2"].status,
+        battle_data[char1.ident]["deck"]["d3"].status,
+        battle_data[char1.ident]["deck"]["d4"].status,
+        battle_data[char1.ident]["deck"]["d5"].status,
+        battle_data[char1.ident]["deck"]["d6"].status,
+    ]
+
+    rival_statuses = [
+        battle_data[char2.ident]["deck"]["d1"].status,
+        battle_data[char2.ident]["deck"]["d2"].status,
+        battle_data[char2.ident]["deck"]["d3"].status,
+        battle_data[char2.ident]["deck"]["d4"].status,
+        battle_data[char2.ident]["deck"]["d5"].status,
+        battle_data[char2.ident]["deck"]["d6"].status,
+    ]
+
+    all_statuses = user_statuses + rival_statuses
+
+    if all("🎴" not in status for status in all_statuses):
+        cont = False
+        user_data[user_id][battle_data[user_id]["round"]] = True
+        user_data[rival_id][battle_data[rival_id]["round"]] = True
+        await bot.send_animation(chat_id=user_id, animation=draw_animation,
+                                 caption=end_text(user_id, rival_id, draw_text, draw_sts), reply_markup=menu_button())
+
+        await mongodb.update_value(char1.ident, {"battle.stats.ties": 1})
+        await mongodb.update_value(char1.ident, {"stats.exp": 75})
+        await mongodb.update_value(char1.ident, {"account.money": 150})
+        await mongodb.update_value(char2.ident, {"battle.stats.ties": 1})
+        await mongodb.update_value(char2.ident, {"stats.exp": 75})
+        await mongodb.update_value(char2.ident, {"account.money": 150})
+        await mongodb.update_many(
+            {"_id": {"$in": [char1.ident]}},
+            {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
+        )
+        battle_data[user_id]["round"] += 1
+        if char2.ident != user_id * 10:
+            await mongodb.update_many(
+                {"_id": {"$in": [char2.ident]}},
+                {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
+            )
+            await bot.send_animation(chat_id=char2.ident, animation=draw_animation,
+                                     caption=end_text(rival_id, user_id, draw_text, draw_sts), reply_markup=menu_button())
+
+    elif all("🎴" not in status for status in user_statuses):
+        cont = False
+        user_data[user_id][battle_data[user_id]["round"]] = True
+        user_data[rival_id][battle_data[rival_id]["round"]] = True
+        await bot.send_animation(chat_id=user_id, animation=lose_animation,
+                                 caption=end_text(user_id, rival_id, lose_text, lose_sts), reply_markup=menu_button())
+
+        await mongodb.update_value(char1.ident, {"battle.stats.loses": 1})
+        await mongodb.update_value(char1.ident, {"stats.exp": 55})
+        await mongodb.update_value(char1.ident, {"account.money": 100})
+        if char2.ident != user_id * 10:
+            await mongodb.update_value(char2.ident, {"battle.stats.wins": 1})
+            await mongodb.update_value(char2.ident, {"stats.exp": 100})
+            await mongodb.update_value(char2.ident, {"account.money": 200})
+            current_date = datetime.today().date()
+            current_datetime = datetime.combine(current_date, datetime.time(datetime.now()))
+            await mongodb.update_user(char2.ident, {"tasks.last_arena_fight": current_datetime})
+        await mongodb.update_many(
+            {"_id": {"$in": [char1.ident]}},
+            {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
+        )
+        if char2.ident != user_id * 10:
+            await mongodb.update_many(
+                {"_id": {"$in": [char2.ident]}},
+                {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
+            )
+            await bot.send_animation(chat_id=char2.ident, animation=win_animation,
+                                     caption=end_text(rival_id, user_id, win_text, win_sts), reply_markup=menu_button())
+    elif all("🎴" not in status for status in rival_statuses):
+        cont = False
+        user_data[user_id][battle_data[user_id]["round"]] = True
+        user_data[rival_id][battle_data[rival_id]["round"]] = True
+        await bot.send_animation(chat_id=user_id, animation=win_animation,
+                                 caption=end_text(user_id, rival_id, win_text, win_sts), reply_markup=menu_button())
+        await mongodb.update_value(char1.ident, {"battle.stats.wins": 1})
+        await mongodb.update_value(char1.ident, {"stats.exp": 100})
+        await mongodb.update_value(char1.ident, {"account.money": 200})
+        if char2.ident != user_id * 10:
+            await mongodb.update_value(char2.ident, {"battle.stats.loses": 1})
+            await mongodb.update_value(char2.ident, {"stats.exp": 55})
+            await mongodb.update_value(char2.ident, {"account.money": 100})
+            current_date = datetime.today().date()
+            current_datetime = datetime.combine(current_date, datetime.time(datetime.now()))
+            await mongodb.update_user(char2.ident, {"tasks.last_arena_fight": current_datetime})
+        await mongodb.update_many(
+            {"_id": {"$in": [char1.ident]}},
+            {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
+        )
+        if char2.ident != user_id * 10:
+            await mongodb.update_many(
+                {"_id": {"$in": [char2.ident]}},
+                {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
+            )
+            await bot.send_animation(chat_id=char2.ident, animation=lose_animation,
+                                     caption=end_text(rival_id, user_id, lose_text, lose_sts), reply_markup=menu_button())
+    else:
+        cont = True
+
+    return cont
+
+
+async def battle(bot: Bot, user_id: int, rival_id: int, char1, char2, card1, card2):
+    battle_log = []  # Лог битвы
+
+    def format_msg():
+        return (f"\n✧ • 🃜 ×    ×    ×    ×    ×    ×    ×    × 🃜 • ✧"
+                f"\n<blockquote>"  # expandable
+                f"{'\n'.join(battle_log)}"  # Показываем последние 6 ходов
+                f"</blockquote>"
+                f"\n✧ • 🃜 ×    ×    ×    ×    ×    ×    ×    × 🃜 • ✧")
+
+    msg = await bot.send_message(user_id, format_msg())
+    msg_rival = await bot.send_message(rival_id, format_msg())
+
+    while char1.health > 0 and char2.health > 0:
+        # Оба атакуют одновременно
+        damage1 = calculate_damage(char1, char2)
+        damage2 = calculate_damage(char2, char1)
+
+        char2.health -= damage1
+        char1.health -= damage2
+
+        if char1.health < 0:
+            char1.health = 0
+        if char2.health < 0:
+            char2.health = 0
+
+        battle_log.append(f"\n{char1.name} нанес {damage1}⚔ урона \n{char2.name} нанес {damage2} урона")
+        battle_log.append(f"\n{char1.name} {max(char1.health, 0)}❤️ {char2.name} {max(char2.health, 0)}❤️")
+
+        # Проверка победителя
+        if char1.health <= 0 and char2.health <= 0:
+            battle_log.append("\n☠️ Бой окончен! Ничья!")
+            battle_data[char1.ident]["deck"][card1].status = "☠️"
+            battle_data[char2.ident]["deck"][card2].status = "☠️"
+            battle_data[char2.ident]["current"] = None
+            battle_data[char1.ident]["current"] = None
+            user_data[user_id][battle_data[user_id]["round"]] = True
+            user_data[rival_id][battle_data[rival_id]["round"]] = True
+
+            battle_data[char1.ident]["round"] += 1
+            battle_data[char2.ident]["round"] += 1
+
+            new_text = format_msg()
+            if msg.text != new_text:
+                await bot.edit_message_text(chat_id=user_id, message_id=msg.message_id, text=format_msg())
+            if msg_rival.text != new_text:
+                await bot.edit_message_text(chat_id=rival_id, message_id=msg_rival.message_id, text=format_msg())
+
+            cont = await win_lose(bot, char1, char2)
+
+            if cont:
+                photo = 'AgACAgIAAx0CfstymgACPxhnpyOyMWhyizsk7AGoC0SRr47FdAACMewxG1EKQEkNebXgoiA-2wEAAwIAA3kAAzYE'
+                text = (f"𝅄  ⭑  ꒰ 🪨 ✂️ 📃 ꒱  ⭑  𝅄"
+                        "\n⟬ Игра камень ножницы бумага ⟭"
+                        "\n\n × Вы: 『....』"
+                        "\n × Соперник: 『....』"
+                        "\n\n✧ ❔ Определяем кто будеть ходить первым")
+                buttons = ["🤜", "✌️", "🫱"]
+                cb = ["stone", "shears", "paper"]
+
+                mes = await bot.send_photo(chat_id=user_id, photo=photo, caption=text,
+                                           reply_markup=inline_builder(buttons, cb, row_width=[3]))
+
+                mis = await bot.send_photo(chat_id=rival_id, photo=photo, caption=text,
+                                           reply_markup=inline_builder(buttons, cb, row_width=[3]))
+
+                battle_data[user_id]["ms_id"] = mes.message_id
+                battle_data[rival_id]["ms_id"] = mis.message_id
+                user_data[user_id][battle_data[user_id]["round"]] = False
+                user_data[rival_id][battle_data[rival_id]["round"]] = False
+
+                await surrender_f(rival_id, battle_data[rival_id]["round"], mis, bot)
+                await surrender_f(user_id, battle_data[user_id]["round"], mes, bot)
+
+        elif char1.health <= 0:
+            battle_log.append(f"\n🏆 {char2.name} побеждает в битве!")
+            battle_data[char2.ident]["deck"][card2].status = "🎴"
+            battle_data[char1.ident]["deck"][card1].status = "☠️"
+            user_data[user_id][battle_data[user_id]["round"]] = True
+            user_data[rival_id][battle_data[rival_id]["round"]] = True
+
+            battle_data[char1.ident]["round"] += 1
+            battle_data[char2.ident]["round"] += 1
+
+            cont = await win_lose(bot, char1, char2)
+
+            if cont:
+                user_text, user_status, user_cb, rd = account_text(user_id)
+                mg = await bot.send_message(chat_id=user_id, text=f"{user_text}"
+                                                                  f"\n🔸Ваш ход:",
+                                            reply_markup=inline_builder(user_status, user_cb, row_width=[3, 3]))
+                await bot.send_message(chat_id=rival_id, text=f"⏳ Ждём ход соперника...")
+
+                battle_data[char2.ident]["current"] = None
+                battle_data[char1.ident]["current"] = None
+                user_data[user_id][battle_data[user_id]["round"]] = False
+                await surrender_f(user_id, battle_data[user_id]["round"], mg, bot)
+                new_text = format_msg()
+                if msg.text != new_text:
+                    await bot.edit_message_text(chat_id=user_id, message_id=msg.message_id, text=format_msg())
+                if msg_rival.text != new_text:
+                    await bot.edit_message_text(chat_id=rival_id, message_id=msg_rival.message_id, text=format_msg())
+
+        elif char2.health <= 0:
+            battle_log.append(f"\n🏆 {char1.name} побеждает в битве!")
+            battle_data[char1.ident]["deck"][card1].status = "🎴"
+            battle_data[char2.ident]["deck"][card2].status = "☠️"
+            user_data[user_id][battle_data[user_id]["round"]] = True
+            user_data[rival_id][battle_data[rival_id]["round"]] = True
+
+            battle_data[char1.ident]["round"] += 1
+            battle_data[char2.ident]["round"] += 1
+
+            cont = await win_lose(bot, char1, char2)
+            if cont:
+                rival_text, rival_status, rival_cb, r_round = account_text(rival_id)
+                mes = await bot.send_message(chat_id=rival_id, text=f"{rival_text}"
+                                                                    f"\n🔸Ваш ход:",
+                                             reply_markup=inline_builder(rival_status, rival_cb, row_width=[3, 3]))
+                await bot.send_message(chat_id=user_id, text=f"⏳ Ждём ход соперника...")
+
+                battle_data[char2.ident]["current"] = None
+                battle_data[char1.ident]["current"] = None
+                user_data[rival_id][battle_data[rival_id]["round"]] = False
+                await surrender_f(rival_id, battle_data[rival_id]["round"], mes, bot)
+                new_text = format_msg()
+                if msg.text != new_text:
+                    await bot.edit_message_text(chat_id=user_id, message_id=msg.message_id, text=format_msg())
+                if msg_rival.text != new_text:
+                    await bot.edit_message_text(chat_id=rival_id, message_id=msg_rival.message_id, text=format_msg())
+
+        # Обновляем сообщение с новыми ходами
+
+        new_text = format_msg()
+        if msg.text != new_text:
+            await bot.edit_message_text(chat_id=user_id, message_id=msg.message_id, text=format_msg())
+        if msg_rival.text != new_text:
+            await bot.edit_message_text(chat_id=rival_id, message_id=msg_rival.message_id, text=format_msg())
+        await asyncio.sleep(1.5)  # Задержка перед следующим раундом
+
+    new_text = format_msg()
+    if msg.text != new_text:
+        await bot.edit_message_text(chat_id=user_id, message_id=msg.message_id, text=format_msg())
+    if msg_rival.text != new_text:
+        await bot.edit_message_text(chat_id=rival_id, message_id=msg_rival.message_id, text=format_msg())
+
+
 @router.callback_query(CallbackChatTypeFilter(chat_type=["private"]), F.data.startswith("┋"))
 async def start_battle(callback: CallbackQuery, bot: Bot):
     cb = callback.data
     player_id = callback.from_user.id
     rival_id = battle_data[player_id]["rival"]
 
-    if battle_data[player_id]["round"] == 1:
-        char = cb.replace("┋", "")
-        battle_data[player_id]["current"] = char
+    char = cb.replace("┋", "")
+    card, char_object = None, None
+    for card_key, card_obj in battle_data[player_id]["deck"].items():
+        if getattr(card_obj, "name", None) == char:  # Проверяем имя персонажа
+            card, char_object = card_key, card_obj
+            break  # Прерываем, если нашли
 
-        card, char_object = None, None
-        for card_key, card_obj in battle_data[player_id]["deck"].items():
-            if getattr(card_obj, "name", None) == char:  # Проверяем имя персонажа
-                card, char_object = card_key, card_obj
-                break  # Прерываем, если нашли
+    if card and battle_data[player_id]["deck"][card].status == "☠️":
+        await callback.answer("❖ ☠️ Этот персонаж уже проиграл, используйте другую 🃜 карту", show_alert=True)
+        return
 
-        user_text = round_text("Вы", char_object, battle_data[player_id]["round"], battle_data[player_id]["faze"])
-        rival_text = round_text("Соперник", char_object, battle_data[player_id]["round"], battle_data[player_id]["faze"])
+    user_data[player_id][battle_data[player_id]["round"]] = True
+    battle_data[player_id]["round"] += 1
 
-        avatar = character_photo.get_stats(char_object.universe, char_object.name, 'avatar')
-        avatar_type = character_photo.get_stats(char_object.universe, char_object.name, 'type')
+    battle_data[player_id]["current"] = char_object
+    battle_data[player_id]["current_c"] = card
 
-        if avatar_type == 'photo':
-            await bot.send_photo(photo=avatar, chat_id=player_id, caption=user_text)
-        else:
-            await bot.send_animation(animation=avatar, chat_id=player_id, caption=user_text)
+    user_text = round_text("Вы", char_object)
+    rival_text = round_text("Соперник", char_object)
 
-        if avatar_type == 'photo':
-            await bot.send_photo(photo=avatar, chat_id=rival_id, caption=rival_text)
-        else:
-            await bot.send_animation(animation=avatar, chat_id=rival_id, caption=rival_text)
+    avatar = character_photo.get_stats(char_object.universe, char_object.name, 'avatar')
+    avatar_type = character_photo.get_stats(char_object.universe, char_object.name, 'type')
+
+    await callback.message.delete()
+
+    if avatar_type == 'photo':
+        await bot.send_photo(photo=avatar, chat_id=player_id, caption=user_text)
+    else:
+        await bot.send_animation(animation=avatar, chat_id=player_id, caption=user_text)
+
+    if avatar_type == 'photo':
+        await bot.send_photo(photo=avatar, chat_id=rival_id, caption=rival_text)
+    else:
+        await bot.send_animation(animation=avatar, chat_id=rival_id, caption=rival_text)
+
+    if not battle_data[rival_id]["current"]:
+        await asyncio.sleep(2)
+        rival_text, rival_status, rival_cb, r_round = account_text(rival_id)
+        mes = await bot.send_message(chat_id=rival_id, text=f"{rival_text}"
+                                                            f"\n🔸Ваш ход:",
+                                     reply_markup=inline_builder(rival_status, rival_cb, row_width=[3, 3]))
+        await bot.send_message(chat_id=player_id, text=f"⏳ Ждём ход соперника...")
+
+        battle_data[rival_id]["round"] += 1
+        user_data[rival_id][battle_data[rival_id]["round"]] = False
+        await surrender_f(rival_id, battle_data[rival_id]["round"], mes, bot)
+    else:
+        user_char = battle_data[player_id]["current"]
+        rival_char = battle_data[rival_id]["current"]
+        user_card = battle_data[player_id]["current_c"]
+        rival_card = battle_data[rival_id]["current_c"]
+        await battle(bot, player_id, rival_id, user_char, rival_char, user_card, rival_card)
 
 
 @router.message(ChatTypeFilter(chat_type=["private"]), Command("card_surrender"))
@@ -639,12 +1089,13 @@ async def start_battle(callback: CallbackQuery, bot: Bot):
 async def surrender(message: Message, bot: Bot):
     user_id = message.from_user.id
     account = await mongodb.get_user(user_id)
+    rival = None
 
     if account["battle"]["battle"]["status"] == 4:
         if account["battle"]["battle"]["rid"] != user_id * 10:
             rival = await mongodb.get_user(account["battle"]["battle"]["rid"])
         await bot.send_animation(chat_id=user_id, animation=lose_animation,
-                                 caption=surrender_text, reply_markup=menu_button())
+                                 caption=end_text(user_id, rival["id"], surrender_text, surrender_sts), reply_markup=menu_button())
 
         await mongodb.update_value(account["_id"], {"battle.stats.loses": 1})
         if account["battle"]["battle"]["rid"] != user_id * 10:
@@ -664,4 +1115,4 @@ async def surrender(message: Message, bot: Bot):
                 {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
             )
             await bot.send_animation(chat_id=rival["_id"], animation=win_animation,
-                                     caption=surrender_r_text, reply_markup=menu_button())
+                                     caption=end_text(user_id, rival["id"], time_out_lose_text, time_out_lose_sts), reply_markup=menu_button())
