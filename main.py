@@ -8,12 +8,30 @@ from aiogram.enums import ParseMode
 from routers import (registration, battle, gacha, banner, settings, navigation, main_menu, inventory, craft, slaves,
                      arena, battle_ai, card_battle, card_battle_ai)
 from data import character_photo
-from routers.tokio import tokio, dungeon, store, Pay, home, quests
+from routers.tokio import tokio, dungeon, store, Pay, home, quests, clans, boss
 from handlers import chat_commands, admins
 from payments import stars
 from chat_handlers import chat_battle
 from callbacks import callback
 from middlewares.AntiFloodMiddleWare import AntiFloodMiddleware, AntiFloodMiddlewareM
+from aiogram.fsm.storage.redis import RedisStorage
+import redis.asyncio as redis
+
+# Твой Redis-клиент (асинхронный)
+redis_client = redis.Redis(
+    host='redis-13363.c328.europe-west3-1.gce.redns.redis-cloud.com',
+    port=13363,
+    decode_responses=True,
+    username='default',
+    password="BFTJgAh9jM5SH1HY8m9KqzFqFnpuDyPl",  # вставь свой пароль
+    ssl=True
+)
+
+# FSM-хранилище на Redis
+storage = RedisStorage(redis=redis_client)
+
+# Подключаем хранилище к диспетчеру
+dp = Dispatcher(storage=storage)
 
 bot = Bot(token="6776753252:AAH4FKaWyegHYHnh_RBJINk2sEhtaebxWrk",
           default=DefaultBotProperties(parse_mode=ParseMode.HTML))
@@ -50,7 +68,9 @@ async def main():
         battle_ai.router,
         card_battle.router,
         card_battle_ai.router,
-        quests.router
+        quests.router,
+        clans.router,
+        boss.router
     )
 
     # dp.callback_query.middleware(AntiFloodMiddleware())

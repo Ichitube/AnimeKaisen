@@ -27,11 +27,42 @@ def menu_button():
     kb = [
         [
             KeyboardButton(text='🪪 〢 Профиль'),
-            KeyboardButton(text='💮 Меню')
+            KeyboardButton(text='〽️ Меню')
         ],
         [
             KeyboardButton(text='🎐 Баннеры'),
+            KeyboardButton(text='🎌 Клан'),
             KeyboardButton(text='🏟️ Арена'),
+            KeyboardButton(text='🏪 Рынок'),
+        ],
+        [
+            KeyboardButton(text='🎴 Grab'),
+            KeyboardButton(text='📜 Квесты'),
+            KeyboardButton(text='⛩️ Подземелье')
+        ],
+        [
+            KeyboardButton(text='🥡 Инвентарь'),
+            KeyboardButton(text='⚙️ Настройки')
+        ]
+    ]
+    keyboard = ReplyKeyboardMarkup(
+        keyboard=kb,
+        resize_keyboard=True,
+        input_field_placeholder='Anime Kaisen'
+    )
+    return keyboard
+
+
+def menu_card_button():
+    kb = [
+        [
+            KeyboardButton(text='🪪 〢 Профиль'),
+            KeyboardButton(text='〽️ Меню')
+        ],
+        [
+            KeyboardButton(text='🎐 Баннеры'),
+            KeyboardButton(text='🎌 Клан'),
+            KeyboardButton(text='🃏 Битва'),
             KeyboardButton(text='🏪 Рынок'),
         ],
         [
@@ -118,7 +149,7 @@ def get_common():
 def success():
     builder = InlineKeyboardBuilder()
     builder.add(InlineKeyboardButton(
-        text='💮 Меню',
+        text='〽️ Меню',
         callback_data="main_page")
     )
     return builder.as_markup()
@@ -163,6 +194,26 @@ def channel_check() -> InlineKeyboardMarkup:
 class Pagination(CallbackData, prefix="pagination"):
     action: str
     page: int
+
+
+def pagination_keyboard_chat(universe,  user_id, character, page: int = 0):
+    builder = InlineKeyboardBuilder()
+    builder.row(
+        InlineKeyboardButton(text='⬅️', callback_data=Pagination(action=f"prev_{user_id}", page=page).pack()),
+        InlineKeyboardButton(text='➡️', callback_data=Pagination(action=f"next_{user_id}", page=page).pack())
+    )
+    # if universe not in ['Allstars', 'Allstars(old)']:
+    #     builder.row(
+    #         InlineKeyboardButton(text='🎴 Навыки', callback_data=Ability(action="ability", universe=universe,
+    #                                                                     character=character, back='inventory').pack())
+    #     )
+    builder.row(
+        InlineKeyboardButton(text='🪪 Установить', callback_data=f'change_character_{user_id}')
+    )
+    builder.row(
+        InlineKeyboardButton(text='🔙 Назад', callback_data=f"inventory_{user_id}")
+    )
+    return builder.as_markup()
 
 
 def pagination_keyboard(universe, character, page: int = 0):
@@ -286,6 +337,21 @@ def pagination_dungeon(page: int = 0):
     )
     builder.row(
         InlineKeyboardButton(text='🔙 Назад', callback_data="dungeon")
+    )
+    return builder.as_markup()
+
+
+def pagination_boss(page: int = 0):
+    builder = InlineKeyboardBuilder()
+    builder.row(
+        InlineKeyboardButton(text='⬅️', callback_data=Pagination(action="bg_prev", page=page).pack()),
+        InlineKeyboardButton(text='➡️', callback_data=Pagination(action="bg_next", page=page).pack())
+    )
+    builder.row(
+        InlineKeyboardButton(text='✅ Выбрать', callback_data='bg_choice_card')
+    )
+    builder.row(
+        InlineKeyboardButton(text='🔙 Назад', callback_data="boss_squad")
     )
     return builder.as_markup()
 

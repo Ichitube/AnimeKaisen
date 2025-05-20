@@ -12,6 +12,8 @@ db = client["AnimeKaisen"]
 collection = db["users"]
 chat_collection = db["chats"]
 promo_collection = db["promo"]
+user_bosses = db["user_bosses"]
+clans = db["clans"]
 
 
 emoji_pattern = re.compile(
@@ -37,13 +39,15 @@ async def input_user(user_id: int, name, universe, character, power):
         'character': {
             universe: character
         },
+        'clan': '',
         'account': {
             'prime': False,
             'money': 1000,
             'fragments': 0,
             'clan': '',
             'referrals': [],
-            'awards': []
+            'awards': [],
+            'clan_coins': 0
         },
         'stats': {
             'rank': 1,
@@ -93,13 +97,89 @@ async def input_user(user_id: int, name, universe, character, power):
     await db.users.insert_one(full_data)
 
 
+async def get_user_boss(user_id: int):
+    boss = await db.user_bosses.find_one({"user_id": user_id})
+    return boss
+
+
+async def create_or_update_user_boss(user_id: int, boss_id: int, boss_hp: int):
+    return await db.user_bosses.update_one(
+        {"user_id": user_id},
+        {
+            "$set": {
+                "boss_id": boss_id,
+                "current_hp": boss_hp,
+                "damage_dealt": 0,
+                "last_spawn": datetime.utcnow()
+            }
+        },
+        upsert=True
+    )
+
+
+async def clan_exists(name):
+    return await db.clans.find_one({"_id": name}) is not None
+
+
+async def create_clan(data):
+    await db.clans.insert_one(data)
+
+
 async def get_user(user_id: int):
     user = await db.users.find_one({"_id": user_id})
     return user
 
 
+async def get_clan(chat_id):
+    clan = await db.clans.find_one({"_id": chat_id})
+    return clan
+
+
 async def update_user(user_id: int, data: dict):
     await db.users.update_one({"_id": user_id}, {"$set": data})
+
+
+async def update_clan(clan_name: str, data: dict):
+    await db.clans.update_one({"_id": clan_name}, {"$set": data})
+
+
+async def delete_clan(clan_name: str):
+    """
+    Удаляет клан из базы данных.
+    """
+    result = await db.clans.delete_one({"_id": clan_name})
+    if result.deleted_count == 0:
+        raise ValueError("✖️ Клан не найден для удаления!")
+
+
+async def rename_clan(old_name: str, new_name: str):
+    """
+    Переименовывает клан: копирует данные клана под новым _id и удаляет старый.
+    Также обновляет клан у всех участников.
+    """
+
+    # Ищем клан по старому имени
+    clan = await db.clans.find_one({"_id": old_name})
+    if not clan:
+        raise ValueError("✖️ Клан не найден!")
+
+    # Проверяем, что нового имени ещё нет
+    existing = await db.clans.find_one({"_id": new_name})
+    if existing:
+        raise ValueError("✖️ Клан с таким именем уже существует!")
+
+    # Копируем клан под новым именем
+    clan["_id"] = new_name
+    await db.clans.insert_one(clan)
+
+    # Удаляем старый клан
+    await db.clans.delete_one({"_id": old_name})
+
+    # Обновляем клан у всех участников
+    members = clan.get("members", [])
+    for uid in members:
+        await db.users.update_one({"_id": uid}, {"$set": {"clan": new_name}})
+
 
 
 async def set_money(message):
@@ -384,3 +464,17 @@ async def migrate_characters():
                 {"_id": user["_id"]},
                 {"$set": {"universe": "Allstars"}}
             )
+
+
+async def get_top10_text() -> str:
+    cursor = db.users.find({"campaign.power": {"$exists": True}}).sort("campaign.power", -1).limit(5)
+    top_accounts = await cursor.to_list(length=5)
+
+    result = [
+        f"{i + 1}. 🪪 {acc.get('name', 'Неизвестно')} ᐷ ⚜️ {acc.get('campaign', {}).get('power', 0)}"
+        for i, acc in enumerate(top_accounts)
+    ]
+
+    return "\n".join(result)
+
+

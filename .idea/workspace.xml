@@ -4,11 +4,42 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="950ee416-d3c6-4244-83ec-ae2022e2f546" name="Changes" comment="4/3" />
+    <list default="true" id="950ee416-d3c6-4244-83ec-ae2022e2f546" name="Changes" comment="4/3">
+      <change afterPath="$PROJECT_DIR$/routers/tokio/boss.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/routers/tokio/clans.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/mongodb.py" beforeDir="false" afterPath="$PROJECT_DIR$/data/mongodb.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/handlers/chat_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/handlers/chat_commands.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/keyboards/builders.py" beforeDir="false" afterPath="$PROJECT_DIR$/keyboards/builders.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routers/arena.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/arena.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routers/banner.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/banner.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routers/battle.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/battle.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routers/battle_ai.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/battle_ai.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routers/card_battle.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/card_battle.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routers/card_battle_ai.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/card_battle_ai.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routers/gacha.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/gacha.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routers/inventory.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/inventory.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routers/main_menu.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/main_menu.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routers/registration.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/registration.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routers/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routers/tokio/dungeon.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/tokio/dungeon.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routers/tokio/quests.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/tokio/quests.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routers/tokio/store.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/tokio/store.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routers/tokio/tokio.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/tokio/tokio.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/states.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/states.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -36,12 +67,19 @@
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
     &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;new-feature&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;last_opened_file_path&quot;: &quot;C:/Зкщоусеы&quot;
   }
 }</component>
-  <component name="RunManager">
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Projects\bots\" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Python.main">
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="main" />
       <option name="ENV_FILES" value="" />
@@ -64,9 +102,32 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="main" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/routers/tokio" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/routers/tokio/test.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
         <item itemvalue="Python.main" />
+        <item itemvalue="Python.test" />
       </list>
     </recent_temporary>
   </component>
@@ -96,6 +157,17 @@
     </task>
     <option name="localTasksCounter" value="2" />
     <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="4/3" />

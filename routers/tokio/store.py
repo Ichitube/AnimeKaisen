@@ -35,11 +35,12 @@ async def store(callback: CallbackQuery | Message):
         caption=f"❖  🏪  <b>Рынок</b>"
                 f"\n── •✧✧• ────────────"
                 f"\n❖  Вы можете купить 🎫 золотые, 🎟 обычные билеты и недвижимость за 💴 ¥"
-                f"\n\n❃  🎫 = 1000 💴"
-                f"\n❃  🎟 = 100 💴"
+                f"\n ❃ ⚖️ Цены:"
+                f"\n  •  🎫 = 1000 💴"
+                f"\n  •  🎟 = 100 💴"
                 f"\n\n❖  Так же можете приобрести 🧧Священный билет, 💮Pass и 🔖Рабынь за 🌟"
                 f"\n── •✧✧• ────────────"
-                f"\n❃  💴 {money} ¥  🧧 ⋗ <b>{keys}</b>  🎫 ⋗ <b>{golden}</b>  🎟 ⋗ <b>{common}</b>",
+                f"\n💴 {money} ¥  🧧 ⋗ <b>{keys}</b>  🎫 ⋗ <b>{golden}</b>  🎟 ⋗ <b>{common}</b>",
         parse_mode=ParseMode.HTML,
         reply_markup=inline_builder(
             ["💮Pass", "🧧 Купить ", "🎫 Купить", "🎟 Купить", "⛓ Рынок рабынь", "🏠 Рынок недвижимости", "🔙 Назад"],
@@ -161,9 +162,9 @@ async def buy_golden_ticket(callback: CallbackQuery, count: int):
         current_date = datetime.today().date()
         current_datetime = datetime.combine(current_date, datetime.time(datetime.now()))
         await mongodb.update_user(user_id, {"tasks.last_shop_purchase": current_datetime})
-        await callback.answer(f"❖  💮  Вы успешно приобрели {count} 🎫 золотых билетов", show_alert=True)
+        await callback.answer(f"❖  🏪  Вы успешно приобрели {count} 🎫 золотых билетов", show_alert=True)
     else:
-        await callback.answer(f"❖  💮  У вас недостаточно 💴 ¥", show_alert=True)
+        await callback.answer(f"❖  🏪  У вас недостаточно 💴 ¥", show_alert=True)
     await store(callback)
 
 

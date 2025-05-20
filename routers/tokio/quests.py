@@ -130,7 +130,7 @@ async def requisites(callback: CallbackQuery | Message):
         parse_mode=ParseMode.HTML,
         reply_markup=inline_builder(
             ["🎁 Получить", "🔙 Меню"],
-            ["get_quest_reward", "tokio"],
+            ["get_quest_reward", "main_page"],
             row_width=[1, 1]
         )
     )

@@ -9,7 +9,7 @@ from data import characters, character_photo
 from data import mongodb
 from routers.arena import arena
 from filters.chat_type import ChatTypeFilter
-from keyboards.builders import reply_builder, inline_builder, menu_button
+from keyboards.builders import reply_builder, inline_builder, menu_card_button
 from routers import gacha
 
 router = Router()
@@ -70,12 +70,12 @@ async def search_opponent(callback: CallbackQuery | Message, bot: Bot):
     account = await mongodb.get_user(user_id)
     universe = account['universe']
 
-    if account['universe'] in ['Allstars', 'Allstars(old)']:
-        await callback.answer(
-            text="💢 Пока доступно в вашой вселеноой!",
-            show_alert=True
-        )
-        return
+    # if account['universe'] in ['Allstars', 'Allstars(old)']:
+    #     await callback.answer(
+    #         text="💢 Пока не доступно в вашой вселеноой!",
+    #         show_alert=True
+    #     )
+    #     return
 
     if isinstance(callback, CallbackQuery):
         await callback.message.delete()
@@ -93,23 +93,22 @@ async def search_opponent(callback: CallbackQuery | Message, bot: Bot):
     rarity = random.choice(rarity_levels)
 
     # Рандомно выбираем персонажа из выбранной категории редкости
-    character = random.choice(gacha.characters[universee][rarity])
+
+    def rar(r):
+        if r == "Божественная":
+            return "divine"
+        elif r == "Мифическая":
+            return "mythical"
+        elif r == "Легендарная":
+            return "legendary"
+        elif r == "Эпическая":
+            return "epic"
+        elif r == "Редкая":
+            return "rare"
+        elif r == "Обычная":
+            return "common"
 
     if account["battle"]["battle"]["status"] == 0:
-        rival = {"_id": user_id * 10,
-                 "name": "AI ✨",
-                 "universe": universee,
-                 "character": {
-                     universee: character},
-                 "battle": {
-                     "battle": {
-                         "status": 0,
-                         "turn": False,
-                         "rid": "",
-                         "round": 1
-                     }
-                 },
-        }
 
         await mongodb.update_user(user_id, {"battle.battle.status": 1})
 
@@ -123,6 +122,22 @@ async def search_opponent(callback: CallbackQuery | Message, bot: Bot):
         slave = None
         if account['inventory']['slaves']:
             slave = account['inventory']['slaves'][0]
+
+        r_character = random.choice(gacha.characters[universee][rar(character_photo.get_stats(universe, character, 'rarity'))])
+        rival = {"_id": user_id * 10,
+                 "name": "AI ✨",
+                 "universe": universee,
+                 "character": {
+                     universee: r_character},
+                 "battle": {
+                     "battle": {
+                         "status": 0,
+                         "turn": False,
+                         "rid": "",
+                         "round": 1
+                        }
+                    },
+                 }
 
         b_character = characters.Character(ident, name, character, strength, agility, intelligence, ability, 1,
                                            False, ident * 10, slave, 0)
@@ -260,7 +275,7 @@ async def ai(character, bot, callback, account):
 
         if character.health <= 0 and r_character.health <= 0:
             await bot.send_animation(chat_id=r_character, animation=draw_animation,
-                                     caption=draw_text, reply_markup=menu_button())
+                                     caption=draw_text, reply_markup=menu_card_button())
 
             await mongodb.update_many(
                 {"_id": {"$in": [character.rid]}},
@@ -279,7 +294,7 @@ async def ai(character, bot, callback, account):
         elif character.health <= 0:
             if character.b_round != r_character.b_round:
                 await bot.send_animation(chat_id=character.rid, animation=win_animation,
-                                         caption=win_text, reply_markup=menu_button())
+                                         caption=win_text, reply_markup=menu_card_button())
 
                 await mongodb.update_many(
                     {"_id": {"$in": [character.rid]}},
@@ -298,7 +313,7 @@ async def ai(character, bot, callback, account):
         elif r_character.health <= 0:
             if character.b_round != r_character.b_round:
                 await bot.send_animation(chat_id=character.rid, animation=lose_animation,
-                                         caption=lose_text, reply_markup=menu_button())
+                                         caption=lose_text, reply_markup=menu_card_button())
 
                 await mongodb.update_many(
                     {"_id": {"$in": [character.rid]}},
@@ -319,7 +334,7 @@ async def ai(character, bot, callback, account):
     except AttributeError as e:
         # Обработка ошибки AttributeError
         await callback.message.answer("❖ 🔂 Идёт разработка бота связи с чем битва была остановлена",
-                                      reply_markup=menu_button())
+                                      reply_markup=menu_card_button())
         await mongodb.update_many(
             {"_id": {"$in": [account["_id"]]}},
             {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}

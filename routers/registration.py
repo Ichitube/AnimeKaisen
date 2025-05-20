@@ -6,10 +6,11 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery, InputMediaAnimation
 from data import mongodb
 from filters.chat_type import ChatTypeFilter
-from keyboards.builders import inline_builder, profile, rm, get_common
+from keyboards.builders import inline_builder, profile, rm, get_common, menu_card_button, menu_button
 from routers import main_menu
 from routers.gacha import first_summon
 from utils.states import Form
+from routers import settings
 
 router = Router()
 
@@ -88,6 +89,8 @@ async def get_first_free(callback: CallbackQuery, state: FSMContext):
         if character:
             await mongodb.update_user(callback.from_user.id, {'universe': 'Bleach'})
             await callback.answer("❖ 🗺 Вы успешно сменили вселенную", show_alert=True)
+            await callback.message.answer("❖ 🗺 Вы успешно сменили вселенную", reply_markup=menu_button())
+            await settings.settings(callback)
             return
     await state.update_data(universe=callback.data)
     media = InputMediaAnimation(media="CgACAgIAAx0CfstymgACCxZl5FxQpuMBOz7tFM8BU88VOEvMXgACtjwAAkLSIEtSvf16OnsuwTQE")
@@ -107,6 +110,8 @@ async def get_first_free(callback: CallbackQuery, state: FSMContext):
         if character:
             await mongodb.update_user(callback.from_user.id, {'universe': 'Naruto'})
             await callback.answer("❖ 🗺 Вы успешно сменили вселенную", show_alert=True)
+            await callback.message.answer("❖ 🗺 Вы успешно сменили вселенную", reply_markup=menu_button())
+            await settings.settings(callback)
             return
     await state.update_data(universe=callback.data)
     media = InputMediaAnimation(media="CgACAgIAAxkBAAKu-2bfz0QjhL_TZCnL-Zha1vsprdVLAAKCUQACzJcBS3N7PqOXSE2qNgQ")
@@ -126,6 +131,8 @@ async def get_first_free(callback: CallbackQuery, state: FSMContext):
         if character:
             await mongodb.update_user(callback.from_user.id, {'universe': 'Allstars'})
             await callback.answer("❖ 🗺 Вы успешно сменили вселенную", show_alert=True)
+            await callback.message.answer("❖ 🗺 Вы успешно сменили вселенную", reply_markup=menu_card_button())
+            await settings.settings(callback)
             return
     await state.update_data(universe=callback.data)
     media = InputMediaAnimation(media="CgACAgIAAx0CfstymgACEnpmnUiYllQQPMNY7B3y44Okelr6UgACsVEAApQD6UhAS-MzjVWVxTUE")

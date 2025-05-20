@@ -9,7 +9,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.filters import Command
 from data import mongodb, character_photo, card_characters
 from filters.chat_type import ChatTypeFilter, CallbackChatTypeFilter
-from keyboards.builders import inline_builder, Pagination, pagination_card, reply_builder, menu_button
+from keyboards.builders import inline_builder, Pagination, pagination_card, reply_builder, menu_card_button
 
 # from caches.redis_ram import RedisDict
 
@@ -27,8 +27,16 @@ draw_animation = "CgACAgQAAx0CfstymgACDfFmFCIV11emoqYRlGWGZRTtrA46oQACAwMAAtwWDV
 
 
 def end_text(user_id, rival_id, txt, sts):
+    if rival_id == user_id * 10:
+        rival_status = [battle_data[rival_id]["deck"]["d1"].status,
+                        battle_data[rival_id]["deck"]["d2"].status,
+                        battle_data[rival_id]["deck"]["d3"].status,
+                        battle_data[rival_id]["deck"]["d4"].status,
+                        battle_data[rival_id]["deck"]["d5"].status,
+                        battle_data[rival_id]["deck"]["d6"].status]
+    else:
+        rival_text, rival_status, rival_cb, rival_round = account_text(rival_id)
     ttext, status, cb, sound = account_text(user_id)
-    rival_text, rival_status, rival_cb, rival_round = account_text(rival_id)
     text = (f"{txt}"
             f"\n<blockquote expandable>── •✧✧• ────────────"
             f"\n ❖  🃏<b> Ваша колода:</b>"
@@ -438,7 +446,7 @@ async def surrender_f(user_id, r, mes, bot):
         if account["battle"]["battle"]["status"] == 4:
             rival = await mongodb.get_user(account["battle"]["battle"]["rid"])
             await bot.send_animation(chat_id=user_id, animation=lose_animation,
-                                     caption=surrender_text, reply_markup=menu_button())
+                                     caption=surrender_text, reply_markup=menu_card_button())
             current_date = datetime.today().date()
             current_datetime = datetime.combine(current_date, datetime.time(datetime.now()))
             await mongodb.update_user(account["battle"]["battle"]["rid"], {"tasks.last_arena_fight": current_datetime})
@@ -455,7 +463,7 @@ async def surrender_f(user_id, r, mes, bot):
                 {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
             )
             await bot.send_animation(chat_id=rival["_id"], animation=win_animation,
-                                     caption=time_out_text, reply_markup=menu_button())
+                                     caption=time_out_text, reply_markup=menu_card_button())
         await bot.edit_message_text(chat_id=user_id, message_id=mes.message_id,
                                     text=f"✖️ Время вышло 🕘", reply_markup=None)
 
@@ -478,7 +486,7 @@ async def search_opponent(callback: CallbackQuery | Message, bot: Bot):
             await bot.send_animation(
                 chat_id=user_id,
                 animation="CgACAgIAAx0CfstymgACBaNly1ESV41gB1s-k4M3VITaGbHvHwACPj8AAlpyWEpUUFtvRlRcpjQE",
-                caption=f"\n 💡 <blockquote expandable>В разработке</blockquote>"
+                caption=f"\n<blockquote expandable>💡 В разработке...</blockquote>"
                         f"\n── •✧✧• ────────────"
                         f"\n❖ 🔎 Поиск соперника . . . . .",
                 reply_markup=reply_builder("✖️ Отмена"))
@@ -504,8 +512,9 @@ async def search_opponent(callback: CallbackQuery | Message, bot: Bot):
             r_universe = rival['universe']
             r_name = rival["name"]
             ru_deck = rival["deck"]
-            r_avatar = character_photo.get_stats(r_universe, ru_deck["d1"], 'avatar')
-            r_avatar_type = character_photo.get_stats(r_universe, ru_deck["d1"], 'type')
+            r_character = rival['character'][rival['universe']]
+            r_avatar = character_photo.get_stats(r_universe, r_character, 'avatar')
+            r_avatar_type = character_photo.get_stats(r_universe, r_character, 'type')
             r_slave = None
             if rival['inventory']['slaves']:
                 r_slave = rival['inventory']['slaves'][0]
@@ -660,7 +669,7 @@ async def start_battle(callback: CallbackQuery, bot: Bot):
         player_tx = None
         rival_tx = None
         if battle_data[player_id]["status"] == battle_data[rival_id]["status"]:
-            player_tx = "💔 Ничья! Но вы выбрали после соперник, ходите первым 1️⃣"
+            player_tx = "💔 Ничья! Но вы выбрали после соперника, ходите первым 1️⃣"
             rival_tx = "🎉 Ничья! Но вы выбрали раньше соперника, ходите вторым 2️⃣"
             battle_data[player_id]["is_first"] = True
             battle_data[rival_id]["is_first"] = False
@@ -795,7 +804,7 @@ async def win_lose(bot, char1, char2):
         user_data[user_id][battle_data[user_id]["round"]] = True
         user_data[rival_id][battle_data[rival_id]["round"]] = True
         await bot.send_animation(chat_id=user_id, animation=draw_animation,
-                                 caption=end_text(user_id, rival_id, draw_text, draw_sts), reply_markup=menu_button())
+                                 caption=end_text(user_id, rival_id, draw_text, draw_sts), reply_markup=menu_card_button())
 
         await mongodb.update_value(char1.ident, {"battle.stats.ties": 1})
         await mongodb.update_value(char1.ident, {"stats.exp": 75})
@@ -814,14 +823,14 @@ async def win_lose(bot, char1, char2):
                 {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
             )
             await bot.send_animation(chat_id=char2.ident, animation=draw_animation,
-                                     caption=end_text(rival_id, user_id, draw_text, draw_sts), reply_markup=menu_button())
+                                     caption=end_text(rival_id, user_id, draw_text, draw_sts), reply_markup=menu_card_button())
 
     elif all("🎴" not in status for status in user_statuses):
         cont = False
         user_data[user_id][battle_data[user_id]["round"]] = True
         user_data[rival_id][battle_data[rival_id]["round"]] = True
         await bot.send_animation(chat_id=user_id, animation=lose_animation,
-                                 caption=end_text(user_id, rival_id, lose_text, lose_sts), reply_markup=menu_button())
+                                 caption=end_text(user_id, rival_id, lose_text, lose_sts), reply_markup=menu_card_button())
 
         await mongodb.update_value(char1.ident, {"battle.stats.loses": 1})
         await mongodb.update_value(char1.ident, {"stats.exp": 55})
@@ -843,13 +852,13 @@ async def win_lose(bot, char1, char2):
                 {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
             )
             await bot.send_animation(chat_id=char2.ident, animation=win_animation,
-                                     caption=end_text(rival_id, user_id, win_text, win_sts), reply_markup=menu_button())
+                                     caption=end_text(rival_id, user_id, win_text, win_sts), reply_markup=menu_card_button())
     elif all("🎴" not in status for status in rival_statuses):
         cont = False
         user_data[user_id][battle_data[user_id]["round"]] = True
         user_data[rival_id][battle_data[rival_id]["round"]] = True
         await bot.send_animation(chat_id=user_id, animation=win_animation,
-                                 caption=end_text(user_id, rival_id, win_text, win_sts), reply_markup=menu_button())
+                                 caption=end_text(user_id, rival_id, win_text, win_sts), reply_markup=menu_card_button())
         await mongodb.update_value(char1.ident, {"battle.stats.wins": 1})
         await mongodb.update_value(char1.ident, {"stats.exp": 100})
         await mongodb.update_value(char1.ident, {"account.money": 200})
@@ -870,7 +879,7 @@ async def win_lose(bot, char1, char2):
                 {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
             )
             await bot.send_animation(chat_id=char2.ident, animation=lose_animation,
-                                     caption=end_text(rival_id, user_id, lose_text, lose_sts), reply_markup=menu_button())
+                                     caption=end_text(rival_id, user_id, lose_text, lose_sts), reply_markup=menu_card_button())
     else:
         cont = True
 
@@ -1090,12 +1099,15 @@ async def surrender(message: Message, bot: Bot):
     user_id = message.from_user.id
     account = await mongodb.get_user(user_id)
     rival = None
-
     if account["battle"]["battle"]["status"] == 4:
         if account["battle"]["battle"]["rid"] != user_id * 10:
+            await bot.send_message(chat_id=user_id, text=f"{account['battle']['battle']['rid']}")
             rival = await mongodb.get_user(account["battle"]["battle"]["rid"])
         await bot.send_animation(chat_id=user_id, animation=lose_animation,
-                                 caption=end_text(user_id, rival["id"], surrender_text, surrender_sts), reply_markup=menu_button())
+                                 caption="💀 Поражение "
+                                         "\n── •✧✧• ────────────"
+                                         "\n  + 55🀄️ xp "
+                                         "\n  + 100💴 ¥", reply_markup=menu_card_button())
 
         await mongodb.update_value(account["_id"], {"battle.stats.loses": 1})
         if account["battle"]["battle"]["rid"] != user_id * 10:
@@ -1115,4 +1127,7 @@ async def surrender(message: Message, bot: Bot):
                 {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
             )
             await bot.send_animation(chat_id=rival["_id"], animation=win_animation,
-                                     caption=end_text(user_id, rival["id"], time_out_lose_text, time_out_lose_sts), reply_markup=menu_button())
+                                     caption="👑 Победа: 🏳️ Соперник сдался"
+                                             "\n── •✧✧• ────────────"
+                                             "\n  + 100🀄️ xp "
+                                             "\n  + 200💴 ¥", reply_markup=menu_card_button())

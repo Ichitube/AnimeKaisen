@@ -16,10 +16,7 @@ router = Router()
 
 
 @router.message(ChatTypeFilter(chat_type=["private"]), Command("menu"))
-@router.message(
-    ChatTypeFilter(chat_type=["private"]),
-    F.text == "🪪 〢 Профиль"
-)
+@router.message(ChatTypeFilter(chat_type=["private"]), F.text == "🪪 〢 Профиль")
 @router.callback_query(F.data == "main_page")
 async def main_menu(message: Message | CallbackQuery):
     user_id = message.from_user.id
@@ -69,17 +66,17 @@ async def main_menu(message: Message | CallbackQuery):
             caption=f"\n── •✧✧• ────────────"
                     f"\n 🪪  〢 Профиль {account['name']} {emoji}"
                     f"\n── •✧✧• ────────────"
-                    f"\n\n❖🎴 <b>{character}</b>"
+                    f"\n❖🎴 <b>{character}</b>"
                     f"\n❖🗺 Вселенная: {universe}"
                     f"\n❖🎐 <b>{rank}</b>"
                     f"\n❖⛩️ <b>{level}</b>"
-                    f"\n\n── •✧✧• ────────────"
+                    f"\n── •✧✧• ────────────"
                     f"\n<i><b>❃💴 {account['account']['money']} ¥ ❃ {account['campaign']['power']} ⚜️ Мощи"
                     f"\n❃🀄️ {account['stats']['exp']} XP ❃ {total_characters} 🃏 Карт</b></i>",
             parse_mode=ParseMode.HTML,
             reply_markup=inline_builder(
-                ["🏟️ Арена", "💮 Меню", "⛩️ Подземелье", "🪄 Крафт", "🥡 Инвентарь", "⚙️ Настройки", "🎁 Рефераль"],
-                ["arena", "tokio", "dungeon", "craft", "inventory", "settings", "referral"],
+                ["🎐 Баннеры", "〽️ Меню", "📜 Квесты", "🪄 Крафт", "🥡 Инвентарь", "⚙️ Настройки", "🎁 Рефераль"],
+                ["banner", "tokio", "quests", "craft", "inventory", "settings", "referral"],
                 row_width=[1, 2, 2, 2])
         )
         if isinstance(message, CallbackQuery):

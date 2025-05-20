@@ -8,7 +8,7 @@ from aiogram.filters import Command
 from aiogram.types import Message
 from data import characters, character_photo
 from data import mongodb
-from keyboards.builders import reply_builder, inline_builder, menu_button, Ability, rm
+from keyboards.builders import reply_builder, inline_builder, menu_button, Ability, rm, menu_card_button
 from recycling import profile
 from filters.chat_type import ChatTypeFilter
 
@@ -282,7 +282,11 @@ async def fill_profile(message: Message, bot: Bot):
 
 @router.message(ChatTypeFilter(chat_type=["private"]), Command("menu_button"))
 async def call_button(message: Message):
-    await message.answer(text='˗ˋˏ💮 Кнопки восстановленыˎˊ˗', reply_markup=menu_button())
+    account = await mongodb.get_user(message.from_user.id)
+    if account['universe'] == 'Allstars':
+        await message.answer(text='˗ˋˏ💮 Кнопки восстановленыˎˊ˗', reply_markup=menu_card_button())
+    else:
+        await message.answer(text='˗ˋˏ💮 Кнопки восстановленыˎˊ˗', reply_markup=menu_button())
 
 
 """

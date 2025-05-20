@@ -24,7 +24,7 @@ async def banner(callback: CallbackQuery | Message):
         parse_mode=ParseMode.HTML,
         reply_markup=inline_builder(
             ["🔮 Ст. баннер", " 🔙 Назад"],
-            ["standard", "tokio"],
+            ["standard", "main_page"],
             row_width=[1, 1, 1]
             )
     )

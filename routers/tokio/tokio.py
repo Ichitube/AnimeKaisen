@@ -10,6 +10,7 @@ from keyboards.builders import inline_builder
 from data import mongodb
 from filters.chat_type import ChatTypeFilter
 
+
 router = Router()
 
 menu = ["CgACAgIAAxkBAAIVCWXMvbya7qFOU8F85SXUu24hM5wgAAKfOwACeyZoShH4z6iUPi8kNAQ",
@@ -37,7 +38,7 @@ menu = ["CgACAgIAAxkBAAIVCWXMvbya7qFOU8F85SXUu24hM5wgAAKfOwACeyZoShH4z6iUPi8kNAQ
 
 @router.message(
     ChatTypeFilter(chat_type=["private"]),
-    F.text == "💮 Меню"
+    F.text == "〽️ Меню"
 )
 @router.callback_query(F.data == "tokio")
 async def tokio(callback: CallbackQuery | Message):
@@ -45,22 +46,27 @@ async def tokio(callback: CallbackQuery | Message):
     account = await mongodb.get_user(user_id)
 
     money = account['account']['money']
-
+    if account["universe"] == "Allstars":
+        area = "🃏 Битва"
+        area_cb = "arena"
+    else:
+        area = "🏟️ Арена"
+        area_cb = "arena"
+    power = account['campaign']['power']
+    top_text = await mongodb.get_top10_text()
     pattern = dict(
-        caption=f"❖  💮  <b>Меню</b>"
+        caption=f"❖  〽️  <b>Меню</b>"
                 f"\n── •✧✧• ────────────"
-                f"\n ❖ 🌊 Добро пожаловать в нашу уникальную вселенную, где каждый игрок вносит свой вклад в создание "
-                f"неповторимого мира"
-                f"\n\n ❖ 💫 Приглашая друзей или купив священных билетов вы поддерживаете проект "
-                f"для дальнейшего развития"
-                f"\n\n ❖ 🏵 Спасибо за вашу поддержку!"
+                f"\n🌊 Добро пожаловать в мир карт"
+                f"\n\n ❖<b>🏆 Топ 5 игроков</b>"
+                f"\n<blockquote>{top_text}</blockquote>"
                 f"\n── •✧✧• ────────────"
-                f"\n❃ 💴 {money} ¥",
+                f"\n❁ 💴 {money} ¥   ❁ ⚜️ Мощь: {power}",
         parse_mode=ParseMode.HTML,
         reply_markup=inline_builder(
-            ["🎐 Баннеры", "🪪 Профиль", "🏪 Рынок", "🏠 Дом", "📜 Квесты", "🃏 Битва", "🏯 Клан"],
-            ["banner", "main_page", "store", "home", "quests", "card_battle", "clan"],
-            row_width=[1, 2, 2]
+            [area, "🪪 Профиль", "🏯 Клан 🎌", "🐉 Босс", "⛩️ Подземелье", "🏪 Рынок", "🏠 Дом"],
+            [area_cb, "main_page", "clan", "boss", "dungeon", "store", "home"],
+            row_width=[1, 2, 2, 2]
             )
     )
 
@@ -82,13 +88,3 @@ homes_photo = {'🏠 home_1': 'CgACAgIAAxkBAAIU-2XMuzNmOsXp4JxBcGGDbpD_XENiAAJwO
                '🏠 home_4': 'CgACAgIAAx0CfstymgACBSZlxMJQZb7FFLh9iPFdSpXOklwDqQACaD4AAgrXEEpTmie8hGfs1zQE',
                '🏠 home_5': 'CgACAgIAAx0CfstymgACBdtlzO0rWNF9QoR6R4_5ZaHZDVb37wACakkAAsywaUpFT0CPnQYM5TQE'
                }
-
-
-@router.callback_query(F.data == "clan")
-async def clan(callback: CallbackQuery):
-    await callback.answer(f"❖  🏯 Кланы в разработке", show_alert=True)
-
-
-@router.callback_query(F.data == "card_battle")
-async def card_battle(callback: CallbackQuery):
-    await callback.answer(f"❖  🃏 Карточная битва в разработке", show_alert=True)
