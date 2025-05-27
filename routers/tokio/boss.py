@@ -1,30 +1,61 @@
 from datetime import datetime, timedelta
-from aiogram import Router, F
+from aiogram import Router, F, Bot
 from contextlib import suppress
+import asyncio
 
 from aiogram.types import CallbackQuery, InputMediaAnimation, InputMediaPhoto, Message
 from aiogram.exceptions import TelegramBadRequest
 from aiogram.fsm.context import FSMContext
 
-from data import mongodb
+from data import mongodb, card_characters
 from data import character_photo
+from filters.chat_type import ChatTypeFilter
 from data.character_photo import get_stats
 from keyboards.builders import inline_builder, Pagination, pagination_boss
 
 router = Router()
 
+battle_data = []
+user_data = []
+
 BOSSES = [
-    {"name": "Огненный дракон", "hp": 1000, "damage": 100, 'class': 'Strength', 'defense': 20,
+    {"name": "🐉 Шадрагон", "hp": 100000, "damage": 1000, 'class': 'strength', 'defense': 20, "strength": 100,
+     "agility": 75, "intelligence": 75, "ability": "🔥 Огненное дыхание",
      "avatar": "CgACAgIAAx0CfstymgACPolna-3ni4cLL39VwuvlFiUQ8kQVVgACMmMAArowYUshoYqGQ-S3bjYE"},
-    {"name": "Небесный дракон", "hp": 1000, "damage": 100, 'class': 'Agility', 'defense': 20,
+    {"name": "🐉 Омракс", "hp": 100000, "damage": 1000, 'class': 'agility', 'defense': 20, "strength": 75,
+     "agility": 100, "intelligence": 75, "ability": "🌪 Торнадо",
      "avatar": "CgACAgIAAx0CfstymgACPn9na-1_e8cHSYA29Plm6gXFgBkzjQACK2MAArowYUsztOi5fvuTOTYE"},
+    {"name": "🐉 Фиргарт", "hp": 100000, "damage": 1000, 'class': 'agility', 'defense': 20, "strength": 100,
+     "agility": 75, "intelligence": 75, "ability": "◾️ Тёмная энергия",
+     "avatar": "CgACAgIAAx0CfstymgACPoFna-2Pk-zLkdcvwZwTGyhajxslTQACLGMAArowYUvGtG_zdydYBjYE"},
+    {"name": "🐉 Игниссер", "hp": 100000, "damage": 1000, 'class': 'intelligence', 'defense': 20, "strength": 100,
+     "agility": 75, "intelligence": 75, "ability": "❄️ Ледяное дыхание",
+     "avatar": "CgACAgIAAx0CfstymgACPndna-1PLFQrktyzqXUn-HhjY_NWagACI2MAArowYUu5DkXp68OLyjYE"},
+    {"name": "🐉 Блейзрон", "hp": 100000, "damage": 1000, 'class': 'agility', 'defense': 20, "strength": 100,
+     "agility": 75, "intelligence": 75, "ability": "◾️ Тёмный огонь",
+     "avatar": "CgACAgIAAx0CfstymgACPn1na-1wj7ZjkXLLICHpUX4O9njL6QACJ2MAArowYUsKQNL5XBCDUTYE"},
+    {"name": "🐉 Элдора", "hp": 100000, "damage": 1000, 'class': 'strength', 'defense': 20, "strength": 100,
+     "agility": 75, "intelligence": 75, "ability": "🔥 Горячая лава",
+     "avatar": "CgACAgIAAx0CfstymgACPoVna-2403qkX-omvqibT9DG4V5ACAACMGMAArowYUv3_Hw6LwtDXDYE"},
+    {"name": "🐉 Эмберус", "hp": 100000, "damage": 1000, 'class': 'strength', 'defense': 20, "strength": 100,
+     "agility": 75, "intelligence": 75, "ability": "⚡️ Чёрная молния",
+     "avatar": "CgACAgIAAx0CfstymgACPoNna-2y5pckqJnzoK_D2h0cUUOJ1AACL2MAArowYUuiG_oGnCGt6zYE"},
+    {"name": "🐉 Скайдрис", "hp": 100000, "damage": 1000, 'class': 'intelligence', 'defense': 20, "strength": 100,
+     "agility": 75, "intelligence": 75, "ability": "☁️ Тёмная буря",
+     "avatar": "CgACAgIAAx0CfstymgACPnVna-1Dhde65Wyr4GgklR1koBsNlgACIWMAArowYUtlr8P-LuT-dTYE"},
+    {"name": "👺 Фэйрвин", "hp": 100000, "damage": 1000, 'class': 'strength', 'defense': 20, "strength": 100,
+     "agility": 75, "intelligence": 75, "ability": "☄️ Огненный шар",
+     "avatar": "CgACAgIAAx0CfstymgACPntna-1p3n5rFymAE88EEy20FWeipAACJmMAArowYUv9rKj5HJGmRDYE"},
 ]
 
 
+@router.message(ChatTypeFilter(chat_type=["private"]), F.text == "👾 Босс")
 @router.callback_query(F.data == "boss")
-async def boss(callback: CallbackQuery):
-    account = await mongodb.get_user(callback.from_user.id)
-    user_id = callback.from_user.id
+async def boss_func(callback: CallbackQuery | Message, account: dict = None, user_id: int = None):
+    if user_id is None:
+        user_id = callback.from_user.id
+    if account is None:
+        account = await mongodb.get_user(user_id)
 
     # Текущее время
     current_datetime = datetime.now()
@@ -34,10 +65,16 @@ async def boss(callback: CallbackQuery):
             "boss_id": 0,
             "name": BOSSES[0]["name"],
             "current_hp": BOSSES[0]["hp"],
+            "hp": BOSSES[0]["hp"],
             "avatar": BOSSES[0]["avatar"],
             "damage": BOSSES[0]["damage"],
             "class": BOSSES[0]["class"],
             "defense": BOSSES[0]["defense"],
+            "strength": BOSSES[0]["strength"],
+            "agility": BOSSES[0]["agility"],
+            "intelligence": BOSSES[0]["intelligence"],
+            "ability": BOSSES[0]["ability"],
+            "is_alive": True,
             "last_spawn": current_datetime.isoformat(),
             "damage_dealt": 0
         }
@@ -54,6 +91,7 @@ async def boss(callback: CallbackQuery):
     # Вычисляем, сколько прошло времени
     elapsed = current_datetime - last_spawn
 
+    # if elapsed >= timedelta(seconds=200):
     # Если прошло больше 72 часов (3 дня)
     if elapsed >= timedelta(hours=72):
         current_boss_id = account['boss'].get("boss_id", 0)
@@ -65,8 +103,16 @@ async def boss(callback: CallbackQuery):
             "boss_id": next_boss_id,
             "name": next_boss["name"],
             "current_hp": next_boss["hp"],
+            "hp": next_boss["hp"],
             "avatar": next_boss["avatar"],
             "class": next_boss["class"],
+            "damage": next_boss["damage"],
+            "defense": next_boss["defense"],
+            "is_alive": True,
+            "strength": next_boss["strength"],
+            "agility": next_boss["agility"],
+            "intelligence": next_boss["intelligence"],
+            "ability": next_boss["ability"],
             "last_spawn": current_datetime.isoformat(),
             "damage_dealt": 0
         }
@@ -74,31 +120,27 @@ async def boss(callback: CallbackQuery):
         # ❗ не забудь сохранить обратно в базу, если используешь MongoDB:
         await mongodb.update_user(user_id, {"boss": account['boss']})
 
-    # Отправляем сообщение с информацией о новом боссе
-    boss_avatar = InputMediaAnimation(media=account['boss']['avatar'])
-    await callback.message.edit_media(boss_avatar)
-    if account['boss']['class'] == 'Strength':
-        clas = "💪 Сила"
-    elif account['boss']['class'] == 'Agility':
-        clas = "🦶 Ловкость"
-    else:
-        clas = "🧠 Интеллект"
-
     # Время следующего респавна (72 часа после спавна)
     next_respawn = last_spawn + timedelta(hours=72)
 
     # Сколько осталось
     remaining = next_respawn - current_datetime
 
-    if remaining.total_seconds() <= 0:
-        text = "✅ Босс готов к обновлению!"
-    else:
-        total_minutes = int(remaining.total_seconds() // 60)
-        days = total_minutes // (60 * 24)
-        hours = (total_minutes // 60) % 24
-        minutes = total_minutes % 60
+    total_minutes = int(remaining.total_seconds() // 60)
+    days = total_minutes // (60 * 24)
+    hours = (total_minutes // 60) % 24
+    minutes = total_minutes % 60
 
-        text = f"{days}д {hours}ч {minutes}мин"
+    time = f"{days}д {hours}ч {minutes}мин"
+
+    # Отправляем сообщение с информацией о новом боссе
+
+    if account['boss']['class'] == 'strength':
+        clas = "💪 Сила"
+    elif account['boss']['class'] == 'agility':
+        clas = "🦶 Ловкость"
+    else:
+        clas = "🧠 Интеллект"
 
     if "boss_squad" not in account:
         await mongodb.update_user(user_id, {"boss_squad": {
@@ -117,21 +159,63 @@ async def boss(callback: CallbackQuery):
         }})
         account = await mongodb.get_user(user_id)
 
-    await callback.message.edit_caption(
-        caption=f"❖ 🐉 <b>{account['boss']['name']}</b>"
+    boss_data = account["boss"]
+    bos = Boss(
+        name=boss_data["name"],
+        hp=boss_data["current_hp"],
+        strength=boss_data["strength"],
+        agility=boss_data["agility"],
+        intelligence=boss_data["intelligence"],
+        ability=boss_data["ability"],
+        clas=boss_data["class"]
+    )
+
+    if 'boss_keys' not in account['account']:
+        await mongodb.update_user(user_id, {"account.boss_keys": 0})
+        account = await mongodb.get_user(user_id)
+
+    if 'clan_coins' not in account['account']:
+        await mongodb.update_user(user_id, {"account.clan_coins": 0})
+        account = await mongodb.get_user(user_id)
+    keys = account['account']['boss_keys']
+
+    if not account['boss']['is_alive']:
+        media_id = "CgACAgIAAx0CfstymgACQApoLhMZydd6r6wQCGjwaMzc-QyEmgAC6noAAsTQcUkwGF1ofkEWljYE"
+        buttons = ["🏴 Отряд", "🔙 Назад"]
+        callbacks = ["boss_squad", "tokio"]
+        text = (f"💔 Босс повержен!"
+                f"\n── •✧✧• ────────────"
+                f"\n💰 Выбывшие ресурсы:"
+                f"\n<blockquote> • 50 🪙 клановых монет"
+                f"\n • 100 💠 нефритов"
+                f"\n • 250 📀 золота "
+                f"\n • 500 💿 серебра</blockquote>")
+    else:
+        media_id = account['boss']['avatar']
+        buttons = ["🗡 Атаковать • 🗝", "🏴 Отряд", "🔙 Назад"]
+        callbacks = ["battle_boss", "boss_squad", "tokio"]
+        text = (f"❖ <b>{account['boss']['name']}</b>"
                 f"\n── •✧✧• ────────────"
                 f"\n<b>Класс: {clas}</b>"
-                f"\n • ❤️ <b>{account['boss']['current_hp']}</b>"
-                f"\n • ⚔️ <b>{account['boss']['damage']}</b>"
-                f"\n • 🛡 <b>{account['boss']['defense']}</b>"
-                f"\n⏱️ <b>Respawn:</b> {text}",
-        parse_mode='HTML',
-        reply_markup=inline_builder(
-            ["🗡 Атаковать", "Отряд", "🔙 Назад"],
-            ["battle_boss", "boss_squad", "tokio"],
-            row_width=[1, 1, 1]
-        )
+                f"\n<blockquote> • ❤️ <b>{bos.health}</b> из {BOSSES[account['boss']['boss_id']]['hp']}"
+                f"\n • ⚔️ <b>{bos.attack}</b>"
+                f"\n • 🛡 <b>{bos.defense}</b>"
+                f"\n • <b>{bos.ability}</b></blockquote>"
+                f"\nКлючи: {keys}🗝")
+
+    pattern = dict(
+        caption=f"{text}"
+                f"\n── •✧✧• ────────────"
+                f"\n⏱️ <b>Respawn:</b> {time}",
+        reply_markup=inline_builder(buttons, callbacks, row_width=[1, 1, 1])
     )
+
+    media = InputMediaAnimation(media=media_id)
+    if isinstance(callback, CallbackQuery):
+        await callback.message.edit_media(media)
+        await callback.message.edit_caption(**pattern)
+    else:
+        await callback.answer_animation(animation=media_id, **pattern)
 
 
 def deck_text(character, universe):
@@ -221,10 +305,10 @@ async def boss_squad(callback: CallbackQuery):
     if "empty" in deck_data.values():
         msg = "❃ ℹ️ Есть пустые места в отряде"
     else:
-        msg = "❃ ✅ Ваш отряд готов к походу"
+        msg = "❃ ✅ Ваш отряд готов к битве"
 
     pattern = dict(
-        caption=f"<b>❖ 🕯 Отряд 🗡</b>"
+        caption=f"<b>❖ 🏴 Отряд 🗡</b>"
                 f"\n✧•───────────────────────•✧"
                 f"\n<blockquote expandable>"
                 f"{f1_msg}"
@@ -243,7 +327,7 @@ async def boss_squad(callback: CallbackQuery):
              "🔙 Назад"],
             ["bg1", "bg2", "bg3",
              "bg4", "bg5", "bg6",
-             "dungeon"],
+             "boss"],
             row_width=[3, 3, 1]
         )
     )
@@ -333,9 +417,9 @@ async def inventory(callback: CallbackQuery | Message, state: FSMContext):
 
     pattern = dict(caption=f"🥡 Инвентарь"
                            f"\n── •✧✧• ────────────"
-                           f"\n❖ Здесь вы можете увидеть все ваши 🃏 карты "
-                           f"и выбрать 🎴 персонажа к 🏴отряду в подземелья"
-                           f"\n\n❖ Выберите ✨ редкость карты, чтобы выбрать персонажа"
+                           f"\n<blockquote>❖ Здесь вы можете увидеть все ваши 🃏 карты "
+                           f"и установить их в качестве основного 🎴 персонажа к 🏴отряду на битву с боссом."
+                           f"\n❖ Выберите ✨ редкость карты, чтобы чтобы выбрать персонажа.</blockquote>"
                            f"\n── •✧✧• ────────────"
                            f"\n❖ 🃏 Количество карт: {total_elements}",
                    reply_markup=inline_builder(
@@ -459,3 +543,206 @@ async def change_ch(callback: CallbackQuery, state: FSMContext):
     except KeyError:
         await callback.answer("❖ 🔂 Идёт разработка бота связи с чем сессия была остановлена, вызовите "
                               "🥡 Инвентарь еще раз", show_alert=True)
+
+
+class Passive:
+    def __init__(self, name, effect, undo_effect, duration, points=None, apply_once=False):
+        self.name = name
+        self.effect = effect
+        self.undo_effect = undo_effect
+        self.duration = duration
+        self.points = points
+        self.applied = False
+        self.apply_once = apply_once
+
+
+def calculate_damage(attacker, defender):
+    base_damage = max(attacker.attack - defender.defense, 1)  # Минимальный урон 1
+
+    # # Проверяем классовое преимущество
+    # class_advantage = {
+    #     "strength": "agility",
+    #     "agility": "intelligence",
+    #     "intelligence": "strength"
+    # }
+    #
+    # if class_advantage[attacker.clas] == defender.clas:
+    #     base_damage = int(base_damage * 1.4)  # 1.4x урон
+
+    return base_damage
+
+
+class Boss:
+    def __init__(self, name, hp, strength, agility, intelligence, ability, clas):
+        self.name = name
+        self.strength = strength
+        self.agility = agility
+        self.intelligence = intelligence
+        self.shield = 0
+        self.health = hp
+        self.attack = strength + agility + (intelligence // 2) * 35
+        self.defense = (strength + agility + (intelligence // 2)) // 4 * 4
+        self.mana = intelligence * 10
+        self.crit_dmg = strength + (agility // 2) + (intelligence // 4)
+        self.crit_ch = agility + (strength // 2) + (intelligence // 4)
+        self.ability = ability
+        self.clas = clas
+
+
+async def battle(bot: Bot, user_id: int, rival_id: int, char1, char2, card1, card2):
+    battle_log = []  # Лог битвы
+
+    def format_msg():
+        return (f"\n✧ • 🃜 ×    ×    ×    ×    ×    ×    ×    × 🃜 • ✧"
+                f"\n<blockquote>"  # expandable
+                f"{'\n'.join(battle_log)}"  # Показываем последние 6 ходов
+                f"</blockquote>"
+                f"\n✧ • 🃜 ×    ×    ×    ×    ×    ×    ×    × 🃜 • ✧")
+
+    msg = await bot.send_message(user_id, format_msg())
+    msg_rival = await bot.send_message(rival_id, format_msg())
+
+    while char1.health > 0 and char2.health > 0:
+        # Оба атакуют одновременно
+        damage1 = calculate_damage(char1, char2)
+        damage2 = calculate_damage(char2, char1)
+
+        char2.health -= damage1
+        char1.health -= damage2
+
+        if char1.health < 0:
+            char1.health = 0
+        if char2.health < 0:
+            char2.health = 0
+
+        battle_log.append(f"\n{char1.name} нанес {damage1}⚔ урона \n{char2.name} нанес {damage2} урона")
+        battle_log.append(f"\n{char1.name} {max(char1.health, 0)}❤️ {char2.name} {max(char2.health, 0)}❤️")
+
+
+async def auto_boss_battle(bot: Bot, user_id: int, characters: list, boss: Boss, account: dict, callback):
+    alive_characters = characters[:]
+    boss_is_alive = True
+    turn_count = 0
+
+    # Сообщение стартовое
+    callback = await callback.message.edit_caption(caption="⏳ Битва начинается...")
+    await asyncio.sleep(1.5)
+
+    while boss.health > 0 and alive_characters:
+        turn_count += 1
+
+        # 💥 Атака отряда (поочерёдно, с паузой и редактированием)
+        for char in alive_characters:
+            damage = calculate_damage(char, boss)
+            boss.health -= damage
+            if boss.health < 0:
+                boss.health = 0
+            text = (
+                f"˹{char.name}˼ атакует {boss.name} на {damage}🗡 урона\n"
+                f"\nHP босса: {boss.health}❤️ "
+            )
+            await callback.edit_caption(caption=text)
+            await asyncio.sleep(1.5)
+
+        # 📍 Победа
+        if boss.health <= 0:
+            await callback.edit_caption(caption=f"🏆 {boss.name} повержен!\n❤️ HP: 0")
+            break
+
+        # 🔥 Атака босса (по всем, одной строкой)
+        boss_damage = boss.attack + 50 if turn_count % 3 == 0 else boss.attack
+        ability_text = f"💥 Босс использует способность: {boss.ability}" if turn_count % 3 == 0 else ""
+
+        await callback.edit_caption(caption=f"{ability_text}\n☠️ {boss.name} наносит {boss_damage} урона всем!")
+        await asyncio.sleep(1.5)
+
+        dead_chars = []
+        for char in alive_characters:
+            char.health -= boss_damage
+            if char.health <= 0:
+                dead_chars.append(char)
+
+        for char in dead_chars:
+            alive_characters.remove(char)
+            await callback.edit_caption(caption=f"💀 {char.name} пал в бою!")
+            await asyncio.sleep(1.2)
+
+    # 🧾 Сохранение
+    account['boss']['current_hp'] = boss.health
+    account['boss']['is_alive'] = boss.health > 0
+    await mongodb.update_user(user_id, {"boss": account['boss']})
+
+    if boss.health > 0:
+        await bot.send_message(user_id, "🏴‍☠️ Битва завершена. ❤️‍🩹 Босс выжил.")
+        await mongodb.update_user(user_id, {"boss.is_alive": True})
+        await callback.delete()
+        await boss_func(callback, account, user_id)
+    else:
+        # даем анграду
+        account['account']['clan_coins'] += 50
+        account['campaign']['nephritis'] += 100
+        account['campaign']['gold'] += 250
+        account['campaign']['silver'] += 500
+
+        await mongodb.update_user(user_id, {
+            "account.clan_coins": account['account']['clan_coins'],
+            "campaign.nephritis": account['campaign']['nephritis'],
+            "campaign.gold": account['campaign']['gold'],
+            "campaign.silver": account['campaign']['silver'],
+            "boss.is_alive": False,
+            "boss.current_hp": 0
+        })
+        await callback.delete()
+        await boss_func(callback, account, user_id)
+
+
+@router.callback_query(F.data == "battle_boss")
+async def battle_boss(callback: CallbackQuery, state: FSMContext):
+    user_id = callback.from_user.id
+    account = await mongodb.get_user(user_id)
+
+    if "empty" in account["boss_squad"].values():
+        await callback.answer("❖ 🔂 У вас есть пустые места в отряде", show_alert=True)
+        return
+
+    if account['account']['boss_keys'] <= 0:
+        await callback.answer("❖ 🗝 У вас недостаточно ключей для битвы с боссом", show_alert=True)
+        return
+
+    account['account']['boss_keys'] -= 1
+    await mongodb.update_user(user_id, {"account.boss_keys": account['account']['boss_keys']})
+
+    await callback.message.delete_reply_markup()
+    await callback.message.edit_caption(caption="⚔ Битва с боссом начинается...")
+    squad = account["boss_squad"]
+    characters = []
+    slave = account["inventory"]["slaves"][0] if account["inventory"]["slaves"] else None
+
+    for i in range(1, 7):
+        name = squad[f"bg{i}"]
+        universe = squad[f"bg{i}_universe"]
+        cb = f"┋{name}┋"
+        character = card_characters.CardCharacters(
+            ident=account["_id"],
+            p_name=account["name"],
+            universe=universe,
+            cb=cb,
+            name=name,
+            slave=slave,
+            rid=0,
+            data=f"bg{i}"
+        )
+        characters.append(character)
+
+    boss_data = account["boss"]
+    bos = Boss(
+        name=boss_data["name"],
+        hp=boss_data["current_hp"],
+        strength=boss_data["strength"],
+        agility=boss_data["agility"],
+        intelligence=boss_data["intelligence"],
+        ability=boss_data["ability"],
+        clas=boss_data["class"]
+    )
+
+    await auto_boss_battle(bot=callback.bot, user_id=user_id, characters=characters, boss=bos, account=account, callback=callback)

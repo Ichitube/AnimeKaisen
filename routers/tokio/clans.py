@@ -26,8 +26,9 @@ async def clan(callback: CallbackQuery | Message):
         photo = "AgACAgIAAx0CfstymgACP5loE0hAO9ZGih89GqGD2Tx4AAGAcqIAArX1MRs4K3lImeuKFTTzxawBAAMCAAN5AAM2BA"
         pattern = dict(caption="❖ 🏯 Кланы 🎌"
                                "\n── •✧✧• ────────────"
-                               "\n✧ 🏯 Кланы - это возможность объединиться с другими игроками и вместе достигать 📈 новых высот!"
-                               "\n\n✧ 🎌 Вы можете создать свой клан за 100 000 💴 или отправить ✉️ заявку в уже существующий клан.",
+                               "\n 🏯 Кланы - это возможность объединиться с другими игроками и вместе достигать 📈 новых высот!"
+                               "\n\n 🎌 Вы можете создать свой клан или отправить ✉️ заявку в уже существующий клан."
+                               "\n\n 🔸 Чтобы создать клан и стать лидером, необходимо статус 💮Pass и 100 000 💴.",
                        reply_markup=inline_builder(
                         ["🎌 Создать клан • 100 000 💴", "✉️ Вступить в клан", "🔙 Назад"],
                         ["clan_create", "clan_join", "tokio"],
@@ -166,6 +167,10 @@ async def start_clan_creation(callback: CallbackQuery, state: FSMContext):
     user_id = callback.from_user.id
     # Проверка: уже в клане?
     account = await mongodb.get_user(user_id)
+
+    if not account['account']['prime']:
+        await callback.answer("❖ 🔸 Для создание клана необходимо статус 💮Pass", show_alert=True)
+        return
 
     if account["account"]["money"] < 100000:
         amount = 100000 - account["account"]["money"]
@@ -870,20 +875,26 @@ async def clan_shop(callback: CallbackQuery):
         await mongodb.update_user(user_id, {"account.clan_coins": 0})
         account = await mongodb.get_user(user_id)
 
+    if 'boss_keys' not in account['account']:
+        await mongodb.update_user(user_id, {"account.boss_keys": 0})
+        account = await mongodb.get_user(user_id)
+
     coins = account['account']['clan_coins']
+    keys = account['account']['boss_keys']
     pattern = dict(
         caption=f"❖  ⛺️ <b> Лавка</b>"
                 f"\n── •✧✧• ────────────"
                 f"\n❖  Вы можете купить 🎫 золотые, 🎟 обычные билеты за 🪙 монетки клана"
-                f"\n ❃ ⚖️ Цены:"
+                f"\n ❃ ⚖️ Цены за предметы:"
+                f"\n  •  🗝 = 15 🪙"
                 f"\n  •  🎫 = 10 🪙"
                 f"\n  •  🎟 = 1 🪙"
                 f"\n── •✧✧• ────────────"
-                f"\n🪙⋗ <b>{coins}</b>  🎫⋗ <b>{golden}</b>  🎟⋗ <b>{common}</b>",
+                f"\n🪙⋗ <b>{coins}</b> 🗝⋗ <b>{keys}</b> 🎫⋗ <b>{golden}</b> 🎟⋗ <b>{common}</b>",
         reply_markup=inline_builder(
-            ["🎫 Купить", "🎟 Купить", "🔙 Назад"],
-            ["buy_golden_clan", "buy_common_clan", "clan"],
-            row_width=[2, 1]
+            ["🗝 Купить", "🎫 Купить", "🎟 Купить", "🔙 Назад"],
+            ["buy_boss_keys", "buy_golden_clan", "buy_common_clan", "clan"],
+            row_width=[1, 2, 1]
             )
     )
 
@@ -896,6 +907,36 @@ async def clan_shop(callback: CallbackQuery):
         await callback.message.edit_caption(inline_id, **pattern)
     else:
         await callback.answer_animation(media_id, **pattern)
+
+
+@router.callback_query(F.data == "buy_boss_keys")
+async def buy_boss_keys(callback: CallbackQuery):
+    inline_id = callback.inline_message_id
+    user_id = callback.from_user.id
+    account = await mongodb.get_user(user_id)
+
+    pattern = dict(
+        caption=f"❖ 🗝 <b>Купить ключи</b>"
+                f"\n── •✧✧• ────────────"
+                f"\n • Сколько 🗝 ключей вы хотите купить?",
+        reply_markup=inline_builder(
+            ["1🗝 • 15🪙", "5🗝 • 75🪙", "🔙 Назад"],
+            ["buy_boss_keys_1_c", "buy_boss_keys_5_c", "clan_shop"],
+            row_width=[2, 1]
+            )
+    )
+
+    await callback.message.edit_caption(inline_id, **pattern)
+
+
+@router.callback_query(F.data == "buy_boss_keys_1_c")
+async def buy_boss_keys_1(callback: CallbackQuery):
+    await buy_boss_keys_clan(callback, 1)
+
+
+@router.callback_query(F.data == "buy_boss_keys_5_c")
+async def buy_boss_keys_5(callback: CallbackQuery):
+    await buy_boss_keys_clan(callback, 5)
 
 
 @router.callback_query(F.data == "buy_common_clan")
@@ -942,6 +983,25 @@ async def buy_common_ticket_clan(callback: CallbackQuery, count: int):
         current_datetime = datetime.combine(current_date, datetime.time(datetime.now()))
         await mongodb.update_user(user_id, {"tasks.last_shop_purchase": current_datetime})
         await callback.answer(f"❖  ⛺️  Вы успешно приобрели {count} 🎟 обычных билетов", show_alert=True)
+    else:
+        await callback.answer(f"❖  ⛺️  У вас недостаточно 🪙 монетки клана", show_alert=True)
+    await clan_shop(callback)
+
+
+async def buy_boss_keys_clan(callback: CallbackQuery, count: int):
+    user_id = callback.from_user.id
+    account = await mongodb.get_user(user_id)
+
+    coins = account['account']['clan_coins']
+    if coins >= 15 * count:
+        await mongodb.update_user(user_id, {'account.money': coins - 15 * count})
+        await mongodb.update_user(
+            user_id, {'inventory.items.keys': account['inventory']['items']['keys'] + count}
+        )
+        current_date = datetime.today().date()
+        current_datetime = datetime.combine(current_date, datetime.time(datetime.now()))
+        await mongodb.update_user(user_id, {"tasks.last_shop_purchase": current_datetime})
+        await callback.answer(f"❖  ⛺️  Вы успешно приобрели {count} 🗝 ключей", show_alert=True)
     else:
         await callback.answer(f"❖  ⛺️  У вас недостаточно 🪙 монетки клана", show_alert=True)
     await clan_shop(callback)

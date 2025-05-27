@@ -66,10 +66,10 @@ async def main_menu(message: Message | CallbackQuery):
             caption=f"\n── •✧✧• ────────────"
                     f"\n 🪪  〢 Профиль {account['name']} {emoji}"
                     f"\n── •✧✧• ────────────"
-                    f"\n❖🎴 <b>{character}</b>"
-                    f"\n❖🗺 Вселенная: {universe}"
-                    f"\n❖🎐 <b>{rank}</b>"
-                    f"\n❖⛩️ <b>{level}</b>"
+                    f"\n<blockquote>🎴 <b>{character}</b>"
+                    f"\n🗺 Вселенная: {universe}"
+                    f"\n🎐 <b>{rank}</b>"
+                    f"\n⛩️ <b>{level}</b></blockquote>"
                     f"\n── •✧✧• ────────────"
                     f"\n<i><b>❃💴 {account['account']['money']} ¥ ❃ {account['campaign']['power']} ⚜️ Мощи"
                     f"\n❃🀄️ {account['stats']['exp']} XP ❃ {total_characters} 🃏 Карт</b></i>",
@@ -130,12 +130,12 @@ async def referral_link(callback: CallbackQuery):
     media = InputMediaAnimation(media="CgACAgIAAx0CfstymgACBb9lzLfhJnj3lcZBeK1j3YTPUX6wfgACYkYAAsywaUpw0JLo7c7pRzQE")
     count = len(account['account']['referrals'])
     deep_link = f'https://t.me/AnimeKaisenbot?start={user_id}'
-    text = (f'\n── •✧✧• ────────────'
-            f'\n ❃  🎐 Ты получил особое приглашение в сообщество Аниме битвы. '
-            f'\n\n ❃  ⛩️ Там ты можешь насладиться плавной 🔮 Гачой, собирать своих 🎴 Персонажей, сражаться в '
-            f'🏟️ Арене с другими игроками, стать самым ⚜️ сильным игроком и найти друзей'
-            f'\n\n ❃  Заходи по моей ссылке ниже и получай 🎁 Бонусы при регистрации: \n\n'
-            f' ⋗ {deep_link} '
+    text = (f'\n🎐 Ты получил особое приглашение в сообщество Multiverse!'
+            f'\n🪽 Multiverse это мир где можешь насладиться плавной 🔮 Гачой, собирать своих 🎴 Персонажей, сражаться в '
+            f'🏟️ Арене с другими игроками, стать ⚜️ сильным игроком, побеждать боссы 👾, вступить в кланы 🏯 и '
+            f'найти друзей'
+            f'\n Заходи по моей ссылке ниже и получай 🎁 Бонусы при регистрации:'
+            f'\n{deep_link} '
             f'\n── •✧✧• ────────────'
             f'\nБудем рады тебя видеть :)')
 
@@ -155,17 +155,18 @@ async def referral_link(callback: CallbackQuery):
         return keyboard
 
     await callback.message.edit_media(media)
-    await callback.message.edit_caption(caption='\n── •✧✧• ────────────'
-                                        f'\n ❃ 🎁 Вы получите 🧧 священный билет за каждых 3 приглашенных игроков. '
-                                        f'\n\n ❃ ⛩️ Условия:'
-                                        f'\n\n  ❖ Новые игроки считаються приглашенными только после того, как они '
-                                        f'зарегистрировались по вашей реферальной ссылке и получили 🎴 первую карту'
-                                        f'\n  ❖ Игроки которые уже зарегистрировались не считаються приглашенными'
-                                        f'\n  ❖ Приглашая игроков вы поддерживаете развитие игры'
-                                        f'\n\n ❃ 🎐 Ваша реферальная ссылка:'
-                                        f'\n\n ⋗ {deep_link} '
+    await callback.message.edit_caption(caption=
+                                        f'\n ❖ ⛩️ Условия:'
                                         f'\n── •✧✧• ────────────'
-                                        f'\n вы пригласили {count} человек', reply_markup=share_keyboard())
+                                        f'\n🎁 Вы получите 🧧 священный билет за каждых 3 приглашенных игроков.'
+                                        f'\n<blockquote> • Новые игроки считаються приглашенными только после того, '
+                                        f'как они зарегистрировались по вашей реферальной ссылке и получили 🎴 первую карту.'
+                                        f'\n • Игроки которые уже зарегистрировались не считаються приглашенными.'
+                                        f'\n • Приглашая игроков вы поддерживаете развитие игры</blockquote>'
+                                        f'\n ❃ 🎐 Ваша реферальная ссылка:'
+                                        f'\n{deep_link}'
+                                        f'\n── •✧✧• ────────────'
+                                        f'\n👥 вы пригласили {count} человек', reply_markup=share_keyboard())
 
 
 @router.callback_query(F.data == "promocode")

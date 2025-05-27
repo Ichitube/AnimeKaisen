@@ -39,7 +39,7 @@ surrender_r_text = ("👑 Победа: 🏴‍☠️Соперник сдалс
                     "\n<blockquote expandable>── •✧✧• ────────────"
                     "\n  + 100🀄️ xp, "
                     "\n  + 200💴 ¥</blockquote>")
-time_out_text = ("👑 Победа: 🕘Время вышло"
+time_out_text = ("👑 Победа: ⏱️Время вышло"
                  "\n<blockquote expandable>── •✧✧• ────────────"
                  "\n  + 100🀄️ xp, "
                  "\n  + 200💴 ¥</blockquote>")
@@ -446,7 +446,7 @@ async def surrender_f(user_id, r, mes, bot):
             await bot.send_animation(chat_id=rival["_id"], animation=win_animation,
                                      caption=time_out_text, reply_markup=menu_button())
         await bot.edit_message_text(chat_id=user_id, message_id=mes.message_id,
-                                    text=f"✖️ Время вышло 🕘", reply_markup=None)
+                                    text=f"✖️ Время вышло ⏱️", reply_markup=None)
 
 
 @router.callback_query(F.data == "card_opponent")

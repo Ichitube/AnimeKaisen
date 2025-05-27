@@ -18,8 +18,9 @@ async def settings(message: Message | CallbackQuery):
     pattern = dict(
         caption=f"❖  ⚙️ <b>Настройки</b>"
                 f"\n── •✧✧• ────────────"
-                f"\n <b>🪪 Имя: {account['name']}"
-                f"\n 🎴 Персонаж: {account['character'][account['universe']]}</b>"
+                f"\n<blockquote><b>🪪 Имя: {account['name']}"
+                f"\n🗺 Вселенная: {account['universe']}"
+                f"\n🎴 Персонаж: {account['character'][account['universe']]}</b></blockquote>"
                 f"\n── •✧✧• ────────────",
         parse_mode=ParseMode.HTML,
         reply_markup=inline_builder(
@@ -46,7 +47,7 @@ async def settings(message: Message | CallbackQuery):
 async def change_n(callback: CallbackQuery, state: FSMContext):
     await callback.message.delete()
     await state.set_state(Name.name)
-    await callback.message.answer("❖  💮 Введи новое имя: ")
+    await callback.message.answer("❖ 🪪 Введи новое имя: ")
 
 
 @router.message(Name.name)
@@ -59,7 +60,7 @@ async def form_name(message: Message, state: FSMContext):
         await change_name(message.from_user.id, data['name'])
         await settings(message)
     else:
-        await message.answer("❖  ✖️ Имя слишком длинное \n\n Введи другое: ")
+        await message.answer("❖  ✖️ Имя слишком длинное \n\n🪪 Введи другое: ")
 
 
 async def change_name(user_id: int, name: str):
@@ -68,7 +69,7 @@ async def change_name(user_id: int, name: str):
 
 @router.callback_query(F.data == "change_universe")
 async def change_universe(callback: CallbackQuery):
-    await callback.message.edit_caption(caption="❖  🗺 Выбери вселенную: ",
+    await callback.message.edit_caption(caption="❖ 🗺 Выбери вселенную: ",
                                         reply_markup=inline_builder(
                                             ['⭐️ Allstars', '🗡 Bleach', '🍥 Naruto'],
                                             ['Allstars', 'Bleach', 'Naruto'],

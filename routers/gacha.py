@@ -61,32 +61,34 @@ characters = {
 
 def common_gacha():
     rand_num = random.random()
-    if rand_num < 0.0003:  # 0.03% шанс
+    if rand_num < 0.001:  # 0.1% — divine
         return 'divine'
-    elif rand_num < 0.003:  # 0.3% шанс
+    elif rand_num < 0.005:  # 0.4% — mythical
         return 'mythical'
-    elif rand_num < 0.024:  # 2.4% шанс
+    elif rand_num < 0.025:  # 2% — legendary
         return 'legendary'
-    elif rand_num < 0.07:  # 7% шанс
+    elif rand_num < 0.085:  # 6% — epic
         return 'epic'
-    elif rand_num < 0.16:  # 16% шанс
+    elif rand_num < 0.22:  # 13.5% — rare
         return 'rare'
-    else:  # 74.77% шанс
+    else:  # 78.0% — common
         return 'common'
 
 
 def golden_gacha():
     rand_num = random.random()
-    if rand_num < 0.001:  # 0.1% шанс
+    if rand_num < 0.005:  # 0.5% — divine
         return 'divine'
-    elif rand_num < 0.006:  # 0.6% шанс
+    elif rand_num < 0.015:  # 1.0% — mythical
         return 'mythical'
-    elif rand_num < 0.11:  # 11% шанс
+    elif rand_num < 0.13:  # 11.5% — legendary
         return 'legendary'
-    elif rand_num < 0.23:  # 23% шанс
+    elif rand_num < 0.37:  # 24% — epic
         return 'epic'
-    else:  # 65.3% шанс
+    elif rand_num < 0.70:  # 33% — rare
         return 'rare'
+    else:  # 30% — common (если допустимо, иначе убери common вообще)
+        return 'common'
 
 
 def sacred_gacha():
@@ -220,10 +222,10 @@ async def card_gacha(user_id, callback):
             power = character_photo.get_stats(universe, character, 'arena')['power']
             message = (f"\n❖ ✨ Редкость: {rarity}"
                        f"\n❖ 🗺 Вселенная: {ch_universe}"
-                       f"\n\n   ✊🏻 Сила: {strength}"
-                       f"\n   👣 Ловкость: {agility}"
-                       f"\n   🧠 Интелект: {intelligence}"
-                       f"\n   ⚜️ Мощь: {power}")
+                       f"\n • ✊🏻 Сила: {strength}"
+                       f"\n • 👣 Ловкость: {agility}"
+                       f"\n • 🧠 Интелект: {intelligence}"
+                       f"\n • ⚜️ Мощь: {power}")
             buttons = ["🎴 Навыки", " 🔙 ", f"{icon}"]
             calls = [Ability(action="ability", universe=universe,
                      character=character, back='banner'), "banner", f"{button}"]
@@ -234,9 +236,9 @@ async def card_gacha(user_id, callback):
 
     pattern = dict(
         caption=f"\n ── •✧✧• ────────────"
-                f"\n  🎴  〢 <tg-spoiler>{character}</tg-spoiler>"
+                f"\n 🎴 〢 <tg-spoiler>{character}</tg-spoiler>"
                 f"\n ── •✧✧• ────────────"
-                f"{message}"
+                f"<blockquote>{message}</blockquote>"
                 f"\n──❀*̥˚──◌──◌──❀*̥˚────"
                 f"\n<i> + {fragments}🧩 Осколков </i>",
         reply_markup=inline_builder(
@@ -320,16 +322,16 @@ async def first_summon(callback, universe):
         power = character_photo.get_stats(universe, character, 'arena')['power']
         msg = (f"\n❖ ✨ Редкость: {rarity}"
                f"\n❖ 🗺 Вселенная: {ch_universe}"
-               f"\n\n   ✊🏻 Сила: {strength}"
-               f"\n   👣 Ловкость: {agility}"
-               f"\n   🧠 Интелект: {intelligence}"
-               f"\n   ⚜️ Мощь: {power}")
+               f"\n • ✊🏻 Сила: {strength}"
+               f"\n • 👣 Ловкость: {agility}"
+               f"\n • 🧠 Интелект: {intelligence}"
+               f"\n • ⚜️ Мощь: {power}")
 
     pattern = dict(
         caption=f"\n ── •✧✧• ────────────"
-                f"\n  🎴  〢 <tg-spoiler>{character}</tg-spoiler>"
+                f"\n 🎴 〢 <tg-spoiler>{character}</tg-spoiler>"
                 f"\n ── •✧✧• ────────────"
-                f"{msg}"
+                f"<blockquote>{msg}</blockquote>"
                 f"\n──❀*̥˚──◌──◌──❀*̥˚────",
         reply_markup=success(),
         parse_mode=ParseMode.HTML
@@ -432,10 +434,10 @@ async def campaign_rank(message: Message):
                         agility = character_photo.get_stats(universe, character, 'arena')['agility']
                         intelligence = character_photo.get_stats(universe, character, 'arena')['intelligence']
                         msg = (f"\n❖ ✨ Редкость: {rarity}"
-                               f"\n\n   🗺 Вселенная: {ch_universe}"
-                               f"\n\n   ✊🏻 Сила: {strength}"
-                               f"\n   👣 Ловкость: {agility}"
-                               f"\n   🧠 Интелект: {intelligence}")
+                               f"\n❖ 🗺 Вселенная: {ch_universe}"
+                               f"\n • ✊🏻 Сила: {strength}"
+                               f"\n • 👣 Ловкость: {agility}"
+                               f"\n • 🧠 Интелект: {intelligence}")
                         buttons = ["🎴 Навыки"]
                         calls = [Ability(action="ability", universe=universe,
                                          character=character, back='banner')]
@@ -446,13 +448,13 @@ async def campaign_rank(message: Message):
 
                 pattern = dict(
                     caption=f"\n ── •✧✧• ────────────"
-                            f"\n  🎴  〢 <tg-spoiler>{character}</tg-spoiler>"
+                            f"\n 🎴 〢 <tg-spoiler>{character}</tg-spoiler>"
                             f"\n ── •✧✧• ────────────"
-                            f"{msg}"
+                            f"<blockquote>{msg}</blockquote>"
                             f"\n──❀*̥˚──◌──◌──❀*̥˚────"
                             f"\n<i> + {fragments}🧩 Осколков </i>",
-                    reply_markup=inline_builder(buttons, calls,
-                                                row_width=[1]),
+                    # reply_markup=inline_builder(buttons, calls,
+                    #                             row_width=[1]),
                     parse_mode=ParseMode.HTML
                 )
 

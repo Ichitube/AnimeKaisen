@@ -20,7 +20,7 @@ async def banner(callback: CallbackQuery | Message):
                 f"\n── •✧✧• ────────────"
                 f"\n❇️ <b><i>Текущие баннеры:</i></b>"
                 # f"\n\n ☆ • 👻 <b>Хэллоуин</b>"
-                f"\n\n ☆ • 🔮 <b>Стандартный баннер</b>",
+                f"\n<blockquote> ☆ 🔮 <b>Стандартный баннер</b></blockquote>",
         parse_mode=ParseMode.HTML,
         reply_markup=inline_builder(
             ["🔮 Ст. баннер", " 🔙 Назад"],
@@ -29,12 +29,7 @@ async def banner(callback: CallbackQuery | Message):
             )
     )
 
-    if account['universe'] == "Bleach":
-        media_id = "CgACAgIAAx0CfstymgACCxZl5FxQpuMBOz7tFM8BU88VOEvMXgACtjwAAkLSIEtSvf16OnsuwTQE"
-    elif account['universe'] == "Naruto":
-        media_id = "CgACAgIAAxkBAAKu-2bfz0QjhL_TZCnL-Zha1vsprdVLAAKCUQACzJcBS3N7PqOXSE2qNgQ"
-    else:
-        media_id = "CgACAgIAAx0CfstymgACEnpmnUiYllQQPMNY7B3y44Okelr6UgACsVEAApQD6UhAS-MzjVWVxTUE"
+    media_id = "CgACAgIAAx0CfstymgACPnlna-1cMqyMz6QaXP9vAcL_PlGkPAACJGMAArowYUvHL8VjyDqLszYE"
     media = InputMediaAnimation(media=media_id)
     if isinstance(callback, CallbackQuery):
         inline_id = callback.inline_message_id
@@ -127,16 +122,14 @@ async def standard(callback: CallbackQuery):
     common = ticket_data['common']
 
     pattern = dict(
-        caption=f"❖ 🔮 <b>Стандартный баннер</b>"
+        caption=f"\n❖ ✨ <b><i>Шансы дропа 🂡</i></b>"
                 f"\n── •✧✧• ────────────"
-                f"\n❖ <b><i>Категории 🃏 карт:</i></b>"
-                f"\n── •✧✧• ────────────"
-                f"\n☆  🌠 <b>Божественные карты 🂡</b>"
-                f"\n☆  🌌 <b>Мифические карты 🂡</b>"
-                f"\n☆  🌅 <b>Легендарные карты 🂡</b>"
-                f"\n☆  🎆 <b>Эпические карты 🂡</b>"
-                f"\n☆  🎇 <b>Редкие карты 🂡</b>"
-                f"\n☆  🌁 <b>Обычные карты 🂡</b>"
+                f"\n<blockquote>🌠 <b>Div.</b> 🎟⋗ 0.1% 🎫⋗ 0.5% 🧧⋗ 25%"
+                f"\n🌌 <b>Myth.</b> 🎟⋗ 0.4% 🎫⋗ 1% 🧧⋗ 35%"
+                f"\n🌅 <b>Leg.</b> 🎟⋗ 2% 🎫⋗ 11.5% 🧧⋗ 40%"
+                f"\n🎆 <b>Epic card</b> 🎟⋗ 6.0% 🎫⋗ 24%"
+                f"\n🎇 <b>Rare card</b> 🎟⋗ 13.5% 🎫⋗ 33%"
+                f"\n🌁 <b>Com. card</b> 🎟⋗ 78% 🎫⋗ 30%</blockquote>"
                 f"\n── •✧✧• ────────────"
                 f"\n❃  🧧 ⋗ <b>{keys}</b>   🎫 ⋗ <b>{golden}</b>   🎟 ⋗ <b>{common}</b>",
         parse_mode=ParseMode.HTML,
@@ -147,7 +140,7 @@ async def standard(callback: CallbackQuery):
             )
     )
 
-    media_id = "CgACAgIAAx0CfstymgACBallzDJIAALy9W358H_8M540_3wQqAAC2T4AAsywYUqtJ3fOrELTrjQE"
+    media_id = "CgACAgIAAx0CfstymgACPnlna-1cMqyMz6QaXP9vAcL_PlGkPAACJGMAArowYUvHL8VjyDqLszYE"
     media = InputMediaAnimation(media=media_id)
     await callback.message.edit_media(media, inline_id)
     await callback.message.edit_caption(inline_id, **pattern)

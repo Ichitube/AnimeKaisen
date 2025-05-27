@@ -38,6 +38,7 @@ def menu_button():
         [
             KeyboardButton(text='🎴 Grab'),
             KeyboardButton(text='📜 Квесты'),
+            KeyboardButton(text='👾 Босс'),
             KeyboardButton(text='⛩️ Подземелье')
         ],
         [
@@ -68,6 +69,7 @@ def menu_card_button():
         [
             KeyboardButton(text='🎴 Grab'),
             KeyboardButton(text='📜 Квесты'),
+            KeyboardButton(text='👾 Босс'),
             KeyboardButton(text='⛩️ Подземелье')
         ],
         [

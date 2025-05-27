@@ -33,19 +33,22 @@ async def store(callback: CallbackQuery | Message):
     money = account['account']['money']
     pattern = dict(
         caption=f"❖  🏪  <b>Рынок</b>"
-                f"\n── •✧✧• ────────────"
-                f"\n❖  Вы можете купить 🎫 золотые, 🎟 обычные билеты и недвижимость за 💴 ¥"
-                f"\n ❃ ⚖️ Цены:"
-                f"\n  •  🎫 = 1000 💴"
-                f"\n  •  🎟 = 100 💴"
-                f"\n\n❖  Так же можете приобрести 🧧Священный билет, 💮Pass и 🔖Рабынь за 🌟"
+                f"\n── •✧✧• ────────────"  # ❖ Вы можете купить 🎫🎟 билеты и недвижку за 💴 ¥"
+                f"\n❖ Вы можете купить за 🌟:"
+                f"\n<blockquote>• 🌟 Эксклюзивные персонажи"
+                f"\n• 🧧Священный билет"
+                f"\n• 💮Pass и 🔖Рабынь</blockquote>"
+                f"\n❖⚖️ Цены:"
+                f"\n<blockquote> • 🏠 = 5000 💴"
+                f"\n • 🎫 = 1000 💴"
+                f"\n • 🎟 = 100 💴</blockquote>"
                 f"\n── •✧✧• ────────────"
                 f"\n💴 {money} ¥  🧧 ⋗ <b>{keys}</b>  🎫 ⋗ <b>{golden}</b>  🎟 ⋗ <b>{common}</b>",
         parse_mode=ParseMode.HTML,
         reply_markup=inline_builder(
-            ["💮Pass", "🧧 Купить ", "🎫 Купить", "🎟 Купить", "⛓ Рынок рабынь", "🏠 Рынок недвижимости", "🔙 Назад"],
-            ["buy_pass", "buy_keys", "buy_golden", "buy_common", "slaves_store", "buy_home", "tokio"],
-            row_width=[2, 2, 1, 1, 1]
+            ["🌟 Эксклюзивные персонажи", "💮Pass", "🧧 Купить ", "⛓ Торг", "🏠 Недвижка", "🎫 Купить", "🎟 Купить", "🔙 Назад"],
+            ["exclusive_char", "buy_pass", "buy_keys", "slaves_store", "buy_home", "buy_golden", "buy_common", "tokio"],
+            row_width=[1, 2, 2, 2, 1]
             )
     )
 
@@ -70,10 +73,10 @@ async def buy_common(callback: CallbackQuery):
     pattern = dict(
         caption=f"❖  🏪  <b>Купить обычные билеты</b>"
                 f"\n── •✧✧• ────────────"
-                f"\n❖  Вы можете купить 🎟 обычные билеты за 💴 ¥"
-                f"\n\n❃  🎟 = 100 💴"
-                f"\n\n❖  У вас есть {money} 💴 ¥"
-                f"\n❖  Сколько билетов вы хотите купить?",
+                f"\n<blockquote>❖  Вы можете купить 🎟 обычные билеты за 💴 ¥"
+                f"\n • 🎟 = 100 💴"
+                f"\nУ вас есть {money} 💴 ¥"
+                f"\nСколько билетов вы хотите купить?</blockquote>",
         parse_mode=ParseMode.HTML,
         reply_markup=inline_builder(
             ["1 🎟", "5 🎟", "🔙 Назад"],
@@ -124,10 +127,10 @@ async def buy_golden(callback: CallbackQuery):
     pattern = dict(
         caption=f"❖  🏪  <b>Купить золотые билеты</b>"
                 f"\n── •✧✧• ────────────"
-                f"\n❖  Вы можете купить 🎫 золотые билеты за 💴 ¥"
-                f"\n\n❃  🎫 = 1000 💴"
-                f"\n\n❖  У вас есть {money} 💴 ¥"
-                f"\n❖  Сколько билетов вы хотите купить?",
+                f"\n<blockquote>Вы можете купить 🎫 золотые билеты за 💴 ¥"
+                f"\n • 🎫 = 1000 💴"
+                f"\nУ вас есть {money} 💴 ¥"
+                f"\nСколько билетов вы хотите купить?</blockquote>",
         parse_mode=ParseMode.HTML,
         reply_markup=inline_builder(
             ["1 🎫", "5 🎫", "🔙 Назад"],
@@ -180,7 +183,7 @@ async def inventory(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_media(photo, inline_id)
     await callback.message.edit_caption(inline_id, caption=f"❖ ⚜️ Сила: {result[1]}"
                                                            f"\n ── •✧✧• ────────────"
-                                                           f"\n❖  Вы можете 🔑 купить этот дом за {result[1]} 💴 ¥",
+                                                           f"\n<blockquote>Вы можете 🔑 купить этот дом за {result[1]} 💴 ¥ </blockquote>",
                                         reply_markup=builders.pagination_store())
 
 
@@ -203,7 +206,7 @@ async def inventory(callback: CallbackQuery, callback_data: builders.Pagination,
             inline_id,
             caption=f"❖ ⚜️ Сила: {result[1]}"
             f"\n ── •✧✧• ────────────"
-            f"\n❖  Вы можете 🔑 купить этот дом за {result[1]} 💴 ¥",
+            f"\n<blockquote>Вы можете 🔑 купить этот дом за {result[1]} 💴 ¥</blockquote>",
             reply_markup=builders.pagination_store(page_num)
         )
     await callback.answer()
@@ -247,8 +250,8 @@ async def store_slaves(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_caption(inline_id,
                                         caption=f"❖ 🔖 {result[1]}"
                                         f"\n──❀*̥˚──◌──◌──❀*̥˚────"
-                                        f"\n💮 Служение: {result[6]}"
-                                        f"\n\n{info}"
+                                        f"\n<blockquote>💮 Служение: {result[6]}"
+                                        f"\n{info}</blockquote>"
                                         f"\n──❀*̥˚──◌──◌──❀*̥˚────"
                                         f"\n • Цена: {result[5]} 🌟",
                                         reply_markup=builders.slaves_store())
@@ -274,8 +277,8 @@ async def inventory(callback: CallbackQuery, callback_data: builders.Pagination,
             inline_id,
             caption=f"❖ 🔖 {result[1]}"
             f"\n──❀*̥˚──◌──◌──❀*̥˚────"
-            f"\n💮 Служение: {result[6]}"
-            f"\n\n{info}"
+            f"\n<blockquote>💮 Служение: {result[6]}"
+            f"\n{info}</blockquote>"
             f"\n──❀*̥˚──◌──◌──❀*̥˚────"
             f"\n • Цена: {result[5]} 🌟",
             reply_markup=builders.slaves_store(page_num)

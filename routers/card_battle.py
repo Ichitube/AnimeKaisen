@@ -65,11 +65,11 @@ draw_sts = ("\n  + 80🀄️ xp"
 surrender_text = "🏴‍☠️ Поражение"
 surrender_sts = " "
 
-time_out_text = "👑 Победа: 🕘Время вышло"
+time_out_text = "👑 Победа: ⏱️Время вышло"
 time_out_sts = ("\n  + 100🀄️ xp"
                 "\n  + 200💴 ¥")
 
-time_out_lose_text = "💀 Поражение: 🕘Время вышло"
+time_out_lose_text = "💀 Поражение: ⏱️Время вышло"
 time_out_lose_sts = " "
 
 
@@ -310,9 +310,9 @@ async def inventory(callback: CallbackQuery | Message, state: FSMContext):
 
     pattern = dict(caption=f"🥡 Инвентарь"
                            f"\n── •✧✧• ────────────"
-                           f"\n❖ Здесь вы можете увидеть все ваши 🃏 карты "
-                           f"и выбрать их в качестве 🎴 персонажа на слот в колоде"
-                           f"\n\n❖ Выберите ✨ редкость карты, чтобы посмотреть"
+                           f"\n<blockquote>❖ Здесь вы можете увидеть все ваши 🃏 карты "
+                           f"и установить их в качестве 🎴 персонажа на слот в колоде."
+                           f"\n❖ Выберите ✨ редкость карты, чтобы посмотреть.</blockquote>"
                            f"\n── •✧✧• ────────────"
                            f"\n❖ 🃏 Количество карт: {total_elements}",
                    reply_markup=inline_builder(
@@ -465,7 +465,7 @@ async def surrender_f(user_id, r, mes, bot):
             await bot.send_animation(chat_id=rival["_id"], animation=win_animation,
                                      caption=time_out_text, reply_markup=menu_card_button())
         await bot.edit_message_text(chat_id=user_id, message_id=mes.message_id,
-                                    text=f"✖️ Время вышло 🕘", reply_markup=None)
+                                    text=f"✖️ Время вышло ⏱️", reply_markup=None)
 
 
 @router.callback_query(F.data == "card_opponent")

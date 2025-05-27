@@ -35,7 +35,7 @@ surrender_r_text = ("👑 Победа: 🏴‍☠️Соперник сдалс
                     "\n<blockquote expandable>── •✧✧• ────────────"
                     "\n  + 100🀄️ xp, "
                     "\n  + 200💴 ¥</blockquote>")
-time_out_text = ("👑 Победа: 🕘Время вышло"
+time_out_text = ("👑 Победа: ⏱️Время вышло"
                  "\n<blockquote expandable>── •✧✧• ────────────"
                  "\n  + 100🀄️ xp, "
                  "\n  + 200💴 ¥</blockquote>")

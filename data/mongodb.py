@@ -306,9 +306,9 @@ async def wins_rating(var, account, icon):
                          f"{account['battle']['stats']['wins']} {icon} Побед • {rank} \n")
         index += 1
 
-    rating_table += f"{text}"
+    table = "<blockquote>" + rating_table + "</blockquote>" + f"{text}"
 
-    return rating_table
+    return table
 
 
 # здесь обработка чатов
