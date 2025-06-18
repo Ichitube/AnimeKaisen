@@ -119,6 +119,8 @@ async def boss_func(callback: CallbackQuery | Message, account: dict = None, use
 
         # ❗ не забудь сохранить обратно в базу, если используешь MongoDB:
         await mongodb.update_user(user_id, {"boss": account['boss']})
+        account = await mongodb.get_user(user_id)  # добавить это здесь
+
 
     # Время следующего респавна (72 часа после спавна)
     next_respawn = last_spawn + timedelta(hours=72)

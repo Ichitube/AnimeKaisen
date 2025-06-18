@@ -71,8 +71,8 @@ async def change_name(user_id: int, name: str):
 async def change_universe(callback: CallbackQuery):
     await callback.message.edit_caption(caption="❖ 🗺 Выбери вселенную: ",
                                         reply_markup=inline_builder(
-                                            ['⭐️ Allstars', '🗡 Bleach', '🍥 Naruto'],
-                                            ['Allstars', 'Bleach', 'Naruto'],
+                                            ['⭐️ Allstars', '🗡 Bleach', '🍥 Naruto', '🔥 Jujutsu Kaisen'],
+                                            ['Allstars', 'Bleach', 'Naruto', 'Jujutsu_Kaisen'],
                                             row_width=1))
 
 

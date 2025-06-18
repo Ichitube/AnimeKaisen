@@ -7,27 +7,11 @@
     <list default="true" id="950ee416-d3c6-4244-83ec-ae2022e2f546" name="Changes" comment="4/3">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/data/character_photo.py" beforeDir="false" afterPath="$PROJECT_DIR$/data/character_photo.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/mongodb.py" beforeDir="false" afterPath="$PROJECT_DIR$/data/mongodb.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/keyboards/builders.py" beforeDir="false" afterPath="$PROJECT_DIR$/keyboards/builders.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routers/arena.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/arena.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routers/banner.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/banner.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routers/battle.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/battle.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routers/battle_ai.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/battle_ai.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routers/card_battle.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/card_battle.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routers/card_battle_ai.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/card_battle_ai.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routers/craft.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/craft.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/routers/gacha.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/gacha.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routers/inventory.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/inventory.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routers/main_menu.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/main_menu.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routers/navigation.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/navigation.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routers/registration.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/registration.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/routers/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/settings.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/routers/tokio/boss.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/tokio/boss.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routers/tokio/clans.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/tokio/clans.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routers/tokio/dungeon.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/tokio/dungeon.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routers/tokio/quests.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/tokio/quests.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routers/tokio/store.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/tokio/store.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/routers/tokio/tokio.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/tokio/tokio.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routers/Текстовый документ.txt" beforeDir="false" afterPath="$PROJECT_DIR$/routers/Текстовый документ.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -163,7 +147,15 @@
       <option name="project" value="LOCAL" />
       <updated>1747770686934</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="4/3">
+      <option name="closed" value="true" />
+      <created>1748322096129</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1748322096129</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">

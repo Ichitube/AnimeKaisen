@@ -109,8 +109,13 @@ async def tokio(callback: CallbackQuery | Message):
         caption=f"❖  〽️  <b>Меню</b>"
                 f"\n── •✧✧• ────────────"
                 f"\n🌊 Добро пожаловать в мир карт"
-                f"\n ❖<b>🏆 Топ 5 игроков</b>"
-                f"\n<blockquote>{top_text}</blockquote>"
+                # f"\n ❖<b>🏆 Топ 5 игроков</b>"
+                # f"\n<blockquote>{top_text}</blockquote>"
+                f"\n<blockquote><b>💡 Примечание</b>"
+                f"\n • 🏟️ <b>Арена</b> - существует в других вселенных, кроме ⭐️ Allstars, "
+                f"где вы можете применять навыки 🎴 персонажей из аниме"
+                f"\n • 🃏 <b>Битва</b> - сильно отличается от 🏟️ арены и только для вселенной ⭐️ Allstars, "
+                f"здесь вы можете сражаться в режиме карточный битвы с 🃏 колодой карт.</blockquote>"
                 f"\n── •✧✧• ────────────"
                 f"\n❁ 💴 {money} ¥   ❁ ⚜️ Мощь: {power}",
         parse_mode=ParseMode.HTML,
