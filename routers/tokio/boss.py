@@ -120,6 +120,13 @@ async def boss_func(callback: CallbackQuery | Message, account: dict = None, use
         # ❗ не забудь сохранить обратно в базу, если используешь MongoDB:
         await mongodb.update_user(user_id, {"boss": account['boss']})
         account = await mongodb.get_user(user_id)  # добавить это здесь
+        last_spawn_raw = account['boss'].get('last_spawn')
+
+        # Преобразуем last_spawn в datetime
+        if isinstance(last_spawn_raw, str):
+            last_spawn = datetime.fromisoformat(last_spawn_raw)
+        else:
+            last_spawn = last_spawn_raw or current_datetime
 
 
     # Время следующего респавна (72 часа после спавна)

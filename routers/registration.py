@@ -75,7 +75,7 @@ async def form_name(message: Message, state: FSMContext):
                         f"здесь вы можете сражаться в режиме карточный битвы с 🃏 колодой карт.</blockquote>"
                         "\n❖ 🔄 Всегда можно сменить вселенную в ⚙️ ️настройки",
                 reply_markup=inline_builder(['⭐️ Allstars', '🗡 Bleach', '🍥 Naruto', '🔥 Jujutsu Kaisen'],
-                                            ['Allstars', 'Bleach', 'Naruto', 'Jujutsu_Kaisen'], row_width=1),
+                                            ['Allstars', 'Bleach', 'Naruto', 'Jujutsu Kaisen'], row_width=1),
             )
             await message.answer_photo(media_id, **pattern)
         else:
@@ -149,13 +149,13 @@ async def get_first_free(callback: CallbackQuery, state: FSMContext):
                                         reply_markup=get_common())
 
 
-@router.callback_query(F.data.in_(['Jujutsu_Kaisen']))
+@router.callback_query(F.data.in_(['Jujutsu Kaisen']))
 async def get_first_free(callback: CallbackQuery, state: FSMContext):
     account = await mongodb.get_user(callback.from_user.id)
     if account is not None and account['_id'] == callback.from_user.id:
-        character = account.get('character', {}).get('Jujutsu_Kaisen')
+        character = account.get('character', {}).get('Jujutsu Kaisen')
         if character:
-            await mongodb.update_user(callback.from_user.id, {'universe': 'Jujutsu_Kaisen'})
+            await mongodb.update_user(callback.from_user.id, {'universe': 'Jujutsu Kaisen'})
             await callback.answer("❖ 🗺 Вы успешно сменили вселенную", show_alert=True)
             await callback.message.answer("❖ 🗺 Вы успешно сменили вселенную", reply_markup=menu_button())
             await settings.settings(callback)

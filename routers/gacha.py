@@ -48,7 +48,7 @@ characters = {
         'rare': ['Toshiro Hitsugaya 🎇', 'Kaneki Ken 🎇', 'Hyakkimaru 🎇', 'Uruma Shun 🎇', 'Makima 🎇', 'Crystal Maiden 🎇', 'Gojo x Visage 🎇', 'Arima x Druid 🎇', 'Void x ? 🎇', 'Sukuna x Techies 🎇', 'Gin x Ancient 🎇', 'Sukuna x Morphling 🎇', 'Spectre 🎇', 'Benimaru x Razor 🎇', 'Genos x Axe 🎇', 'Takizawa x Knight 🎇', 'Shinobu Kocho 🎇', 'Miwa Kasumi 🎇', 'Muerta 🎇', 'Undying 🎇', 'Prophet 🎇', 'Razor 🎇', 'Wind Ranger 🎇', 'Luna 🎇', 'Tinker 🎇', 'Bat Rider 🎇', 'Lifestealer 🎇', 'Giyu Tomioka 🎇', 'Musashi Miyamoto 🎇', 'TBlade 🎇', 'Faceless Void 🎇', 'Disruptor 🎇', 'Terrorblade 🎇'],
         'common': ['Yuta Okkotsu 🌁', 'Seishiro Nagi 🌁', 'Kaneki Ken 🌁', 'Uchiha Madara 🌁', 'Manjiro Sano 🌁', 'Itoshi Rin 🌁', 'Benimaru Shinmon 🌁', 'Aki Hayakawa ▫️ 🌁', 'Izuku Midoriya 🌁', 'Deku 🌁', 'Sukuna 🌁', 'Eren Yeager 🌁', 'Aki Hayakawa 🌁', 'Juuzou Suzuya 🌁', 'Toji Fushiguro 🌁', 'Gojo Satoru 🌁', 'Makima 🌁', 'Unohana Retsu 🌁', 'Toshiro Hitsugaya 🌁', 'Arima Kishou 🌁', 'Hyakkimaru 🌁', 'Levi Ackerman 🌁', 'Uchiha Sasuke 🌁', 'Naruto Uzumaki 🌁', 'Zenitsu 🌁', 'Shoto Todoroki 🌁', 'Lance Crown 🌁', 'Megumi Fushiguro 🌁', 'Nanami Kento 🌁', 'Todoroki 🌁', 'Miyamoto Musashi 🌁', 'Feitan Portor 🌁', 'Seidou Takizawa 🌁', 'Gaara 🌁', '02 🌁', 'Power 🌁', 'Yoru 🌁', 'Kugisaki Nobara 🌁', 'Hinata Hyuga 🌁', 'Sakura Haruno 🌁', 'Maki Zenin 🌁']
     },
-    'Jujutsu_Kaisen': {
+    'Jujutsu Kaisen': {
         'divine': ['Gojo Satoru 🌠'],
     },
     # 'Allstars(old)': {

@@ -539,8 +539,8 @@ def get_stats(universe, name, key):
             'Deku 🌁': {'avatar': 'AgACAgIAAx0CfstymgACCNJl0hlQSt41Tcsu6ZnRyqBnfwJXsgACcdYxGx0bkUoyOc3RanGVwgEAAwIAA3kAAzQE', 'type': 'photo', 'gender': 'boy', 'universe': 'Allstars', 'rarity': 'Обычная', 'arena': {'class': 'agility', 'strength': 43, 'agility': 60, 'intelligence': 39, 'power': 142, 'shield': 0, 'stun': 0}},
             'Sukuna 🌁': {'avatar': 'AgACAgIAAx0CfstymgACCMZl0hkTmOcPd3OIoP0Pf_-GkyhW-gACa9YxGx0bkUoThxqQjYqM7AEAAwIAA3kAAzQE', 'type': 'photo', 'gender': 'boy', 'universe': 'Allstars', 'rarity': 'Обычная', 'arena': {'class': 'intelligence', 'strength': 39, 'agility': 46, 'intelligence': 57, 'power': 142, 'shield': 0, 'stun': 0}},
         },
-        'Jujutsu_Kaisen': {
-            'Gojo Satoru 🌠': {'avatar': 'CgACAgIAAx0CfstymgACE6tmo4GxUQwTM2v8XL84nPrKuqFUnQACG1UAAh0kIEnojWwtz4RxzDUE', 'type': 'animation', 'gender': 'boy', 'universe': 'Jujutsu_Kaisen', 'rarity': 'Божественная', 'arena': {'class': 'Gojo', 'ability': ['˹🗡Атака˼', '˹Данку˼', '˹⚡️Райхоко˼', '˹🔶Мильон Эскудо˼', '˹◼️Курохицуги˼', '˹🐉Горьюу Теммецу˼'], 'strength': 65, 'agility': 87, 'intelligence': 80, 'power': 232, 'shield': 0, 'stun': 0}},
+        'Jujutsu Kaisen': {
+            'Gojo Satoru 🌠': {'avatar': 'CgACAgIAAx0CfstymgACE6tmo4GxUQwTM2v8XL84nPrKuqFUnQACG1UAAh0kIEnojWwtz4RxzDUE', 'type': 'animation', 'gender': 'boy', 'universe': 'Jujutsu Kaisen', 'rarity': 'Божественная', 'arena': {'class': 'Gojo', 'ability': ['˹🗡Атака˼', '˹Данку˼', '˹⚡️Райхоко˼', '˹🔶Мильон Эскудо˼', '˹◼️Курохицуги˼', '˹🐉Горьюу Теммецу˼'], 'strength': 65, 'agility': 87, 'intelligence': 80, 'power': 232, 'shield': 0, 'stun': 0}},
         }
     }
 
