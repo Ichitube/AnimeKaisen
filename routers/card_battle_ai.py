@@ -43,16 +43,16 @@ def end_text(user_id, rival_id, txt, sts):
 
 
 win_text = "👑 Победа: 💀Соперник мертв"
-win_sts = (f"\n  + 100🀄️ xp"
-           f"\n  + 200💴 ¥")
+win_sts = (f"\n  + 10🀄️ xp"
+           f"\n  + 20💴 ¥")
 
 lose_text = "💀 Поражение"
-lose_sts =("\n  + 55🀄️ xp"
-           "\n  + 100💴 ¥")
+lose_sts =("\n  + 5🀄️ xp"
+           "\n  + 10💴 ¥")
 
 draw_text = "☠️ Ничья"
-draw_sts = ("\n  + 80🀄️ xp"
-            "\n  + 150💴 ¥")
+draw_sts = ("\n  + 8🀄️ xp"
+            "\n  + 15💴 ¥")
 
 surrender_text = "🏴‍☠️ Поражение"
 surrender_sts = " "
@@ -471,23 +471,13 @@ async def win_lose(bot, char1, char2):
                                  caption=end_text(user_id, rival_id, draw_text, draw_sts), reply_markup=menu_button())
 
         await mongodb.update_value(char1.ident, {"battle.stats.ties": 1})
-        await mongodb.update_value(char1.ident, {"stats.exp": 75})
-        await mongodb.update_value(char1.ident, {"account.money": 150})
-        await mongodb.update_value(char2.ident, {"battle.stats.ties": 1})
-        await mongodb.update_value(char2.ident, {"stats.exp": 75})
-        await mongodb.update_value(char2.ident, {"account.money": 150})
+        await mongodb.update_value(char1.ident, {"stats.exp": 8})
+        await mongodb.update_value(char1.ident, {"account.money": 15})
         await mongodb.update_many(
             {"_id": {"$in": [char1.ident]}},
             {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
         )
         battle_data[user_id]["round"] += 1
-        if char2.ident != user_id * 10:
-            await mongodb.update_many(
-                {"_id": {"$in": [char2.ident]}},
-                {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
-            )
-            await bot.send_animation(chat_id=char2.ident, animation=draw_animation,
-                                     caption=end_text(rival_id, user_id, draw_text, draw_sts), reply_markup=menu_button())
 
     elif all("🎴" not in status for status in user_statuses):
         cont = False
@@ -497,26 +487,12 @@ async def win_lose(bot, char1, char2):
                                  caption=end_text(user_id, rival_id, lose_text, lose_sts), reply_markup=menu_button())
 
         await mongodb.update_value(char1.ident, {"battle.stats.loses": 1})
-        await mongodb.update_value(char1.ident, {"stats.exp": 55})
-        await mongodb.update_value(char1.ident, {"account.money": 100})
-        if char2.ident != user_id * 10:
-            await mongodb.update_value(char2.ident, {"battle.stats.wins": 1})
-            await mongodb.update_value(char2.ident, {"stats.exp": 100})
-            await mongodb.update_value(char2.ident, {"account.money": 200})
-            current_date = datetime.today().date()
-            current_datetime = datetime.combine(current_date, datetime.time(datetime.now()))
-            await mongodb.update_user(char2.ident, {"tasks.last_arena_fight": current_datetime})
+        await mongodb.update_value(char1.ident, {"stats.exp": 5})
+        await mongodb.update_value(char1.ident, {"account.money": 10})
         await mongodb.update_many(
             {"_id": {"$in": [char1.ident]}},
             {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
         )
-        if char2.ident != user_id * 10:
-            await mongodb.update_many(
-                {"_id": {"$in": [char2.ident]}},
-                {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
-            )
-            await bot.send_animation(chat_id=char2.ident, animation=win_animation,
-                                     caption=end_text(rival_id, user_id, win_text, win_sts), reply_markup=menu_button())
     elif all("🎴" not in status for status in rival_statuses):
         cont = False
         user_data[user_id][battle_data[user_id]["round"]] = True
@@ -524,26 +500,12 @@ async def win_lose(bot, char1, char2):
         await bot.send_animation(chat_id=user_id, animation=win_animation,
                                  caption=end_text(user_id, rival_id, win_text, win_sts), reply_markup=menu_button())
         await mongodb.update_value(char1.ident, {"battle.stats.wins": 1})
-        await mongodb.update_value(char1.ident, {"stats.exp": 100})
-        await mongodb.update_value(char1.ident, {"account.money": 200})
-        if char2.ident != user_id * 10:
-            await mongodb.update_value(char2.ident, {"battle.stats.loses": 1})
-            await mongodb.update_value(char2.ident, {"stats.exp": 55})
-            await mongodb.update_value(char2.ident, {"account.money": 100})
-            current_date = datetime.today().date()
-            current_datetime = datetime.combine(current_date, datetime.time(datetime.now()))
-            await mongodb.update_user(char2.ident, {"tasks.last_arena_fight": current_datetime})
+        await mongodb.update_value(char1.ident, {"stats.exp": 10})
+        await mongodb.update_value(char1.ident, {"account.money": 20})
         await mongodb.update_many(
             {"_id": {"$in": [char1.ident]}},
             {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
         )
-        if char2.ident != user_id * 10:
-            await mongodb.update_many(
-                {"_id": {"$in": [char2.ident]}},
-                {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
-            )
-            await bot.send_animation(chat_id=char2.ident, animation=lose_animation,
-                                     caption=end_text(rival_id, user_id, lose_text, lose_sts), reply_markup=menu_button())
     else:
         cont = True
 

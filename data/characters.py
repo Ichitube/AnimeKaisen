@@ -2292,7 +2292,7 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
         await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     elif action == '˹👁 Rikugan˼':
-        mana = await calculate_mana(self, 90)
+        mana = await calculate_mana(self, 40)
         if not mana:
             return False, True
         energy = await calculate_energy(self, 20)

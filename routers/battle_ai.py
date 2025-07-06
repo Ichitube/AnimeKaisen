@@ -20,16 +20,16 @@ user_data = {}
 
 win_text = ("👑 Победа: 💀Соперник мертв"
             "\n<blockquote expandable>── •✧✧• ────────────"
-            "\n  + 100🀄️ xp, "
-            "\n  + 200💴 ¥</blockquote>")
+            "\n  + 10🀄️ xp, "
+            "\n  + 20💴 ¥</blockquote>")
 lose_text = ("💀 Поражение"
              "\n<blockquote expandable>── •✧✧• ────────────"
-             "\n  + 55🀄️ xp, "
-             "\n  + 100💴 ¥</blockquote>")
+             "\n  + 5🀄️ xp, "
+             "\n  + 10💴 ¥</blockquote>")
 draw_text = ("☠️ Ничья"
              "\n<blockquote expandable>── •✧✧• ────────────"
-             "\n  + 80🀄️ xp, "
-             "\n  + 150💴 ¥</blockquote>")
+             "\n  + 8🀄️ xp, "
+             "\n  + 15💴 ¥</blockquote>")
 surrender_text = "🏴‍☠️ Поражение"
 surrender_r_text = ("👑 Победа: 🏴‍☠️Соперник сдался"
                     "\n<blockquote expandable>── •✧✧• ────────────"
@@ -284,7 +284,7 @@ async def ai(character, bot, callback, account):
 
             await mongodb.update_many(
                 {"_id": {"$in": [character.rid]}},
-                {"$inc": {"stats.exp": 80, "battle.stats.ties": 1, "account.money": 150}}
+                {"$inc": {"stats.exp": 8, "battle.stats.ties": 1, "account.money": 15}}
             )
 
             current_date = datetime.today().date()
@@ -301,8 +301,8 @@ async def ai(character, bot, callback, account):
                     {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
                 )
 
-                await mongodb.update_value(character.rid, {"stats.exp": 20})
-                await mongodb.update_value(character.rid, {"account.money": 40})
+                await mongodb.update_value(character.rid, {"stats.exp": 10})
+                await mongodb.update_value(character.rid, {"account.money": 20})
                 current_date = datetime.today().date()
                 current_datetime = datetime.combine(current_date, datetime.time(datetime.now()))
                 await mongodb.update_user(character.rid, {"tasks.last_arena_fight": current_datetime})
@@ -320,8 +320,8 @@ async def ai(character, bot, callback, account):
                     {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
                 )
 
-                await mongodb.update_value(character.rid, {"stats.exp": 10})
-                await mongodb.update_value(character.rid, {"account.money": 20})
+                await mongodb.update_value(character.rid, {"stats.exp": 5})
+                await mongodb.update_value(character.rid, {"account.money": 10})
                 current_date = datetime.today().date()
                 current_datetime = datetime.combine(current_date, datetime.time(datetime.now()))
                 await mongodb.update_user(character.rid, {"tasks.last_arena_fight": current_datetime})
