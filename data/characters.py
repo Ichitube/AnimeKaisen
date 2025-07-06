@@ -93,8 +93,20 @@ def decrease_energy(player, points):
     player.energy -= points
 
 
+# def return_energy(player, points):
+#     player.energy = player.initial.energy
+
+
 def increase_mana(player, points):
     player.mana += points
+
+
+def decrease_mana(player, points):
+    player.mana -= points
+
+
+# def return_mana(player, points):
+#     player.mana = player.initial_mana
 
 
 def increase_hp(player, points):
@@ -166,6 +178,18 @@ def decrease_agility(player, points):
 
 def return_agility(player, _):
     player.agility = player.initial_agility
+
+
+def increase_intelligence(player, points):
+    player.intelligence += points
+
+
+def decrease_intelligence(player, points):
+    player.intelligence -= points
+
+
+def return_intelligence(player, _):
+    player.intelligence = player.initial_intelligence
 
 
 async def undo_hollow(player, bot):
@@ -282,6 +306,7 @@ class Character:
         self.initial_defense = self.defense
         self.initial_strength = self.strength
         self.initial_agility = self.agility
+        self.initial_intelligence = self.intelligence
         self.immortal = 0
         self.energy = 0
         self.immunity = False
@@ -389,14 +414,14 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
 
         new_skills = ["˹🗡Атака˼", "˹🟥Гецуга◼️Теншоу˼", "˹💀Пустой˼"]
         skills_change = Passive("Банкай ࿖", change_skills, undo_change_skills, 8, new_skills)
-        attack_up = Passive("⇪🗡⇪", increase_attack, decrease_attack, 8, 200, apply_once=True)
+        attack_up = Passive("⇪🗡", increase_attack, decrease_attack, 8, 200, apply_once=True)
 
         self.add_passive(skills_change)
         self.add_passive(attack_up)
 
         gif = 'CgACAgIAAx0CfstymgACCzZl8T9WLPOCuQG34Qcjn4xCiP6KXAACWD8AAvSEkUtsDKXUVPoFeTQE'
         caption = (f"Банкай ࿖: Tensa Zangetsu"
-                   f"\n<blockquote expandable>🗡Урон +200 8⏳</blockquote>")
+                   f"\n<blockquote expandable>🗡Урон ⇪200 8⏳</blockquote>")
 
         await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
@@ -467,8 +492,8 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
         skills_change = Passive("⛓Гецуга◾️", change_skills, undo_change_skills, 3, new_skills, apply_once=True)
         im = Passive("💥", immunity, undo_immunity, 3, 1, apply_once=True)
         over_g = Passive("⛓Гецуга◾️", fix_effects, undo_g, 3, bot, apply_once=True)
-        defense_up = Passive("⇪🛡⇪", increase_defense, fix_effects, 3, 900, apply_once=True)
-        attack_up = Passive("⇪🗡⇪", increase_attack, fix_effects, 3, 1000, apply_once=True)
+        defense_up = Passive("⇪🛡", increase_defense, fix_effects, 3, 900, apply_once=True)
+        attack_up = Passive("⇪🗡", increase_attack, fix_effects, 3, 1000, apply_once=True)
 
         self.add_passive(skills_change)
         self.add_passive(over_g)
@@ -478,8 +503,8 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
 
         gif = 'CgACAgIAAx0CfstymgACC4ll_c3Iv9lZgb5gNHy_i9vCDgcs3AACBU8AAv0v8EuVgi04yq7GzjQE'
         caption = (f"Финальная Гецуга Теншоу"
-                   f"\n<blockquote expandable>🗡Атака +1000 2⏳"
-                   f"\n🛡Защита +900 2⏳</blockquote>")
+                   f"\n<blockquote expandable>🗡Атака ⇪1000 2⏳"
+                   f"\n🛡Защита ⇪900 2⏳</blockquote>")
 
         await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
@@ -655,14 +680,14 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
         new_skills = ["˹🗡Атака˼", "˹❤️‍🩹Лечение🪽˼", "˹🧊Рюсенька˼", "˹🧊Сеннен Хёро˼",
                       "˹❄️Гунчо Цурара˼", "˹🌫Хётен🪽Хяккасо˼", "˹❄️Хёрю Сенби˼"]
         skills_change = Passive("Банкай 🪽", change_skills, undo_change_skills, 20, new_skills)
-        attack_up = Passive("⇪🗡⇪", increase_attack, decrease_attack, 5, 200, apply_once=True)
+        attack_up = Passive("⇪🗡", increase_attack, decrease_attack, 5, 200, apply_once=True)
 
         self.add_passive(skills_change)
         self.add_passive(attack_up)
 
         gif = 'CgACAgIAAx0CfstymgACC9lmArelFbpDJmVZoG6SfaaaQ4yO8gACVUEAAjWZGEgIRJjtP0Il-jQE'
         caption = (f"Банкай ❆: Дайгурен Хёринмару"
-                   f"\n<blockquote expandable>🗡Урон +200 5⏳</blockquote>")
+                   f"\n<blockquote expandable>🗡Урон ⇪200 5⏳</blockquote>")
 
         await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
@@ -1065,14 +1090,14 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
         new_skills = ["˹🗡Атака˼", "˹Наке Бенхиме˼", "˹Чикасуми но тате˼", '˹Шинтен Райхо˼', '˹Котен Тайхо˼',
                       "˹Камисори Бенхиме˼", "˹Шибари Бенхиме˼", "˹🪡Бенхиме Аратаме˼"]
         skills_change = Passive("Банкай ࿖", change_skills, undo_change_skills, 10, new_skills)
-        attack_up = Passive("⇪🗡⇪", increase_attack, decrease_attack, 10, 200, apply_once=True)
+        attack_up = Passive("⇪🗡", increase_attack, decrease_attack, 10, 200, apply_once=True)
 
         self.add_passive(skills_change)
         self.add_passive(attack_up)
 
         gif = 'CgACAgIAAx0CfstymgACEBtmH2kiAyY6VX5-kxc1JDL6ElLxogACyjgAAkXDAAFJCyOIbv_PK7o0BA'
         caption = (f"Шикай: Бенхиме"
-                   f"\n<blockquote expandable>🗡Урон +200 10⏳</blockquote>")
+                   f"\n<blockquote expandable>🗡Урон ⇪200 10⏳</blockquote>")
 
         await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
@@ -1316,9 +1341,9 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
 
         new_skills = ["˹🗡Атака˼", "˹Лечение🩸˼", "˹Лезвие🩸˼", "˹Защитная сфера🩸˼"]
         skills_change = Passive("🩸", change_skills, undo_minazuki, 20, new_skills)
-        attack_up = Passive("⇪🗡⇪", increase_attack, decrease_attack, 20, 400, apply_once=True)
-        agility_up = Passive("⇪👣⇪", increase_agility, decrease_agility, 20, 200, apply_once=True)
-        strength_up = Passive("⇪✊🏻⇪", increase_strength, decrease_strength, 20, 200, apply_once=True)
+        attack_up = Passive("⇪🗡", increase_attack, decrease_attack, 20, 400, apply_once=True)
+        agility_up = Passive("⇪👣", increase_agility, decrease_agility, 20, 200, apply_once=True)
+        strength_up = Passive("⇪✊🏻", increase_strength, decrease_strength, 20, 200, apply_once=True)
 
         self.add_passive(skills_change)
         self.add_passive(attack_up)
@@ -1327,9 +1352,9 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
 
         gif = 'CgACAgIAAx0CfstymgACD-xmIIezCd3-a2Ek84w5VsAXFGinmwAC2DcAAkXDAAFJ5Zi36HeBGK00BA'
         caption = (f"Миназуки Банкай🩸"
-                   f"\n<blockquote expandable>🗡Урон +400 10⏳"
-                   f"\n👣Ловкость +200 10⏳"
-                   f"\n✊🏻Сила +200 10⏳</blockquote>")
+                   f"\n<blockquote expandable>🗡Урон ⇪400 10⏳"
+                   f"\n👣Ловкость ⇪200 10⏳"
+                   f"\n✊🏻Сила ⇪200 10⏳</blockquote>")
 
         await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
@@ -1412,9 +1437,9 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
 
         new_skills = ["˹🗡Атака˼", "˹Гран Рей Серо˼", "˹Луз дэ ла Луна˼", "˹Сэгунда Этапа 🦇˼"]
         skills_change = Passive("🦇", change_skills, undo_change_skills, 10, new_skills)
-        attack_up = Passive("⇪🗡⇪", increase_attack, decrease_attack, 10, 200, apply_once=True)
-        agility_up = Passive("⇪👣⇪", increase_agility, decrease_agility, 10, 100, apply_once=True)
-        strength_up = Passive("⇪✊🏻⇪", increase_strength, decrease_strength, 10, 100, apply_once=True)
+        attack_up = Passive("⇪🗡", increase_attack, decrease_attack, 10, 200, apply_once=True)
+        agility_up = Passive("⇪👣", increase_agility, decrease_agility, 10, 100, apply_once=True)
+        strength_up = Passive("⇪✊🏻", increase_strength, decrease_strength, 10, 100, apply_once=True)
 
         self.add_passive(skills_change)
         self.add_passive(attack_up)
@@ -1423,9 +1448,9 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
 
         gif = 'CgACAgIAAx0CfstymgACD8hmH8rOTwAB4OuK07Jbyh966mMDUnQAAq83AAJFwwABSfYOi7l9klFpNAQ'
         caption = (f"Мурсьелаго 🦇"
-                   f"\n<blockquote expandable>🗡Урон +200 10⏳"
-                   f"\n👣Ловкость +100 10⏳"
-                   f"\n✊🏻Сила +100 10⏳</blockquote>")
+                   f"\n<blockquote expandable>🗡Урон ⇪200 10⏳"
+                   f"\n👣Ловкость ⇪100 10⏳"
+                   f"\n✊🏻Сила ⇪100 10⏳</blockquote>")
 
         await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
@@ -1465,9 +1490,9 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
 
         new_skills = ["˹🗡Атака˼", "˹Латиго˼", "˹Серо Оскурас˼", "˹Ланза дэль Рэлампаго˼", "˹Лечение ˼"]
         skills_change = Passive("🦇", change_skills, undo_change_skills, 10, new_skills)
-        attack_up = Passive("⇪🗡⇪", increase_attack, decrease_attack, 10, 400, apply_once=True)
-        agility_up = Passive("⇪👣⇪", increase_agility, decrease_agility, 10, 200, apply_once=True)
-        strength_up = Passive("⇪✊🏻⇪", increase_strength, decrease_strength, 10, 200, apply_once=True)
+        attack_up = Passive("⇪🗡", increase_attack, decrease_attack, 10, 400, apply_once=True)
+        agility_up = Passive("⇪👣", increase_agility, decrease_agility, 10, 200, apply_once=True)
+        strength_up = Passive("⇪✊🏻", increase_strength, decrease_strength, 10, 200, apply_once=True)
 
         self.add_passive(skills_change)
         self.add_passive(attack_up)
@@ -1476,9 +1501,9 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
 
         gif = 'CgACAgIAAx0CfstymgACEEtmH_ueh2NqxoTZ_KnWCTRHN6LVVQACwkAAAkXDAAFJpRvMV5DKE7Y0BA'
         caption = (f"Сэгунда Этапа 🦇"
-                   f"\n<blockquote expandable>🗡Урон +400 10⏳"
-                   f"\n👣Ловкость +200 10⏳"
-                   f"\n✊🏻Сила +200 10⏳</blockquote>")
+                   f"\n<blockquote expandable>🗡Урон ⇪400 10⏳"
+                   f"\n👣Ловкость ⇪200 10⏳"
+                   f"\n✊🏻Сила ⇪200 10⏳</blockquote>")
 
         await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
@@ -1733,7 +1758,7 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
         new_skills = ["˹🗡Атака˼", "˹⛬Расен Расенган˼", "˹⚡️Усиление˼",
                       "˹🌔Расен Ренган˼", "˹🌘Расен Таренган˼", '˹🦊Биджу модо˼']
         skills_change = Passive("🦊Кьюби Чакра", change_skills, undo_change_skills, 8, new_skills)
-        sage_boost = Passive("⇪🗡⇪", increase_attack, decrease_attack, 8, 300, apply_once=True)
+        sage_boost = Passive("⇪🗡", increase_attack, decrease_attack, 8, 300, apply_once=True)
 
         self.add_passive(skills_change)
         self.add_passive(sage_boost)
@@ -1772,9 +1797,9 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
         if not energy:
             return True, False
 
-        sage_boost = Passive("⇪🗡⇪", increase_attack, decrease_attack, 8, 300, apply_once=True)
-        a_boost = Passive("⇪🗡⇪", increase_agility, decrease_agility, 8, 300, apply_once=True)
-        s_boost = Passive("⇪✊🏻⇪", increase_strength, decrease_strength, 8, 300, apply_once=True)
+        sage_boost = Passive("⇪🗡", increase_attack, decrease_attack, 8, 300, apply_once=True)
+        a_boost = Passive("⇪👣", increase_agility, decrease_agility, 8, 300, apply_once=True)
+        s_boost = Passive("⇪✊🏻", increase_strength, decrease_strength, 8, 300, apply_once=True)
 
         self.add_passive(sage_boost)
         self.add_passive(a_boost)
@@ -1782,9 +1807,9 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
 
         gif = 'CgACAgIAAx0CfstymgACG2dm1fZWXWQge4m8MwRQUCrwlQoI4QACM2QAAr3bsEoaoeTckEDm9zUE'
         caption = (f"⚡️Усиление"
-                   f"\n<blockquote expandable>+ ✊🏻 300 "
-                   f"\n+ 👣 300 "
-                   f"\n+ 🗡 300 </blockquote>")
+                   f"\n<blockquote expandable>+ ⇪300✊🏻 "
+                   f"\n+ ⇪300👣  "
+                   f"\n+ ⇪300🗡  </blockquote>")
 
         await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
@@ -1836,7 +1861,7 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
 
         new_skills = ["˹🗡Атака˼", "˹🌀Тайкьёку Расенган˼"]
         skills_change = Passive("🦊", change_skills, undo_change_skills, 3, new_skills)
-        sage_boost = Passive("⇪🗡⇪", increase_attack, decrease_attack, 3, 500, apply_once=True)
+        sage_boost = Passive("⇪🗡", increase_attack, decrease_attack, 3, 500, apply_once=True)
 
         self.add_passive(skills_change)
         self.add_passive(sage_boost)
@@ -2223,6 +2248,128 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
         gif = 'CgACAgIAAx0CfstymgACHXVm30ek0l34CPfHivmZjNBy1hPgJwAClV4AAgfJ-EqC4kqVw4K_FDYE'
         caption = (f"🌑Ясака🌑но🌑Магатама🌑"
                    f"\n<blockquote expandable>Саске использовал Ясака но Магатама, нанося {damage}🗡 урона</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+# Jujutsu Kaisen
+
+# Gojo Satoru
+
+    elif action == '˹🔵 Синий˼':
+        mana = await calculate_mana(self, 20)
+        if not mana:
+            return False, True
+        energy = await calculate_energy(self, 10)
+        if not energy:
+            return True, False
+
+        damage = self.intelligence * 5 + self.attack
+
+        calculate_shield(enemy, damage)
+
+        gif = 'CgACAgIAAx0CfstymgACQMRoaRZ2I76HTYlQvMtzUB_8BgABUrIAAuB6AAJJl0lLCSXRQ89Z2VY2BA'
+        caption = (f"🔵 Синий"
+                   f"\n<blockquote expandable>Годзё использует Синий, нанося {damage} 🗡 урона противнику</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    elif action == '˹🔴 Красный˼':
+        mana = await calculate_mana(self, 30)
+        if not mana:
+            return False, True
+        energy = await calculate_energy(self, 15)
+        if not energy:
+            return True, False
+
+        damage = self.intelligence * 10 + self.attack
+
+        calculate_shield(enemy, damage)
+
+        gif = 'CgACAgIAAx0CfstymgACQMNoaRZ2UZmu9z9YuNu33DE8bFgsfAAC33oAAkmXSUsZSV07OYsmqjYE'
+        caption = (f"🔴 Красный"
+                   f"\n<blockquote expandable>Годзё использует Красный, нанося {damage} 🗡 урона противнику</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    elif action == '˹👁 Rikugan˼':
+        mana = await calculate_mana(self, 90)
+        if not mana:
+            return False, True
+        energy = await calculate_energy(self, 20)
+        if not energy:
+            return True, False
+
+        baf_attack = self.intelligence * 5
+        self.add_passive(Passive("⇪🗡", increase_attack, decrease_attack, 10, baf_attack, apply_once=True))
+        gif = 'CgACAgIAAx0CfstymgACQNhoaoN1ipS8Z_DXJCcq0UMSE9tmYgACLnoAAkmXWUsqiGMd2gIY9zYE'
+        caption = (f"👁 Rikugan"
+                   f"\n<blockquote expandable>Годзё использует Рикюган, увеличивая атаку на {baf_attack} ⇪🗡⇪ на 10⏳</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    elif action == '˹🌐 Проклятый щит˼':
+        mana = await calculate_mana(self, 100)
+        if not mana:
+            return False, True
+        energy = await calculate_energy(self, 20)
+        if not energy:
+            return True, False
+
+        damage = self.mana + self.intelligence * 2
+        self.shield += damage
+        calculate_shield(enemy, damage)
+        gif = 'CgACAgIAAx0CfstymgACQMtoaRuK5iPk6lSpSlsc88lDCEk9GAACUXsAAkmXSUv1Csx6qWfs8TYE'
+        caption = (f"🌐 Проклятый щит"
+                   f"\n<blockquote expandable>Годзё использует Проклятый щит, увеличивая свой щит на {damage} 🌐 "
+                   f"и нанося {damage} 🗡 урона противнику</blockquote>")
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    elif action == '˹🟣 Фиолетовый˼':
+        mana = await calculate_mana(self, 100)
+        if not mana:
+            return False, True
+        energy = await calculate_energy(self, 40)
+        if not energy:
+            return True, False
+
+        damage = self.intelligence * 15 + self.attack * 5
+
+        calculate_shield(enemy, damage)
+
+        gif = 'CgACAgIAAx0CfstymgACQMdoaRfu-5Q1PUBAHMA0V3vtJlBMZAACB3sAAkmXSUtrfyVP_22bNTYE'
+        caption = (f"🟣 Фиолетовый"
+                   f"\n<blockquote expandable>Годзё использует Фиолетовый, нанося {damage} 🗡 урона противнику</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    elif action == '˹◼️ Необъятая бездна˼':
+        mana = await calculate_mana(self, 150)
+        if not mana:
+            return False, True
+        energy = await calculate_energy(self, 40)
+        if not energy:
+            return True, False
+
+        dec_en = Passive("⇩🪫", decrease_energy, fix_effects, 10, 5, apply_once=False)
+        dec_mana = Passive("⇩🧪", decrease_mana, fix_effects, 10, 20, apply_once=False)
+        dec_int = Passive("⇩🧠", decrease_intelligence, return_intelligence, 10, 100, apply_once=True)
+        dec_agl = Passive("⇩👣", decrease_mana, return_agility, 10, 100, apply_once=True)
+        inc_int = Passive("⇪🧠", increase_intelligence, return_intelligence, 10, 150, apply_once=True)
+        inc_agl = Passive("⇪👣", increase_agility, return_agility, 10, 150, apply_once=True)
+
+
+        enemy.add_passive(dec_en)
+        enemy.add_passive(dec_mana)
+        enemy.add_passive(dec_int)
+        enemy.add_passive(dec_agl)
+        self.add_passive(inc_int)
+        self.add_passive(inc_agl)
+
+        gif = 'CgACAgIAAx0CfstymgACQMloaRoqv8KYQ7joZFUulnteetabjwACRHsAAkmXSUue_In4O4j1dzYE'
+        caption = (f"◼️ Необъятая бездна"
+                   f"\n<blockquote expandable>Годзё использует Необъятую бездну, "
+                   f"снижая энергию, ману, интеллект и ловкость противника на ⇩5🪫⇨⏳, ⇩20🧪⇨⏳, ⇩100🧠 и ⇩100👣 соответственно и "
+                   f"увеличивая свой интеллект и ловкость на ⇪150🧠 и ⇪150👣 соответственно на 10⏳</blockquote>")
 
         await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
