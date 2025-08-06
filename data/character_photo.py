@@ -1981,8 +1981,6 @@ def get_stats(universe, name, key):
 
             'Gojo 🎇': {'avatar': 'AgACAgIAAx0CfstymgACCYdl0h5s6EbLufGMThNMqJ8aMTPtgAACitYxGx0bkUo-H37FZUcfuwEAAwIAA3kAAzQE', 'type': 'animation', 'gender': 'boy', 'universe': 'Jujutsu Kaisen', 'rarity': 'Редкая', 'arena': {'class': 'Gojo', 'ability': ['˹🗡Атака˼', '˹🔵 Синий˼', '˹🔴 Красный˼', '˹👁 Rikugan˼', '˹🌐 Проклятый щит˼'], 'strength': 49, 'agility': 59, 'intelligence': 52, 'power': 160, 'shield': 0, 'stun': 0}},
 
-
-
             'Gojo Satoru ▫️ 🌁': {'avatar': 'AgACAgIAAx0CfstymgACFMZmo453Vo04lVbPOxCaqNFXSYtXGAACK9wxGx0kIEmqawABv-Dw5xMBAAMCAAN5AAM1BA', 'type': 'animation', 'gender': 'boy', 'universe': 'Jujutsu Kaisen', 'rarity': 'Обычная', 'arena': {'class': 'Gojo', 'ability': ['˹🗡Атака˼', '˹🔵 Синий˼', '˹🔴 Красный˼', '˹👁 Rikugan˼', '˹🌐 Проклятый щит˼'], 'strength': 35, 'agility': 43, 'intelligence': 64, 'power': 142, 'shield': 0, 'stun': 0}},
             'Gojo Satoru 🌁': {'avatar': 'AgACAgIAAx0CfstymgACB4ll0Q6J6CLpfCQZSYcpSHRGGn7oQgACI9QxG_asiUqneTVFXXz94QEAAwIAA3gAAzQE', 'type': 'animation', 'gender': 'boy', 'universe': 'Jujutsu Kaisen', 'rarity': 'Обычная', 'arena': {'class': 'Gojo', 'ability': ['˹🗡Атака˼', '˹🔵 Синий˼', '˹🔴 Красный˼', '˹👁 Rikugan˼', '˹🌐 Проклятый щит˼'], 'strength': 35, 'agility': 43, 'intelligence': 64, 'power': 142, 'shield': 0, 'stun': 0}},
 

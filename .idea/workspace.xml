@@ -6,10 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="950ee416-d3c6-4244-83ec-ae2022e2f546" name="Changes" comment="4/3">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/character_photo.py" beforeDir="false" afterPath="$PROJECT_DIR$/data/character_photo.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/data/characters.py" beforeDir="false" afterPath="$PROJECT_DIR$/data/characters.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routers/battle_ai.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/battle_ai.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routers/card_battle.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/card_battle.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routers/card_battle_ai.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/card_battle_ai.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,18 +44,18 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python.main.executor&quot;: &quot;Run&quot;,
-    &quot;Python.test.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;#2 on new-feature&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/dire/AnimeKaisen&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.main.executor": "Run",
+    "Python.test.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "#2 on new-feature",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "/home/dire/AnimeKaisen"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\Projects\bots\" />
@@ -118,7 +116,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-python-sdk-53e2683a6804-9cdd278e9d02-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-251.26094.141" />
+        <option value="bundled-python-sdk-4c141bd692a7-e2d783800521-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-251.26927.90" />
       </set>
     </attachedChunks>
   </component>
@@ -171,7 +169,15 @@
       <option name="project" value="LOCAL" />
       <updated>1751816982842</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="4/3">
+      <option name="closed" value="true" />
+      <created>1751820561000</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1751820561000</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
