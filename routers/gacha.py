@@ -22,22 +22,244 @@ async def check_user_subscription(user_id: int, bot):
 router = Router()
 
 characters = {
-    'Bleach': {
-        'divine': ['Toshiro Hitsuyaga 🌠', 'Unohana Retsu 🌠', 'Ulquiorra Cifer 🌠', 'Urahara Kisuke🌠', 'Toshiro Hitsuyaga🌠', 'Aizen Sosuke🌠', 'Aizen Sosuke 🌠', 'Aizen Sosuke 🌠 ', 'Aizen Sosuke  🌠', 'Ichigo Kurosaki 🌠', 'Ichigo Kurosaki  🌠', 'Ichigo Kurosaki 🌠 ', 'Ichigo Kurosaki🌠 ', 'Ichigo Kurosaki🌠'],
-        'mythical': ['Toshiro Hitsuyaga 🌌', 'Unohana Retsu 🌌', 'Urahara Kisuke🌌', 'Urahara Kisuke 🌌', 'Urahara Kisuke 🌌 ', 'Urahara Kisuke  🌌', 'Ulquiorra Cifer 🌌', 'Ulquiorra Cifer🌌', 'Aizen Sosuke 🌌', 'Aizen Sosuke🌌', 'Aizen Sosuke 🌌 ', 'Ichigo Kurosaki 🌌', 'Ichigo Kurosaki  🌌', 'Ichigo Kurosaki 🌌 '],
-        'legendary': ['Ichigo Kurosaki 🌅', 'Ulquiorra Cifer 🌅', 'Toshiro Hitsuyaga 🌅', 'Aizen Sosuke 🌅', 'Kurosaki Ichigo 🌅'],
-        'epic': ['Toshiro Hitsuyaga 🎆', 'Toshiro Hitsuyaga🎆', 'Aizen Sosuke 🎆', 'Ichigo Kurosaki 🎆', 'Ichigo Kurosaki 🎆', 'Ichigo Kurosaki🎆'],
-        'rare': ['Toshiro Hitsuyaga 🎇', 'Unohana Retsu 🎇', 'Toshiro Hitsuyaga🎇', 'Urahara Kisuke 🎇', 'Ichigo Kurosaki 🎇', 'Ichigo Kurosaki🎇', 'Ichigo Kurosaki 🎇 '],
-        'common': ['Toshiro Hitsuyaga 🌁', 'Ulquiorra Cifer 🌁', 'Unohana Retsu 🌁', 'Unohana Retsu🌁', 'Ulquiorra Cifer🌁', 'Urahara Kisuke 🌁', 'Urahara Kisuke🌁', 'Aizen Sosuke 🌁', 'Aizen Sosuke🌁', 'Unohana Retsu 🌁 ', 'Toshiro Hitsuyaga🌁', 'Toshiro Hitsuyaga 🌁 ', 'Toshiro Hitsuyaga  🌁', 'Ichigo Kurosaki 🌁', 'Ichigo Kurosaki🌁', 'Ichigo Kurosaki 🌁 ', 'Ichigo Kurosaki  🌁']
+    "Bleach": {
+        "divine": [
+            "Toshiro Hitsuyaga 🌠",
+            "Toshiro Hitsuyaga 🌠 ㊀",
+            "Ulquiorra Cifer 🌠",
+            "Urahara Kisuke 🌠",
+            "Unohana Retsu 🌠",
+            "Aizen Sosuke 🌠",
+            "Aizen Sosuke 🌠 ㊀",
+            "Aizen Sosuke 🌠 ㊁",
+            "Aizen Sosuke 🌠 ㊂",
+            "Ichigo Kurosaki 🌠",
+            "Ichigo Kurosaki 🌠 ㊀",
+            "Ichigo Kurosaki 🌠 ㊁",
+            "Ichigo Kurosaki 🌠 ㊂",
+            "Ichigo Kurosaki 🌠 ㊃"
+        ],
+        "mythical": [
+            "Toshiro Hitsuyaga 🌌",
+            "Ulquiorra Cifer 🌌",
+            "Ulquiorra Cifer 🌌 ㊀",
+            "Urahara Kisuke 🌌",
+            "Urahara Kisuke 🌌 ㊀",
+            "Urahara Kisuke 🌌 ㊁",
+            "Urahara Kisuke 🌌 ㊂",
+            "Unohana Retsu 🌌",
+            "Aizen Sosuke 🌌",
+            "Aizen Sosuke 🌌 ㊀",
+            "Aizen Sosuke 🌌 ㊁",
+            "Ichigo Kurosaki 🌌",
+            "Ichigo Kurosaki 🌌 ㊀",
+            "Ichigo Kurosaki 🌌 ㊁"
+        ],
+        "legendary": [
+            "Ichigo Kurosaki 🌅",
+            "Ulquiorra Cifer 🌅",
+            "Aizen Sosuke 🌅",
+            "Kurosaki Ichigo 🌅",
+            "Toshiro Hitsuyaga 🌅"
+        ],
+        "epic": [
+            "Toshiro Hitsuyaga 🎆",
+            "Toshiro Hitsuyaga 🎆 ㊀",
+            "Aizen Sosuke 🎆",
+            "Ichigo Kurosaki 🎆",
+            "Ichigo Kurosaki 🎆 ㊀"
+        ],
+        "rare": [
+            "Toshiro Hitsuyaga 🎇",
+            "Toshiro Hitsuyaga 🎇 ㊀",
+            "Urahara Kisuke 🎇",
+            "Unohana Retsu 🎇",
+            "Ichigo Kurosaki 🎇",
+            "Ichigo Kurosaki 🎇 ㊀",
+            "Ichigo Kurosaki 🎇 ㊁"
+        ],
+        "common": [
+            "Toshiro Hitsuyaga 🌁",
+            "Toshiro Hitsuyaga 🌁 ㊀",
+            "Toshiro Hitsuyaga 🌁 ㊁",
+            "Toshiro Hitsuyaga 🌁 ㊂",
+            "Urahara Kisuke 🌁",
+            "Urahara Kisuke 🌁 ㊀",
+            "Unohana Retsu 🌁",
+            "Unohana Retsu 🌁 ㊀",
+            "Unohana Retsu 🌁 ㊁",
+            "Ulquiorra Cifer 🌁",
+            "Ulquiorra Cifer 🌁 ㊀",
+            "Aizen Sosuke 🌁",
+            "Aizen Sosuke 🌁 ㊀",
+            "Ichigo Kurosaki 🌁",
+            "Ichigo Kurosaki 🌁 ㊀",
+            "Ichigo Kurosaki 🌁 ㊁",
+            "Ichigo Kurosaki 🌁 ㊂"
+        ]
     },
-    'Naruto': {
-        'divine': ['Naruto Uzumaki 🌠', 'Uchiha▫️ 🌠', 'Naruto▫️ 🌠', 'Sasuke 🌠', 'Uchiha Sasuke◾️ 🌠', 'Uchiha◾️ 🌠', 'Sasuke Uchiha 🌠', 'Uzumaki Naruto 🌠', 'Naruto 🌠', 'Naruto Uzumaki◾️ 🌠', 'Naruto◾️ 🌠', 'Uchiha Sasuke 🌠'],
-        'mythical': ['Naruto Uzumaki 🌌', 'Sasuke Uchiha 🌌', 'Naruto▫️ 🌌', 'Sasuke 🌌', 'Uchiha Sasuke◾️ 🌌', 'Sasuke◾️ 🌌', 'Sasuke▫️ 🌌', 'Sasuke Uchiha◾️ 🌌', 'Uchiha Sasuke▫️ 🌌', 'Naruto 🌌', 'Uzumaki Naruto 🌌', 'Naruto Uzumaki◾️ 🌌', 'Uchiha Sasuke 🌌'],
-        'legendary': ['Naruto Uzumaki 🌅', 'Uchiha Sasuke 🌅'],
-        'epic': ['Naruto Uzumaki 🎆', 'Uchiha Sasuke 🎆'],
-        'rare': ['Naruto Uzumaki 🎇', 'Uchiha Sasuke◾️ 🎇', 'Sasuke◾️ 🎇', 'Uzumaki Naruto 🎇', 'Uchiha Sasuke 🎇', 'Sasuke Uchiha 🎇', 'Sasuke 🎇', 'Uchiha Sasuke 🎇'],
-        'common': ['Naruto Uzumaki 🌁', 'Sasuke Uchiha 🌁', 'Sasuke 🌁', 'Sasuke◾️ 🌁', 'Sasuke Uchiha◾️ 🌁', 'Naruto Uzumaki◾️ 🌁', 'Naruto 🌁', 'Uzumaki Naruto 🌁', 'Uchiha Sasuke 🌁', 'Uchiha Sasuke◾️ 🌁']
+    "Naruto": {
+        "divine": [
+            "Naruto Uzumaki 🌠",
+            "Uzumaki Naruto 🌠",
+            "Naruto 🌠",
+            "Naruto Uzumaki 🌠 ㊀",
+            "Naruto 🌠 ㊀",
+            "Naruto 🌠 ㊁",
+            "Uchiha Sasuke 🌠",
+            "Sasuke Uchiha 🌠",
+            "Sasuke 🌠",
+            "Uchiha Sasuke 🌠 ㊀",
+            "Uchiha 🌠 ㊀",
+            "Uchiha 🌠 ㊁"
+        ],
+        "mythical": [
+            "Naruto Uzumaki 🌌",
+            "Naruto 🌌",
+            "Uzumaki Naruto 🌌",
+            "Naruto Uzumaki 🌌 ㊀",
+            "Naruto 🌌 ㊀",
+            "Uchiha Sasuke 🌌",
+            "Sasuke Uchiha 🌌 ㊀",
+            "Uchiha Sasuke 🌌 ㊀",
+            "Sasuke 🌌",
+            "Uchiha Sasuke 🌌 ㊁",
+            "Sasuke 🌌 ㊀",
+            "Sasuke 🌌 ㊁",
+            "Sasuke Uchiha 🌌"
+        ],
+        "legendary": [
+            "Naruto Uzumaki 🌅",
+            "Uchiha Sasuke 🌅"
+        ],
+        "epic": [
+            "Naruto Uzumaki 🎆",
+            "Uchiha Sasuke 🎆"
+        ],
+        "rare": [
+            "Naruto Uzumaki 🎇",
+            "Uzumaki Naruto 🎇",
+            "Uchiha Sasuke 🎇",
+            "Sasuke Uchiha 🎇",
+            "Sasuke 🎇",
+            "Uchiha Sasuke 🎇 ㊀",
+            "Sasuke 🎇 ㊀"
+        ],
+        "common": [
+            "Naruto Uzumaki 🌁",
+            "Naruto Uzumaki 🌁 ㊀",
+            "Naruto 🌁",
+            "Uzumaki Naruto 🌁",
+            "Uchiha Sasuke 🌁",
+            "Uchiha Sasuke 🌁 ㊀",
+            "Sasuke Uchiha 🌁",
+            "Sasuke 🌁",
+            "Sasuke 🌁 ㊀",
+            "Sasuke Uchiha 🌁 ㊀"
+        ]
     },
+    "Jujutsu Kaisen": {
+        "divine": [
+            "Gojo Satoru 🌠",
+            "Gojo Satoru 🌠 ㊀",
+            "Gojo Satoru 🌠 ㊁",
+            "Gojo Satoru 🌠 ㊃",
+            "Gojo Satoru 🌠 ㊄",
+            "Sukuna x Itadori 🌠",
+            "Sukuna x Itadori 🌠 ㊀",
+            "Sukuna x Itadori 🌠 ㊁",
+            "Sukuna x Itadori 🌠 ㊃",
+            "Sukuna x Itadori 🌠 ㊄"
+        ],
+        "mythical": [
+            "Gojo Satoru 🌌",
+            "Gojo Satoru 🌌 ㊀",
+            "Gojo Satoru 🌌 ㊁",
+            "Gojo Satoru 🌌 ㊃",
+            "Gojo Satoru 🌌 ㊄",
+            "Gojo Satoru 🌌 ㊅",
+            "Gojo Satoru 🌌 ㊆",
+            "Gojo Satoru 🌌 ㊇",
+            "Gojo Satoru 🌌 ㊈",
+            "Gojo Satoru 🌌 ㊉",
+            "Gojo Satoru 🌌 ㊉㊀",
+            "Gojo Satoru 🌌 ㊉㊁",
+            "Sukuna x Itadori 🌌",
+            "Sukuna x Itadori 🌌 ㊀",
+            "Sukuna x Itadori 🌌 ㊁",
+            "Sukuna x Itadori 🌌 ㊂",
+            "Sukuna x Itadori 🌌 ㊃",
+            "Sukuna x Itadori 🌌 ㊄",
+            "Sukuna x Itadori 🌌 ㊅",
+            "Sukuna x Itadori 🌌 ㊆",
+            "Sukuna x Itadori 🌌 ㊇"
+        ],
+        "legendary": [
+            "Sukuna x Itadori 🌅",
+            "Gojo Satoru 🌅",
+            "Gojo Satoru 🌅 ㊀",
+            "Gojo Satoru 🌅 ㊁"
+        ],
+        "epic": [
+            "Gojo Satoru 🎆",
+            "Gojo Satoru 🎆 ㊀",
+            "Gojo Satoru 🎆 ㊁",
+            "Gojo Satoru 🎆 ㊂",
+            "Sukuna x Itadori 🎆",
+            "Sukuna x Itadori 🎆 ㊀",
+            "Sukuna x Itadori 🎆 ㊁"
+        ],
+        "rare": [
+            "Gojo Satoru 🎇 ㊀",
+            "Gojo Satoru 🎇 ㊁",
+            "Gojo Satoru 🎇 ㊂",
+            "Gojo Satoru 🎇 ㊃",
+            "Gojo Satoru 🎇 ㊄",
+            "Gojo Satoru 🎇 ㊅",
+            "Gojo Satoru 🎇",
+            "Sukuna x Itadori🎇 ㊀",
+            "Sukuna x Itadori🎇 ㊁",
+            "Sukuna x Itadori🎇 ㊂",
+            "Sukuna x Itadori🎇 ㊃"
+        ],
+        "common": [
+            "Gojo Satoru 🌁",
+            "Gojo Satoru 🌁 ㊀",
+            "Gojo Satoru 🌁 ㊁",
+            "Gojo Satoru 🌁 ㊂",
+            "Gojo Satoru 🌁 ㊃",
+            "Gojo Satoru 🌁 ㊄",
+            "Gojo Satoru 🌁 ㊅",
+            "Gojo Satoru 🌁 ㊆",
+            "Gojo Satoru 🌁 ㊇",
+            "Gojo Satoru 🌁 ㊈",
+            "Sukuna x Itadori 🌁",
+            "Sukuna x Itadori 🌁 ㊀",
+            "Sukuna x Itadori 🌁 ㊁",
+            "Sukuna x Itadori 🌁 ㊂",
+            "Sukuna x Itadori 🌁 ㊃",
+            "Sukuna x Itadori 🌁 ㊄",
+            "Sukuna x Itadori 🌁 ㊅",
+            "Sukuna x Itadori 🌁 ㊆",
+            "Sukuna x Itadori 🌁 ㊇"
+        ]
+    },
+    # 'Bleach': {
+    #     'divine': ['Toshiro Hitsuyaga 🌠', 'Unohana Retsu 🌠', 'Ulquiorra Cifer 🌠', 'Urahara Kisuke🌠', 'Toshiro Hitsuyaga🌠', 'Aizen Sosuke🌠', 'Aizen Sosuke 🌠', 'Aizen Sosuke 🌠 ', 'Aizen Sosuke  🌠', 'Ichigo Kurosaki 🌠', 'Ichigo Kurosaki  🌠', 'Ichigo Kurosaki 🌠 ', 'Ichigo Kurosaki🌠 ', 'Ichigo Kurosaki🌠'],
+    #     'mythical': ['Toshiro Hitsuyaga 🌌', 'Unohana Retsu 🌌', 'Urahara Kisuke🌌', 'Urahara Kisuke 🌌', 'Urahara Kisuke 🌌 ', 'Urahara Kisuke  🌌', 'Ulquiorra Cifer 🌌', 'Ulquiorra Cifer🌌', 'Aizen Sosuke 🌌', 'Aizen Sosuke🌌', 'Aizen Sosuke 🌌 ', 'Ichigo Kurosaki 🌌', 'Ichigo Kurosaki  🌌', 'Ichigo Kurosaki 🌌 '],
+    #     'legendary': ['Ichigo Kurosaki 🌅', 'Ulquiorra Cifer 🌅', 'Toshiro Hitsuyaga 🌅', 'Aizen Sosuke 🌅', 'Kurosaki Ichigo 🌅'],
+    #     'epic': ['Toshiro Hitsuyaga 🎆', 'Toshiro Hitsuyaga🎆', 'Aizen Sosuke 🎆', 'Ichigo Kurosaki 🎆', 'Ichigo Kurosaki 🎆', 'Ichigo Kurosaki🎆'],
+    #     'rare': ['Toshiro Hitsuyaga 🎇', 'Unohana Retsu 🎇', 'Toshiro Hitsuyaga🎇', 'Urahara Kisuke 🎇', 'Ichigo Kurosaki 🎇', 'Ichigo Kurosaki🎇', 'Ichigo Kurosaki 🎇 '],
+    #     'common': ['Toshiro Hitsuyaga 🌁', 'Ulquiorra Cifer 🌁', 'Unohana Retsu 🌁', 'Unohana Retsu🌁', 'Ulquiorra Cifer🌁', 'Urahara Kisuke 🌁', 'Urahara Kisuke🌁', 'Aizen Sosuke 🌁', 'Aizen Sosuke🌁', 'Unohana Retsu 🌁 ', 'Toshiro Hitsuyaga🌁', 'Toshiro Hitsuyaga 🌁 ', 'Toshiro Hitsuyaga  🌁', 'Ichigo Kurosaki 🌁', 'Ichigo Kurosaki🌁', 'Ichigo Kurosaki 🌁 ', 'Ichigo Kurosaki  🌁']
+    # },
+    # 'Naruto': {
+    #     'divine': ['Naruto Uzumaki 🌠', 'Uchiha▫️ 🌠', 'Naruto▫️ 🌠', 'Sasuke 🌠', 'Uchiha Sasuke◾️ 🌠', 'Uchiha◾️ 🌠', 'Sasuke Uchiha 🌠', 'Uzumaki Naruto 🌠', 'Naruto 🌠', 'Naruto Uzumaki◾️ 🌠', 'Naruto◾️ 🌠', 'Uchiha Sasuke 🌠'],
+    #     'mythical': ['Naruto Uzumaki 🌌', 'Sasuke Uchiha 🌌', 'Naruto▫️ 🌌', 'Sasuke 🌌', 'Uchiha Sasuke◾️ 🌌', 'Sasuke◾️ 🌌', 'Sasuke▫️ 🌌', 'Sasuke Uchiha◾️ 🌌', 'Uchiha Sasuke▫️ 🌌', 'Naruto 🌌', 'Uzumaki Naruto 🌌', 'Naruto Uzumaki◾️ 🌌', 'Uchiha Sasuke 🌌'],
+    #     'legendary': ['Naruto Uzumaki 🌅', 'Uchiha Sasuke 🌅'],
+    #     'epic': ['Naruto Uzumaki 🎆', 'Uchiha Sasuke 🎆'],
+    #     'rare': ['Naruto Uzumaki 🎇', 'Uchiha Sasuke◾️ 🎇', 'Sasuke◾️ 🎇', 'Uzumaki Naruto 🎇', 'Uchiha Sasuke 🎇', 'Sasuke Uchiha 🎇', 'Sasuke 🎇', 'Uchiha Sasuke 🎇'],
+    #     'common': ['Naruto Uzumaki 🌁', 'Sasuke Uchiha 🌁', 'Sasuke 🌁', 'Sasuke◾️ 🌁', 'Sasuke Uchiha◾️ 🌁', 'Naruto Uzumaki◾️ 🌁', 'Naruto 🌁', 'Uzumaki Naruto 🌁', 'Uchiha Sasuke 🌁', 'Uchiha Sasuke◾️ 🌁']
+    # },
     'Allstars': {
         'soccer': ['Gojo Satoru ⚽', 'Sukuna ⚽'],
         'halloween': ['Ichigo Kurosaki 👻', 'Rukia Kuchiki 👻', 'Ichigo 👻', 'Kurosaki Ichigo 👻', 'Hawk 👻', 'Zoro 👻', 'Sanji 👻', 'Luffi 👻', 'Kimiko 👻', 'Sasuke 👻', 'Gojo 👻', 'Gojo Satoru👻', 'Sukuna 👻', 'Ryomen Sukuna 👻', 'Megumi 👻', 'Kuchiki Rukia 👻', 'Robin 👻', 'Nami 👻', 'Kugisaki 👻', 'Kugisaki Nobara👻', 'Nobara Kugisaki 👻', '2b 👻', '2B 👻'],
@@ -47,9 +269,6 @@ characters = {
         'epic': ['Yuta Okkotsu 🎆', 'Ichigo Kurosaki 🎆', 'Yamamoto Genryuusai 🎆', 'Yuta Okkotsu ▫️ 🎆', 'Bakugo Katsuki 🎆', 'Isagi Yoichi 🎆', 'Phantom x ? 🎆', 'Ichigo x Legion 🎆', 'SF x ? 🎆', 'Kiper x ? 🎆', 'Aizen x Juggernaut 🎆', 'Zoldyck x Storm 🎆', 'Visage x ? 🎆', 'Tusk x ? 🎆', 'Yamamoto x Ember 🎆', 'Kunkka x ? 🎆', 'Sukuna x BloodSeeker 🎆', 'Zeus x ? 🎆', 'Todoroki Shoto 🎆', 'Sven 🎆', 'Juggernaut 🎆', 'Void 🎆', 'Chaos Knight 🎆', 'Axe 🎆', 'Luffi 🎆', 'Zeus 🎆', 'Sukuna 🎆', 'Phantom Assassin 🎆', 'Visage 🎆', 'Storm Spirit 🎆', 'Kunkka 🎆', 'Shadow Fiend 🎆', 'Magnus 🎆', 'Tusk 🎆', 'Lo 🎆', 'Spectrum 🎆', 'Arc Warden 🎆', 'Marci 🎆', 'Lina 🎆', 'Drow Ranger 🎆', 'Keeper of Light 🎆'],
         'rare': ['Toshiro Hitsugaya 🎇', 'Kaneki Ken 🎇', 'Hyakkimaru 🎇', 'Uruma Shun 🎇', 'Makima 🎇', 'Crystal Maiden 🎇', 'Gojo x Visage 🎇', 'Arima x Druid 🎇', 'Void x ? 🎇', 'Sukuna x Techies 🎇', 'Gin x Ancient 🎇', 'Sukuna x Morphling 🎇', 'Spectre 🎇', 'Benimaru x Razor 🎇', 'Genos x Axe 🎇', 'Takizawa x Knight 🎇', 'Shinobu Kocho 🎇', 'Miwa Kasumi 🎇', 'Muerta 🎇', 'Undying 🎇', 'Prophet 🎇', 'Razor 🎇', 'Wind Ranger 🎇', 'Luna 🎇', 'Tinker 🎇', 'Bat Rider 🎇', 'Lifestealer 🎇', 'Giyu Tomioka 🎇', 'Musashi Miyamoto 🎇', 'TBlade 🎇', 'Faceless Void 🎇', 'Disruptor 🎇', 'Terrorblade 🎇'],
         'common': ['Yuta Okkotsu 🌁', 'Seishiro Nagi 🌁', 'Kaneki Ken 🌁', 'Uchiha Madara 🌁', 'Manjiro Sano 🌁', 'Itoshi Rin 🌁', 'Benimaru Shinmon 🌁', 'Aki Hayakawa ▫️ 🌁', 'Izuku Midoriya 🌁', 'Deku 🌁', 'Sukuna 🌁', 'Eren Yeager 🌁', 'Aki Hayakawa 🌁', 'Juuzou Suzuya 🌁', 'Toji Fushiguro 🌁', 'Gojo Satoru 🌁', 'Makima 🌁', 'Unohana Retsu 🌁', 'Toshiro Hitsugaya 🌁', 'Arima Kishou 🌁', 'Hyakkimaru 🌁', 'Levi Ackerman 🌁', 'Uchiha Sasuke 🌁', 'Naruto Uzumaki 🌁', 'Zenitsu 🌁', 'Shoto Todoroki 🌁', 'Lance Crown 🌁', 'Megumi Fushiguro 🌁', 'Nanami Kento 🌁', 'Todoroki 🌁', 'Miyamoto Musashi 🌁', 'Feitan Portor 🌁', 'Seidou Takizawa 🌁', 'Gaara 🌁', '02 🌁', 'Power 🌁', 'Yoru 🌁', 'Kugisaki Nobara 🌁', 'Hinata Hyuga 🌁', 'Sakura Haruno 🌁', 'Maki Zenin 🌁']
-    },
-    'Jujutsu Kaisen': {
-        'divine': ['Gojo Satoru 🌠'],
     },
     # 'Allstars(old)': {
     #     'divine': ['Arima Kishou 🌠', 'Uruma Shun 🌠', 'Gojo Satoru 🌠', 'Kaneki Ken 🌠', 'Gojo Satoru ▫️ ▫️ 🌠', 'Koji 🌠', 'Ulquiorra 🌠', 'Kurumi Tokisaki 🌠', 'Gabimaru 🌠', 'Renji 🌠', 'Grimmjow 🌠', 'Megumi Fushiguro 🌠', 'Geto Suguru ▫️ 🌠', 'Rangiku Matsumoto 🌠', 'Shutara Senjumaru 🌠', 'Gojo Satoru ▫️ ▫️ ▫️ 🌠', 'Gorgon 🌠', 'Urahara Kisuke 🌠', 'Rukia Kuchiki 🌠', 'Inoue Orihime 🌠', 'Soifon 🌠', 'Urahara Kisuke ▫️ 🌠', 'Yagami Light ▫️ 🌠', 'Sukuna 🌠', 'Aizen Sosuke 🌠', 'Yuta Okkotsu ▫️ 🌠', 'Yuta Okkotsu 🌠', 'Kakashi Hatake 🌠', 'Seishiro Nagi 🌠', 'Mitsuri Kanroji 🌠', 'Rengoku Kyojuro ▫️ 🌠', 'Temari Nara 🌠', 'Yagami Light 🌠', 'Tengen Uzui ▫️ 🌠', 'Itachi Uchiha 🌠', 'Geto Suguru 🌠', 'Rengoku Kyojuro 🌠', 'Yami Sukehiro 🌠', 'Choso Kamo 🌠', 'Gojo Satoru ▫️ 🌠', 'Uchiha Madara 🌠', 'Shinobu Kocho 🌠', 'Toji Fushiguro 🌠', 'Tengen Uzui 🌠', 'Toji Fushiguro ▫️ 🌠'],  # Самый редкий уровень
