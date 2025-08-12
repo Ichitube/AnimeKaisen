@@ -2539,8 +2539,6 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
 
         await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
-
-
     elif action == '˹💥 Dismantle˼':
 
         mana = await calculate_mana(self, 90)
@@ -2557,6 +2555,29 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
         gif = 'CgACAgIAAx0CfstymgACQwNokzcpl4-NogNGahfTE5zlW4Sr7QACunkAAqlYmEjqcIFLQR8w1jYE'
         caption = (f"💥 Dismantle"
                    f"\n<blockquote expandable>Сукуна использует Dismantle, нанося {damage} 🗡 урона противнику</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+# Megumi Fushiguro
+
+    elif action == '˹🐺🐺 Гёкукен˼':
+        mana = await calculate_mana(self, 35)
+        if not mana:
+            return False, True
+        energy = await calculate_energy(self, 10)
+        if not energy:
+            return True, False
+
+        damage = (self.agility + self.strength) * 3
+
+        dragon = Passive("🐺🐺", decrease_hp, fix_effects, 3, damage)
+
+        enemy.add_passive(dragon)
+
+        gif = 'CgACAgIAAx0CfstymgACG31m1ftEHS0meSMBPJxHRXrOjvNXoQACfmUAAr3bsEpFmmvIiNPvxzUE'
+        caption = (f"🐺🐺 Гёкукен"
+                   f"\n<blockquote expandable>🐺🐺 два волка наносят урон ─ "
+                   f"🗡{(self.agility + self.strength + self.intelligence)} х3 3⏳</blockquote>")
 
         await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
