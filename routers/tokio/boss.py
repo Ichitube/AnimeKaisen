@@ -49,7 +49,7 @@ BOSSES = [
 ]
 
 
-@router.message(ChatTypeFilter(chat_type=["private"]), F.text == "👾 Босс")
+@router.message(ChatTypeFilter(chat_type=["private"]), F.text == "🐦‍🔥Босс")
 @router.callback_query(F.data == "boss")
 async def boss_func(callback: CallbackQuery | Message, account: dict = None, user_id: int = None):
     if user_id is None:

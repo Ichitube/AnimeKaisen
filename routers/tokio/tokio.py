@@ -120,7 +120,7 @@ async def tokio(callback: CallbackQuery | Message):
                 f"\n❁ 💴 {money} ¥   ❁ ⚜️ Мощь: {power}",
         parse_mode=ParseMode.HTML,
         reply_markup=inline_builder(
-            [area, "🪪 Профиль", "🏯 Клан 🎌", " 👾 Босс", "⛩️ Подземелье", "🏪 Рынок", "🏠 Дом"],
+            [area, "🪪 Профиль", "🏯 Клан 🎌", " 🐦‍🔥Босс", "⛩️ Подземелье", "🏪 Рынок", "🏠 Дом"],
             [area_cb, "main_page", "clan", "boss", "dungeon", "store", "home"],
             row_width=[1, 2, 2, 2]
             )

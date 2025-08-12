@@ -217,10 +217,10 @@ characters = {
             "Gojo Satoru 🎇 ㊄",
             "Gojo Satoru 🎇 ㊅",
             "Gojo Satoru 🎇",
-            "Sukuna x Itadori🎇 ㊀",
-            "Sukuna x Itadori🎇 ㊁",
-            "Sukuna x Itadori🎇 ㊂",
-            "Sukuna x Itadori🎇 ㊃"
+            "Sukuna x Itadori 🎇 ㊀",
+            "Sukuna x Itadori 🎇 ㊁",
+            "Sukuna x Itadori 🎇 ㊂",
+            "Sukuna x Itadori 🎇 ㊃"
         ],
         "common": [
             "Gojo Satoru 🌁",

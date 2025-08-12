@@ -3,6 +3,7 @@ import inspect
 import random
 
 from data import character_photo
+# from data.default import caption
 
 
 async def send_action(bot, self, enemy, chat_id, gif, text, ai=None):
@@ -1784,7 +1785,7 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
 
         gif = 'CgACAgIAAx0CfstymgACG4Nm1fzsMYiyQ7B5wu0BKtb6xAXRjgACo2UAAr3bsEqjhPCQREoJKjUE'
         caption = (f"˹⛬Расен Расенган˼"
-                   f"\n<blockquote expandable>Наруто использовал множество расенганов, нанося {damage} х6 "
+                   f"\n<blockquote expandable>Наруто использовал множество расенганов, нанося {damage} х6"
                    f"🗡 урона противнику</blockquote>")
 
         await send_action(bot, self, enemy, chat_id, gif, caption, ai)
@@ -2342,7 +2343,7 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
 
         await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
-    elif action == '˹◼️ Необъятая бездна˼':
+    elif action == '˹🪐 Необъятая бездна˼':
         mana = await calculate_mana(self, 150)
         if not mana:
             return False, True
@@ -2366,7 +2367,7 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
         self.add_passive(inc_agl)
 
         gif = 'CgACAgIAAx0CfstymgACQMloaRoqv8KYQ7joZFUulnteetabjwACRHsAAkmXSUue_In4O4j1dzYE'
-        caption = (f"◼️ Необъятая бездна"
+        caption = (f"Расширение Территории: 🪐 Необъятая бездна"
                    f"\n<blockquote expandable>Годзё использует Необъятую бездну, "
                    f"снижая энергию, ману, интеллект и ловкость противника на ⇩5🪫⇨⏳, ⇩20🧪⇨⏳, ⇩100🧠 и ⇩100👣 соответственно и "
                    f"увеличивая свой интеллект и ловкость на ⇪150🧠 и ⇪150👣 соответственно на 10⏳</blockquote>")
@@ -2435,7 +2436,7 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
             return True, False
 
         new_skills = ["˹🗡Атака˼", "˹❤️‍🩹 Обратная техника˼", "˹🌑 Рассечение˼", "˹🔥 Mizushi˼",
-                      "˹🏹🔥 Божественное пламя˼", "˹💥 Dismantle˼"]
+                      "˹🏹🔥 Божественное пламя˼", "˹⛩🩸 Демоническая гробница˼"]
         skills_change = Passive("😈", change_skills, fix_effects, 8, new_skills)
         strength_up = Passive("⇪💪", increase_strength, fix_effects, 8, 100, apply_once=True)
         agility_up = Passive("⇪👣", increase_agility, fix_effects, 8, 100, apply_once=True)
@@ -2476,7 +2477,7 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
         mana = await calculate_mana(self, 40)
         if not mana:
             return False, True
-        energy = await calculate_energy(self, 20)
+        energy = await calculate_energy(self, 25)
         if not energy:
             return True, False
 
@@ -2539,8 +2540,7 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
 
         await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
-    elif action == '˹💥 Dismantle˼':
-
+    elif action == '˹⛩🩸 Демоническая гробница˼':
         mana = await calculate_mana(self, 90)
         if not mana:
             return False, True
@@ -2553,33 +2553,190 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
         calculate_shield(enemy, damage)
 
         gif = 'CgACAgIAAx0CfstymgACQwNokzcpl4-NogNGahfTE5zlW4Sr7QACunkAAqlYmEjqcIFLQR8w1jYE'
-        caption = (f"💥 Dismantle"
-                   f"\n<blockquote expandable>Сукуна использует Dismantle, нанося {damage} 🗡 урона противнику</blockquote>")
+        caption = (f"Расширение Территории: ⛩🩸 Демоническая гробница"
+                   f"\n<blockquote expandable>Сукуна использует ⛩🩸 Демоническую гробницу, нанося {damage} 🗡 урона противнику</blockquote>")
 
         await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
 # Megumi Fushiguro
 
-    elif action == '˹🐺🐺 Гёкукен˼':
-        mana = await calculate_mana(self, 35)
+    elif action == '˹🔥 Проклятая энергия˼':
+        mana = await calculate_mana(self, 40)
         if not mana:
             return False, True
         energy = await calculate_energy(self, 10)
         if not energy:
             return True, False
 
-        damage = (self.agility + self.strength) * 3
+        inc_int = Passive("⇪💪", increase_strength, return_strength, 10, 100, apply_once=True)
+        inc_agl = Passive("⇪👣", increase_agility, return_agility, 10, 100, apply_once=True)
 
-        dragon = Passive("🐺🐺", decrease_hp, fix_effects, 3, damage)
+        self.add_passive(inc_int)
+        self.add_passive(inc_agl)
+
+        gif = 'CgACAgIAAx0CfstymgACQzhomwQ1oDOyuhL4tIVgyHVBrMaH4wAClX4AArQAAdlIJtVd8Bqqjyg2BA'
+        caption = (f"🔥 Проклятая энергия"
+                   f"\n<blockquote expandable>"
+                   f"💪Сила ⇪100 10⏳"
+                   f"\n👣Ловкость ⇪100 10⏳</blockquote>")
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    elif action == '˹🐺 Гёкукен˼':
+        mana = await calculate_mana(self, 45)
+        if not mana:
+            return False, True
+        energy = await calculate_energy(self, 15)
+        if not energy:
+            return True, False
+
+        damage = (self.agility + self.strength + self.intelligence) * 3
+
+        dragon = Passive("🐺🐺🗡", decrease_hp, fix_effects, 3, damage)
 
         enemy.add_passive(dragon)
 
-        gif = 'CgACAgIAAx0CfstymgACG31m1ftEHS0meSMBPJxHRXrOjvNXoQACfmUAAr3bsEpFmmvIiNPvxzUE'
-        caption = (f"🐺🐺 Гёкукен"
-                   f"\n<blockquote expandable>🐺🐺 два волка наносят урон ─ "
-                   f"🗡{(self.agility + self.strength + self.intelligence)} х3 3⏳</blockquote>")
+        gif = 'CgACAgIAAx0CfstymgACQxVomsHiouyIfLH-19MPsJzgRkdKIAACO3sAAinasUjYmI9ogjYUiDYE'
+        caption = (f"🐺 Гёкукен"
+                   f"\n<blockquote expandable>🐺🐺 два волка наносят 🗡{damage} урона 3⏳</blockquote>")
 
         await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    elif action == '˹🐇🐰 Датто˼':
+        mana = await calculate_mana(self, 50)
+        if not mana:
+            return False, True
+        energy = await calculate_energy(self, 25)
+        if not energy:
+            return True, False
+        stun = Passive("🐇🐰💫", bash, undo_bash, 3, 1, apply_once=True)
+
+        enemy.add_passive(stun)
+
+        gif = 'CgACAgIAAx0CfstymgACQytomd5YJ8BYf38Fdu_argXoQX9YngACFoAAArQAAclIeU85S9fnk842BA'
+        caption = (f"🐇🐰 Датто"
+                   f"\n<blockquote expandable>🐇🐰 кролики отвлечёт врага"
+                   f"\n💫Оглушение 3⏳</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    elif action == '˹🦅 Нуэ˼':
+        mana = await calculate_mana(self, 50)
+        if not mana:
+            return False, True
+        energy = await calculate_energy(self, 30)
+        if not energy:
+            return True, False
+        hp = self.pre_hp - self.health
+        self.health += hp
+
+        gif = 'CgACAgIAAx0CfstymgACQxRomxBaWSTnlOywOgueH8DDDOn0QwACOHsAAinasUhq8czzTHeY4TYE'
+        caption = (f"🦅 Нуэ"
+                   f"\n<blockquote expandable>🦅 Нуэ дал уклон от {hp} 🗡 урона</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    elif action == '˹🐸🪽 Гама˼':
+        mana = await calculate_mana(self, 40)
+        if not mana:
+            return False, True
+        energy = await calculate_energy(self, 35)
+        if not energy:
+            return True, False
+
+        damage = Passive("🐸🪽🗡", decrease_hp, fix_effects, 3, self.intelligence, apply_once=True)
+        stun = Passive("🐸🪽💫", bash, undo_bash, 2, 1, apply_once=True)
+
+        enemy.add_passive(damage)
+        enemy.add_passive(stun)
+
+        gif = 'CgACAgIAAx0CfstymgACQy1omd5sQVZVYGKXOIkS6Bz53wABQpgAAhmAAAK0AAHJSKuMOHZHTRGuNgQ'
+        caption = (f"🐸🪽 Гама"
+                   f"\n<blockquote expandable>🐸🪽 летучие жабы оглушают и атакуют врага"
+                   f"\n🗡{self.intelligence} Урона 3⏳"
+                   f"\n💫Оглушение 2⏳</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    elif action == '˹🐘💦 Бансё˼':
+        mana = await calculate_mana(self, 75)
+        if not mana:
+            return False, True
+        energy = await calculate_energy(self, 40)
+        if not energy:
+            return True, False
+
+        damage = (self.agility + self.strength + self.intelligence) * 5
+
+        dragon = Passive("🐘💦", decrease_hp, fix_effects, 5, damage)
+
+        enemy.add_passive(dragon)
+
+        gif = 'CgACAgIAAx0CfstymgACQxZomxb3MLEyqn4qWj9QOdJdTSZGfgACPHsAAinasUg9NE70qx2tXDYE'
+        caption = (f"🐘💦 Бансё"
+                   f"\n<blockquote expandable>🐘 Слон выпускают огромное количество 💦 воды из хобота нанося {damage} 🗡 урона 5⏳</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    elif action == '˹🐍 Орочи˼':
+        mana = await calculate_mana(self, 85)
+        if not mana:
+            return False, True
+        energy = await calculate_energy(self, 40)
+        if not energy:
+            return True, False
+
+        damage = (self.agility + self.strength + self.intelligence) * 2
+
+        damage = Passive("🐍🗡", decrease_hp, fix_effects, 4, damage, apply_once=True)
+        stun = Passive("🐍💫", bash, undo_bash, 4, 1, apply_once=True)
+
+        enemy.add_passive(damage)
+        enemy.add_passive(stun)
+
+        gif = 'CgACAgIAAx0CfstymgACQyxomd5iYxETVpR1Xholzz81JKEnjAACF4AAArQAAclIvS1KRECKgWY2BA'
+        caption = (f"🐍 Орочи"
+                   f"\n<blockquote expandable>🐍 Чудовищная змея оглушаает и атакует врага"
+                   f"\n🗡{damage} Урона 4⏳"
+                   f"\n💫Оглушение 4⏳</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    elif action == '˹🕳 Теневой сад химер˼':
+        mana = await calculate_mana(self, 100)
+        if not mana:
+            return False, True
+        energy = await calculate_energy(self, 45)
+        if not energy:
+            return True, False
+
+        inc_agl = Passive("⇪👣", increase_agility, return_agility, 5, 200, apply_once=True)
+        inc_def = Passive("⇪🛡", increase_defense, return_defense, 5, 100, apply_once=True)
+        self.mana += 1000
+
+        self.add_passive(inc_agl)
+        self.add_passive(inc_def)
+
+
+        gif = 'CgACAgIAAx0CfstymgACQxJomysysItJk-iQiCYxk81N5NsrYgAC-nEAAjI_oEjVwM5PGhW22zYE'
+        caption = (f"Расширение Территории: 🕳 Теневой сад химер"
+                   f"\n<blockquote expandable>"
+                   f"\n⇪Ловкость ⇪200 5⏳"
+                   f"\n⇪Защита ⇪100 5⏳"
+                   f"\n⇪Мана ⇪1500</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    elif action == '˹☸️ Колесо адаптации˼':
+        damage = self.intelligence * 20
+
+        calculate_shield(enemy, damage)
+
+        gif = 'CgACAgIAAx0CfstymgACQzxomwaK3OSr8bjDklKMaLtq_rhY_AACs34AArQAAdlIcATNBsFE_hM2BA'
+        caption = (f"☸️ Колесо адаптации"
+                   f"\n<blockquote expandable>Махорага использует ☸️ Колесо адаптации, нанося {damage} 🗡 урона противнику</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
 
     # After death
 
@@ -2601,7 +2758,7 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
             gif = 'CgACAgIAAx0CfstymgACC1Nl_ISertvi3kRMGCiNOeD1ce9EFgACLFAAAuZv4Uv5LK0AAQPBEzQ0BA'
             caption = (f"💀Финальный пустой🕳 "
                        f"\n<blockquote expandable>+ 10000❤️ hp 5⏳"
-                       f"\n💥невосприимчивый контроли 5⏳</blockquote>")
+                       f"\n💥невосприимчивый к контроли 5⏳</blockquote>")
 
             await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
@@ -2619,7 +2776,7 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
             caption = (f"🪽Вторая стадия"
                        f"\n<blockquote expandable>+ 8000❤️ hp"
                        f"\n+ 300🗡 атаки"
-                       f"\n💥невосприимчивый контроли</blockquote>")
+                       f"\n💥невосприимчивый к контроли</blockquote>")
 
             await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
@@ -2635,7 +2792,7 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
             gif = 'CgACAgIAAx0CfstymgACC1Nl_ISertvi3kRMGCiNOeD1ce9EFgACLFAAAuZv4Uv5LK0AAQPBEzQ0BA'
             caption = (f"👿третья стадия"
                        f"\n<blockquote expandable>+ 10000❤️ hp 5⏳"
-                       f"\n💥невосприимчивый контроли</blockquote>")
+                       f"\n💥невосприимчивый к контроли</blockquote>")
 
             await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
@@ -2643,7 +2800,7 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
 
         # Naruto Udzumaki
 
-        elif self.name.startswith('Naruto Uzumaki') and self.immortal == 0:
+        elif self.name.startswith('Naruto') and self.immortal == 0:
             self.immortal += 1
             self.ability = ['˹🗡Атака˼', "˹🌑Биджу Дама˼"]
             im = Passive("👾", immunity, fix_effects, 5, 1, apply_once=True)
@@ -2654,7 +2811,26 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
             gif = 'CgACAgIAAx0CfstymgACG3Nm1fsQOgABQ-pLc76a6zIBuDTfy9wAAnRlAAK927BKNR8f5SBhEco1BA'
             caption = (f"👾Бааджен Цуу"
                        f"\n<blockquote expandable>+ 10000❤️ hp 5⏳"
-                       f"\n💥невосприимчивый контроли</blockquote>")
+                       f"\n💥невосприимчивый к контроли</blockquote>")
+
+            await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    # Jujutsu Kaisen
+
+        # Megumi Fushiguro
+
+        elif self.name.startswith('Megumi') and self.immortal == 0:
+            self.immortal += 1
+            self.ability = ["˹☸️ Колесо адаптации˼"]
+            im = Passive("💀", immunity, fix_effects, 2, 1, apply_once=True)
+            immortal = Passive("💀 Генерал Махорага", increase_hp, decrease_hp, 5, 10000, apply_once=True)
+            self.add_passive(immortal)
+            self.add_passive(im)
+
+            gif = 'CgACAgIAAx0CfstymgACQy5omd6Ky2jsyKeRxVBFw6xnpMcDyQACHoAAArQAAclICTTzn1zXLFg2BA'
+            caption = (f"💀 Генерал Махорага"
+                       f"\n<blockquote expandable>Мегуми призывает прирученного генерала Махорагу перед смертью на 1⏳"
+                       f"\n💥невосприимчивый к контроли 1⏳</blockquote>")
 
             await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
