@@ -2718,11 +2718,11 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
 
 
         gif = 'CgACAgIAAx0CfstymgACQxJomysysItJk-iQiCYxk81N5NsrYgAC-nEAAjI_oEjVwM5PGhW22zYE'
-        caption = (f"Расширение Территории: 🕳 Теневой сад химер"
+        caption = (f"Расширение Территории: 🕳 Теневой сад химер, увелечение 👣 ловкости и количество 🪫маны за счет которого Мегуми сможет призывать шикигами множество раз"
                    f"\n<blockquote expandable>"
-                   f"\n⇪Ловкость ⇪200 5⏳"
-                   f"\n⇪Защита ⇪100 5⏳"
-                   f"\n⇪Мана ⇪1500</blockquote>")
+                   f"\n👣Ловкость ⇪200 5⏳"
+                   f"\n🛡Защита ⇪100 5⏳"
+                   f"\n🪫Мана ⇪1500</blockquote>")
 
         await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
@@ -2737,6 +2737,164 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
 
         await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
+# Yuta Okkotsu
+
+    elif action == '˹🗡💥 проклятая атака˼':
+        mana = await calculate_mana(self, 20)
+        if not mana:
+            return False, True
+        energy = await calculate_energy(self, 10)
+        if not energy:
+            return True, False
+
+        damage = self.attack + self.agility + self.intelligence * 2
+
+        calculate_shield(enemy, damage)
+
+        gif = 'CgACAgIAAx0CfstymgACQ6BonBo8MpY0JQ6o2g95MBy-E9bxewACcW0AAiJLYUqdAw-bHLcx9TYE'
+        caption = (f"🗡💥 проклятая атака"
+                   f"\n<blockquote expandable>Юта атакует 🗡 катаной с 💥 проклятой энергией, нанося {damage} 🗡 урона противнику</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+
+    elif action == '˹◼️⚡️ чёрная молния˼':
+        mana = await calculate_mana(self, 30)
+        if not mana:
+            return False, True
+        energy = await calculate_energy(self, 15)
+        if not energy:
+            return True, False
+
+        damage = self.intelligence * 5 + self.attack
+
+        calculate_shield(enemy, damage)
+
+        gif = 'CgACAgIAAx0CfstymgACQ55onBo8UP54hDJC9u6Ot8zsBnSOQQACcmwAAiJLYUp-eKeP8yBHuzYE'
+        caption = (f"◼️⚡️ чёрная молния"
+                   f"\n<blockquote expandable>Юта использует ◼️⚡️ чёрную молнию, нанося {damage} 🗡 урона противнику</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+
+    elif action == '˹💚 Лечение˼':
+        mana = await calculate_mana(self, 50)
+        if not mana:
+            return False, True
+        energy = await calculate_energy(self, 20)
+        if not energy:
+            return True, False
+
+        hp = self.intelligence * 5
+        self.health += hp
+
+        gif = 'CgACAgIAAx0CfstymgACQ9RonB8l1323kdBITnh_3D_ceIiMowACSXsAAinasUgl1Oe-dpfMbDYE'
+        caption = (f"💚 Лечение"
+                   f"\n<blockquote expandable>Юта использует проклятую энергию для 💚 лечения, восстанавливая {hp} ❤️</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    elif action == '˹🪽 Укрепление˼':
+        mana = await calculate_mana(self, 50)
+        if not mana:
+            return False, True
+        energy = await calculate_energy(self, 20)
+        if not energy:
+            return True, False
+
+        inc_def = Passive("⇪🛡", increase_defense, return_defense, 10, 100, apply_once=True)
+        inc_agl = Passive("⇪👣", increase_agility, return_agility, 10, 150, apply_once=True)
+
+        self.add_passive(inc_def)
+        self.add_passive(inc_agl)
+
+        gif = 'CgACAgIAAx0CfstymgACQ6FonBo8scmnxFVzLn6fZtysycpUlwAC8HQAAiJLYUrA-jEWmAZz8DYE'
+        caption = (f"🪽 Укрепление"
+                   f"\n<blockquote expandable>"
+                   f"\n⇪Защита ⇪100 10⏳"
+                   f"\n⇪Ловкость ⇪150 10⏳</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    elif action == '˹👾 Призыв Рити˼':
+        mana = await calculate_mana(self, 60)
+        if not mana:
+            return False, True
+        energy = await calculate_energy(self, 35)
+        if not energy:
+            return True, False
+
+        new_skills = ["˹🗡Атака˼", "˹💍 Полное проявление˼", "˹🗣📢 Проклятая речь˼", "˹🌪 Рев Рики˼"]
+        skills_change = Passive("👾", change_skills, fix_effects, 8, new_skills)
+        intelligence_up = Passive("⇪🧠", increase_intelligence, fix_effects, 8, 100, apply_once=True)
+        self.mana += 1000
+
+
+        self.add_passive(skills_change)
+        self.add_passive(intelligence_up)
+
+        gif = 'CgACAgIAAx0CfstymgACQ5xonBo84ro0m7Gux-JKpB6vhNhWUgACZmwAAiJLYUo--87LLFxqBTYE'
+        caption = (f"👾 Призыв Рити"
+                   f"\n<blockquote expandable>Юта призывает Риту, получив доступ к ее запасу проклятой энергии и новые способности"
+                     f"\n🧠Интеллект ⇪100 8⏳"
+                     f"\n🪫Мана ⇪1000</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    elif action == '˹💍 Полное проявление˼':
+        mana = await calculate_mana(self, 50)
+        if not mana:
+            return False, True
+        energy = await calculate_energy(self, 20)
+        if not energy:
+            return True, False
+
+        damage = self.intelligence * 8 + self.attack
+
+        calculate_shield(enemy, damage)
+
+        gif = 'CgACAgIAAx0CfstymgACQ6tonBo82OF2NLaW0DXrqOCzAw3ULAAC8XQAAiJLYUoKZMPdue1OiTYE'
+        caption = (f"💍 Полное проявление "
+                     f"\n<blockquote expandable>Юта использует 💍 Полное проявление, Рита наносят {damage} 🗡 урона противнику</blockquote>")
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    elif action == '˹🗣📢 Проклятая речь˼':
+        mana = await calculate_mana(self, 60)
+        if not mana:
+            return False, True
+        energy = await calculate_energy(self, 30)
+        if not energy:
+            return True, False
+
+        stun = Passive("🗣📢💫", bash, undo_bash, 5, 1, apply_once=True)
+        damage = self.intelligence * 5 + self.attack
+        calculate_shield(enemy, damage)
+
+        enemy.add_passive(stun)
+
+        gif = 'CgACAgIAAx0CfstymgACQ51onBo8sOkrNTwPQxjenKnQ6TjVzgACZ2wAAiJLYUr6HVMbGi0SCDYE'
+        caption = (f"🗣📢 Проклятая речь"
+                   f"\n<blockquote expandable>Юта использует 🗣📢 Проклятую речь, нанося {damage} 🗡 урона противнику и оглушая на 5⏳</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    elif action == '˹🌪 Рев Рики˼':
+        mana = await calculate_mana(self, 80)
+        if not mana:
+            return False, True
+        energy = await calculate_energy(self, 40)
+        if not energy:
+            return True, False
+
+        damage = self.intelligence * 10 + self.attack
+
+        calculate_shield(enemy, damage)
+
+        gif = 'CgACAgIAAx0CfstymgACQ59onBo8stD6Sh0fJXXuQdFtzuJx5QACj2wAAiJLYUrqJbHuargQzDYE'
+        caption = (f"🌪 Рев Рики"
+                   f"\n<blockquote expandable>Юта использует 🌪 Рев Рики, нанося {damage} 🗡 урона противнику</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
     # After death
 
