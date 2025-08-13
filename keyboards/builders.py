@@ -224,11 +224,11 @@ def pagination_keyboard(universe, character, page: int = 0):
         InlineKeyboardButton(text='⬅️', callback_data=Pagination(action="prev", page=page).pack()),
         InlineKeyboardButton(text='➡️', callback_data=Pagination(action="next", page=page).pack())
     )
-    if universe not in ['Allstars', 'Allstars(old)']:
-        builder.row(
-            InlineKeyboardButton(text='🎴 Навыки', callback_data=Ability(action="ability", universe=universe,
-                                                                        character=character, back='inventory').pack())
-        )
+    # if universe not in ['Allstars', 'Allstars(old)']:
+    #     # builder.row(
+    #     #     InlineKeyboardButton(text='🎴 Навыки', callback_data=Ability(action="ability", universe=universe,
+    #     #                                                                 character=character, back='inventory').pack())
+    #     # )
     builder.row(
         InlineKeyboardButton(text='🪪 Установить', callback_data='change_character')
     )

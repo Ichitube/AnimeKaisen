@@ -55,13 +55,15 @@ async def inventory(callback: CallbackQuery | Message):
         for item in sublist:
             if isinstance(item, str):
                 total_elements += 1
-    msg = (f"\n❖ 🃏 Количество карт: {total_elements}"
+    msg = (f"\n❖ 🃏 〢 Количество карт: {total_elements}"
+           f"\n ── •✧✧• ────────────"
+           f"<blockquote>"
            f"\n\n❖ 🌠 Божественные 🌟 {total_divine}"
            f"\n❖ 🌌 Мифические ⭐️ {total_mythical}"
            f"\n❖ 🌅 Легендарные ⭐️ {total_legendary}"
            f"\n❖ 🎆 Эпические ⭐️ {total_epic}"
            f"\n❖ 🎇 Редкие ⭐️ {total_rare}"
-           f"\n❖ 🌁 Обычные ⭐️ {total_common}")
+           f"\n❖ 🌁 Обычные ⭐️ {total_common}</blockquote>")
     buttons = [f"🌠 Божественные 🌟 {total_divine}", f"🌌 Мифические ⭐️ {total_mythical}", f"🌅 Легендарные ⭐️ {total_legendary}",
                f"🎆 Эпические ⭐️ {total_epic}", f"🎇 Редкие ⭐️ {total_rare}", f"🌁 Обычные ⭐️ {total_common}", "🔙 Назад"]
     callbacks = ["divine", "mythical", "legendary", "epic", "rare", "common", "main_page"]
@@ -132,7 +134,7 @@ async def inventory(callback: CallbackQuery, state: FSMContext):
         await callback.message.edit_media(photo, inline_id)
         await callback.message.edit_caption(inline_id, caption=f"🎴 {invent[0]}"
                                                                f"\n ── •✧✧• ────────────"
-                                                               f"{msg}"
+                                                               f"<blockquote>{msg}</blockquote>"
                                                                f"\n──❀*̥˚──◌──◌──❀*̥˚────"
                                                                f"\n❖ 🔖 1 из {len(invent)}",
                                             reply_markup=builders.pagination_keyboard(universe, invent[0]))
@@ -181,7 +183,7 @@ async def inventory(callback: CallbackQuery, callback_data: builders.Pagination,
                 inline_id,
                 caption=f"🎴 {invent[page_num]}"
                         f"\n ── •✧✧• ────────────"
-                        f"{msg}"
+                        f"<blockquote>{msg}</blockquote>"
                         f"\n──❀*̥˚──◌──◌──❀*̥˚────"
                         f"\n❖ 🔖 {page_num + 1} из {len(invent)}",
                 reply_markup=builders.pagination_keyboard(universe=universe, character=invent[page_num], page=page_num)
@@ -259,9 +261,9 @@ async def inventory(callback: CallbackQuery | Message, state: FSMContext):
 
     pattern = dict(caption=f"🥡 Инвентарь"
                            f"\n── •✧✧• ────────────"
-                           f"\n❖ Здесь вы можете увидеть все ваши 🃏 карты "
-                           f"и установить их в качестве 🎴 персонажа"
-                           f"\n\n❖ Выберите ✨ редкость карты, чтобы посмотреть"
+                           f"\n<blockquote>❖ Здесь вы можете увидеть все ваши 🃏 карты "
+                           f"и установить их в качестве основного 🎴 персонажа."
+                           f"\n❖ Выберите ✨ редкость карты, чтобы посмотреть.</blockquote>"
                            f"\n── •✧✧• ────────────"
                            f"\n❖ 🃏 Количество карт: {total_elements}",
                    reply_markup=builders.inline_builder(
@@ -326,7 +328,7 @@ async def inventory(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_media(photo, inline_id)
     await callback.message.edit_caption(inline_id, caption=f"🎴 {invent[0]}"
                                                            f"\n ── •✧✧• ────────────"
-                                                           f"{msg}"
+                                                           f"<blockquote>{msg}</blockquote>"
                                                            f"\n──❀*̥˚──◌──◌──❀*̥˚────"
                                                            f"\n❖ 🔖 1 из {len(invent)}",
                                         reply_markup=builders.pagination_keyboard_chat(universe, user_id, invent[0]))
@@ -395,7 +397,7 @@ async def inventory(callback: CallbackQuery, callback_data: builders.Pagination,
                 inline_id,
                 caption=f"🎴 {invent[page_num]}"
                         f"\n ── •✧✧• ────────────"
-                        f"{msg}"
+                        f"<blockquote>{msg}</blockquote>"
                         f"\n──❀*̥˚──◌──◌──❀*̥˚────"
                         f"\n❖ 🔖 {page_num + 1} из {len(invent)}",
                 reply_markup=builders.pagination_keyboard_chat(universe=universe, character=invent[page_num],
