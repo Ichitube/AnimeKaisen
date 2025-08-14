@@ -2896,6 +2896,158 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
 
         await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
+# Geto Suguru
+
+    elif action == '˹💥 Проклятые пули˼':
+        mana = await calculate_mana(self, 20)
+        if not mana:
+            return False, True
+        energy = await calculate_energy(self, 5)
+        if not energy:
+            return True, False
+
+        damage = self.intelligence + self.attack
+
+        calculate_shield(enemy, damage)
+
+        gif = 'CgACAgIAAx0CfstymgACQ_BonEHr5j9hfI0JUYAc-6mQCqa5xgACJV0AAppzgEpFLQXvAVFumjYE'
+        caption = (f"💥 Проклятые пули"
+                   f"\n<blockquote expandable>Сугуру использует 💥 Проклятые пули, нанося {damage} 🗡 урона противнику</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    elif action == '˹🌌 Уноми˼':
+        mana = await calculate_mana(self, 30)
+        if not mana:
+            return False, True
+        energy = await calculate_energy(self, 10)
+        if not energy:
+            return True, False
+
+        damage = self.intelligence * 2 + self.attack
+
+        calculate_shield(enemy, damage)
+
+        gif = 'CgACAgIAAx0CfstymgACQ-9onEHr0NdJ_7V3rPxNie4-HaVLOQACIF0AAppzgEqZduNzYT2J0zYE'
+        caption = (f"🌌 Уноми"
+                   f"\n<blockquote expandable>Сугуру использует 🌌 Уноми, нанося {damage} 🗡 урона противнику</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    elif action == '˹🏚 землетрясение˼':
+        mana = await calculate_mana(self, 40)
+        if not mana:
+            return False, True
+        energy = await calculate_energy(self, 15)
+        if not energy:
+            return True, False
+
+        damage = self.intelligence * 3 + self.attack
+
+        stun = Passive("💫", bash, undo_bash, 3, 1, apply_once=True)
+        calculate_shield(enemy, damage)
+
+        enemy.add_passive(stun)
+
+        gif = 'CgACAgIAAx0CfstymgACQ-5onEHrxo_9LB8USRTLoO8IXg9XTQACHV0AAppzgEpOErk3xvAibzYE'
+        caption = (f"🏚 землетрясение"
+                     f"\n<blockquote expandable>Сугуру использует 🏚 землетрясение, нанося {damage} 🗡 урона противнику и 💫 оглушая его на 3⏳</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    elif action == '˹🪱 проклятый червь˼':
+        mana = await calculate_mana(self, 55)
+        if not mana:
+            return False, True
+        energy = await calculate_energy(self, 25)
+        if not energy:
+            return True, False
+
+        damage = self.agility + self.strength + self.intelligence * 2
+
+        damage = Passive("🪱", decrease_hp, fix_effects, 3, damage, apply_once=True)
+        stun = Passive("💫", bash, undo_bash, 2, 1, apply_once=True)
+
+        enemy.add_passive(damage)
+        enemy.add_passive(stun)
+
+        gif = 'CgACAgIAAx0CfstymgACQ_RonEHr3Sxdph418faW6YUq1f2R-QACPl0AAppzgEolcZD5emmL2jYE'
+        caption = (f"🪱 проклятый червь"
+                   f"\n<blockquote expandable>Сугуру использует 🪱 проклятый червь, нанося {damage} 🗡 урона противнику и 💫 оглушая его на 3⏳</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    elif action == '˹🦯 Игровое облако˼':
+        energy = await calculate_energy(self, 30)
+        if not energy:
+            return True, False
+        hp = self.pre_hp - self.health
+        self.health += hp
+
+        gif = 'CgACAgIAAx0CfstymgACQ_donEHr7FqrBpMPD2ixwakaHkQ8HQACZF8AAubGiEplE2RoSZIIjjYE'
+        caption = (f"🦯 Игровое облако"
+                   f"\n<blockquote expandable>Сугуру использует снаряжение 🦯 игровое облако, блокируя {hp} 🗡 урона</blockquote>")
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    elif action == '˹🐉 Белый дракон˼':
+        mana = await calculate_mana(self, 65)
+        if not mana:
+            return False, True
+        energy = await calculate_energy(self, 35)
+        if not energy:
+            return True, False
+
+        damage = (self.agility + self.strength + self.intelligence) * 2
+
+        damage = Passive("🐉", decrease_hp, fix_effects, 5, damage, apply_once=True)
+        stun = Passive("💫", bash, undo_bash, 3, 1, apply_once=True)
+
+        enemy.add_passive(damage)
+        enemy.add_passive(stun)
+
+        gif = 'CgACAgIAAx0CfstymgACQ_JonEHrt8Pjyk82ozb2oDZ5s62m3QACMl0AAppzgErfZEsR87zW5jYE'
+        caption = (f"🐉 Белый дракон"
+                     f"\n<blockquote expandable>Сугуру использует 🐉 Белый дракон, нанося {damage} 🗡 урона противнику и 💫 оглушая его на 5⏳</blockquote>")
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    elif action == '˹🧞 Узумаки˼':
+        mana = await calculate_mana(self, 80)
+        if not mana:
+            return False, True
+        energy = await calculate_energy(self, 40)
+        if not energy:
+            return True, False
+
+        damage = self.intelligence * 6 + self.attack
+
+        calculate_shield(enemy, damage)
+
+        gif = 'CgACAgIAAx0CfstymgACQ_ZonEHrfQ6kgwT2yXSh6nvMVlDZBgACYF8AAubGiErnQp5QhVFpZzYE'
+        caption = (f"🧞 Узумаки"
+                     f"\n<blockquote expandable>Сугуру использует 🧞 Узумаки, нанося {damage} 🗡 урона противнику</blockquote>")
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    elif action == '˹🕳🪱 Проклятая бездна˼':
+        mana = await calculate_mana(self, 70)
+        if not mana:
+            return False, True
+        energy = await calculate_energy(self, 45)
+        if not energy:
+            return True, False
+
+        damage = (self.agility + self.strength + self.intelligence) * 3
+
+        damage = Passive("🕳🪱", decrease_hp, fix_effects, 5, damage, apply_once=True)
+        stun = Passive("🪱💫", bash, undo_bash, 4, 1, apply_once=True)
+
+        enemy.add_passive(damage)
+        enemy.add_passive(stun)
+
+        gif = 'CgACAgIAAx0CfstymgACQ_1onEHriNNz4J8vrXsffBox9HoufwACfF0AAppzgEqDdlXPSXizjjYE'
+        caption = (f"🕳🪱 Проклятая бездна"
+                     f"\n<blockquote expandable>Сугуру использует 🕳🪱 Проклятую бездну, нанося {damage} 🗡 урона противнику и 💫 оглушая его на 5⏳</blockquote>")
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
     # After death
 
     if self.health <= 0:
