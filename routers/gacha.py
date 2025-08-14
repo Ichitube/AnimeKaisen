@@ -169,7 +169,11 @@ characters = {
             "Sukuna x Itadori 🌠 ㊀",
             "Sukuna x Itadori 🌠 ㊁",
             "Sukuna x Itadori 🌠 ㊃",
-            "Sukuna x Itadori 🌠 ㊄"
+            "Sukuna x Itadori 🌠 ㊄",
+            "Megumi Fushiguro 🌠",
+            "Megumi Fushiguro 🌠 ㊀",
+            "Yuta Okkotsu 🌠",
+            "Yuta Okkotsu 🌠 ㊀",
         ],
         "mythical": [
             "Gojo Satoru 🌌",
@@ -192,13 +196,23 @@ characters = {
             "Sukuna x Itadori 🌌 ㊄",
             "Sukuna x Itadori 🌌 ㊅",
             "Sukuna x Itadori 🌌 ㊆",
-            "Sukuna x Itadori 🌌 ㊇"
+            "Sukuna x Itadori 🌌 ㊇",
+            "Megumi Fushiguro 🌌",
+            "Megumi Fushiguro 🌌 ㊀",
+            "Megumi Fushiguro 🌌 ㊁",
+            "Megumi Fushiguro 🌌 ㊂",
+            "Megumi Fushiguro 🌌 ㊃",
+            "Yuta Okkotsu 🌌",
+            "Yuta Okkotsu 🌌 ㊁",
+            "Yuta Okkotsu 🌌 ㊂",
+            "Yuta Okkotsu 🌌 ㊃",
         ],
         "legendary": [
             "Sukuna x Itadori 🌅",
             "Gojo Satoru 🌅",
             "Gojo Satoru 🌅 ㊀",
-            "Gojo Satoru 🌅 ㊁"
+            "Gojo Satoru 🌅 ㊁",
+            "Yuta Okkotsu 🌅"
         ],
         "epic": [
             "Gojo Satoru 🎆",
@@ -207,7 +221,12 @@ characters = {
             "Gojo Satoru 🎆 ㊂",
             "Sukuna x Itadori 🎆",
             "Sukuna x Itadori 🎆 ㊀",
-            "Sukuna x Itadori 🎆 ㊁"
+            "Sukuna x Itadori 🎆 ㊁",
+            "Yuta Okkotsu 🎆",
+            "Yuta Okkotsu 🎆 ㊁",
+            "Yuta Okkotsu 🎆 ㊂",
+            "Yuta Okkotsu 🎆 ㊃",
+            "Megumi Fushiguro 🎆",
         ],
         "rare": [
             "Gojo Satoru 🎇 ㊀",
@@ -220,7 +239,12 @@ characters = {
             "Sukuna x Itadori 🎇 ㊀",
             "Sukuna x Itadori 🎇 ㊁",
             "Sukuna x Itadori 🎇 ㊂",
-            "Sukuna x Itadori 🎇 ㊃"
+            "Sukuna x Itadori 🎇 ㊃",
+            "Yuta Okkotsu 🎇",
+            "Yuta Okkotsu 🎇 ㊀",
+            "Yuta Okkotsu 🎇 ㊁",
+            "Yuta Okkotsu 🎇 ㊂",
+            "Megumi Fushiguro 🎇"
         ],
         "common": [
             "Gojo Satoru 🌁",
@@ -241,7 +265,22 @@ characters = {
             "Sukuna x Itadori 🌁 ㊄",
             "Sukuna x Itadori 🌁 ㊅",
             "Sukuna x Itadori 🌁 ㊆",
-            "Sukuna x Itadori 🌁 ㊇"
+            "Sukuna x Itadori 🌁 ㊇",
+            "Yuta Okkotsu 🌁",
+            "Yuta Okkotsu 🌁 ㊀",
+            "Yuta Okkotsu 🌁 ㊁",
+            "Yuta Okkotsu 🌁 ㊂",
+            "Yuta Okkotsu 🌁 ㊃",
+            "Yuta Okkotsu 🌁 ㊄",
+            "Yuta Okkotsu 🌁 ㊅",
+            "Megumi Fushiguro 🌁",
+            "Megumi Fushiguro 🌁 ㊀",
+            "Megumi Fushiguro 🌁 ㊁",
+            "Megumi Fushiguro 🌁 ㊂",
+            "Megumi Fushiguro 🌁 ㊃",
+            "Megumi Fushiguro 🌁 ㊄",
+            "Megumi Fushiguro 🌁 ㊅",
+            "Megumi Fushiguro 🌁 ㊆"
         ]
     },
     # 'Bleach': {
