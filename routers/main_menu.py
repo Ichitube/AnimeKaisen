@@ -63,7 +63,7 @@ async def main_menu(message: Message | CallbackQuery):
                 total_characters += len(characters[outer_key][inner_key])
 
         pattern = dict(
-            caption=f"\n── •✧✧• ────────────"
+            caption=#f"\n── •✧✧• ────────────"
                     f"\n 🪪  〢 Профиль {account['name']} {emoji}"
                     f"\n── •✧✧• ────────────"
                     f"\n<blockquote>🎴 <b>{character}</b>"

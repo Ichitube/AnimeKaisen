@@ -59,18 +59,18 @@ async def main_chat(message: Message):
                 total_characters += len(characters[outer_key][inner_key])
 
         pattern = dict(
-            caption=f"\n── •✧✧• ────────────"
+            caption=# f"\n── •✧✧• ────────────"
                     f"\n 🪪  〢 Профиль {account['name']} "
                     f"\n── •✧✧• ────────────"
-                    f"\n\n❖🎴 <b>{character}</b>"
-                    f"\n❖🗺 Вселенная: {universe}"
-                    f"\n❖🎐 <b>{rank}</b>"
-                    f"\n❖⛩️ <b>{level}</b>"
-                    f"\n\n── •✧✧• ────────────"
+                    f"\n<blockquote>🎴 <b>{character}</b>"
+                    f"\n🗺 Вселенная: {universe}"
+                    f"\n🎐 <b>{rank}</b>"
+                    f"\n⛩️ <b>{level}</b></blockquote>"
+                    f"\n── •✧✧• ────────────"
                     f"\n<i><b>❃💴 {account['account']['money']} ¥ ❃ {account['campaign']['power']} ⚜️ Мощи"
                     f"\n❃🀄️ {account['stats']['exp']} XP ❃ {total_characters} 🃏 Карт</b></i>",
             parse_mode=ParseMode.HTML,
-            reply_markup=goto_bot()
+            # reply_markup=goto_bot()
         )
         if avatar_type == 'photo':
             await message.answer_photo(avatar, **pattern)

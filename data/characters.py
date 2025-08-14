@@ -3048,6 +3048,23 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
                      f"\n<blockquote expandable>Сугуру использует 🕳🪱 Проклятую бездну, нанося {damage} 🗡 урона противнику и 💫 оглушая его на 5⏳</blockquote>")
         await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
+    elif action == '˹🫧 Водоворот˼':
+        mana = await calculate_mana(self, 80)
+        if not mana:
+            return False, True
+        energy = await calculate_energy(self, 40)
+        if not energy:
+            return True, False
+
+        damage = self.intelligence + self.attack * 5
+
+        calculate_shield(enemy, damage)
+
+        gif = 'CgACAgIAAx0CfstymgACQ_lonEHr01SmOIzBjNgTbc41aitunAACf10AAppzgEoo04ABhwYW8TYE'
+        caption = (f"🫧 Высшая техника водоворот"
+                     f"\n<blockquote expandable>Сугуру использует 🫧 высшую технику водоворот, нанося {damage} 🗡 урона противнику</blockquote>")
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
     # After death
 
     if self.health <= 0:

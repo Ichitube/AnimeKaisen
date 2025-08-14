@@ -117,11 +117,11 @@ async def requisites(callback: CallbackQuery | Message):
     delta = midnight - now
     hours, remainder = divmod(delta.seconds, 3600)
     minutes = remainder // 60
-    time_until_reset = f"{hours} ч {minutes} мин"
+    time_until_reset = f"{hours}ч {minutes}мин"
 
     pattern = dict(
-        caption=f"❖ 📃 Список ежедневных квестов:"
-                f"\n── •✧✧• ────────────"
+        caption=f"❖ 📃 Ежедневные квесты:"
+                # f"\n── •✧✧• ────────────"
                 f"\n<blockquote>{summon} • 🔮 Совершите призыв"
                 f"\n{arena_fight} • ⚔️ Сразитесь в арене"
                 f"\n{free_summon} • 🎴 Совершите граб"
@@ -132,7 +132,7 @@ async def requisites(callback: CallbackQuery | Message):
                 f"\n {emoji} {reward} • 💴 {money} ¥</blockquote>"
                 f"{msg}"
                 f"\n── •✧✧• ────────────"
-                f"\n♻️ Обновятся через: ⏱️ {time_until_reset}",
+                f"\n♻️ Обнуление: ⏱️ {time_until_reset}",
         parse_mode=ParseMode.HTML,
         reply_markup=inline_builder(
             ["🎁 Получить", "🔙 Меню"],
@@ -141,7 +141,7 @@ async def requisites(callback: CallbackQuery | Message):
         )
     )
 
-    media = 'AgACAgIAAx0CfstymgACHvFm7nfVl1UgyCpMV2em6oT-0fVueAAC0d8xG6zFeUuTGRHASLHNiwEAAwIAA3gAAzYE'
+    media = 'AgACAgIAAx0CfstymgACREJonaJZzJQmnV2NWIuC3llVipz-OAACB_cxG3oF8Uhwd3VJrmw1SgEAAwIAA3kAAzYE'
 
     media_id = InputMediaPhoto(media=media)
 
@@ -162,7 +162,7 @@ async def get_quest_reward(callback: CallbackQuery):
     last_get_reward = account["tasks"]["last_get_reward"]
     last_get_reward = last_get_reward.date()
     if last_get_reward == current_date:
-        await callback.answer(f"❖ ✅ Награда уже получена, 🎁 возвращайтесь завтра!", show_alert=True)
+        await callback.answer(f"❖ ⏱️ Награды на сегодня уже получены, ♻️ возвращайтесь завтра!", show_alert=True)
         return
     else:
         if "halloween" not in account['inventory']['items']:
@@ -177,7 +177,7 @@ async def get_quest_reward(callback: CallbackQuery):
                 # await mongodb.update_user(user_id, {
                 #     "inventory.items.halloween": account["inventory"]["items"]["halloween"] + 100})
                 await mongodb.update_user(user_id, {"tasks.last_get_reward": current_datetime})
-                await callback.answer(f"❖ ✅ Награда получена", show_alert=True)
+                await callback.answer(f"❖ ✅ Награды получены", show_alert=True)
                 return
                 # Получаем текущую дату
                 current_date = datetime.today().date()
@@ -200,8 +200,8 @@ async def get_quest_reward(callback: CallbackQuery):
                 await mongodb.update_user(user_id, {"inventory.items.tickets.golden": account["inventory"]["items"]["tickets"]["golden"] + 3})
                 await mongodb.update_user(user_id, {"inventory.items.halloween": account["inventory"]["items"]["halloween"] + 65})
                 await mongodb.update_user(user_id, {"tasks.last_get_reward": current_datetime})
-                await callback.answer(f"❖ ✅ Награда получена", show_alert=True)
+                await callback.answer(f"❖ ✅ Награды получены", show_alert=True)
                 return
         else:
-            await callback.answer(f"❖ ✖️ Не все задания выполнены", show_alert=True)
+            await callback.answer(f"❖ ✖️ Не все задании выполнены", show_alert=True)
             return
