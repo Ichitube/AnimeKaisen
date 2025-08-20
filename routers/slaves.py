@@ -26,7 +26,7 @@ async def slave(callback: CallbackQuery, state: FSMContext):
     account = await mongodb.get_user(callback.from_user.id)
     slaves = account['inventory']['slaves']
     if not slaves:
-        await callback.answer(f"❖ ✖️  У вас нет рабыни, купите в рынке рабынь ⛓", show_alert=True)
+        await callback.answer(f"❖ ✖️  У вас нет рабыни, купите в торге рабынь ⛓", show_alert=True)
         return
     result = character_photo.slaves_stats(slaves[0])
     animation = InputMediaAnimation(media=result[0])

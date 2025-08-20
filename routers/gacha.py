@@ -320,46 +320,86 @@ characters = {
 }
 
 
-def common_gacha():
-    rand_num = random.random()
-    if rand_num < 0.001:  # 0.1% — divine
-        return 'divine'
-    elif rand_num < 0.005:  # 0.4% — mythical
-        return 'mythical'
-    elif rand_num < 0.025:  # 2% — legendary
-        return 'legendary'
-    elif rand_num < 0.085:  # 6% — epic
-        return 'epic'
-    elif rand_num < 0.22:  # 13.5% — rare
-        return 'rare'
-    else:  # 78.0% — common
-        return 'common'
+# def common_gacha():
+#     rand_num = random.random()
+#     if rand_num < 0.001:  # 0.1% — divine
+#         return 'divine'
+#     elif rand_num < 0.005:  # 0.4% — mythical
+#         return 'mythical'
+#     elif rand_num < 0.025:  # 2% — legendary
+#         return 'legendary'
+#     elif rand_num < 0.085:  # 6% — epic
+#         return 'epic'
+#     elif rand_num < 0.22:  # 13.5% — rare
+#         return 'rare'
+#     else:  # 78.0% — common
+#         return 'common'
+#
+#
+# def golden_gacha():
+#     rand_num = random.random()
+#     if rand_num < 0.005:  # 0.5% — divine
+#         return 'divine'
+#     elif rand_num < 0.015:  # 1.0% — mythical
+#         return 'mythical'
+#     elif rand_num < 0.13:  # 11.5% — legendary
+#         return 'legendary'
+#     elif rand_num < 0.37:  # 24% — epic
+#         return 'epic'
+#     elif rand_num < 0.70:  # 33% — rare
+#         return 'rare'
+#     else:  # 30% — common (если допустимо, иначе убери common вообще)
+#         return 'common'
+#
+#
+# def sacred_gacha():
+#     rand_num = random.random()
+#     if rand_num < 0.25:  # 25% шанс
+#         return 'divine'
+#     elif rand_num < 0.35:  # 35% шанс
+#         return 'mythical'
+#     else:  # 40% шанс
+#         return 'legendary'
 
+
+def roll(weighted):
+    """weighted: список [('название', вероятность)] с суммой = 1.0"""
+    r, acc = random.random(), 0.0
+    for name, p in weighted:
+        acc += p
+        if r < acc:
+            return name
+    return weighted[-1][0]  # защита от float
+
+def common_gacha():
+    weights = [
+        ('divine',    0.001),   # 0.1%
+        ('mythical',  0.004),   # 0.4%
+        ('legendary', 0.020),   # 2.0%
+        ('epic',      0.060),   # 6.0%
+        ('rare',      0.135),   # 13.5%
+        ('common',    0.780),   # 78.0%
+    ]
+    return roll(weights)
 
 def golden_gacha():
-    rand_num = random.random()
-    if rand_num < 0.005:  # 0.5% — divine
-        return 'divine'
-    elif rand_num < 0.015:  # 1.0% — mythical
-        return 'mythical'
-    elif rand_num < 0.13:  # 11.5% — legendary
-        return 'legendary'
-    elif rand_num < 0.37:  # 24% — epic
-        return 'epic'
-    elif rand_num < 0.70:  # 33% — rare
-        return 'rare'
-    else:  # 30% — common (если допустимо, иначе убери common вообще)
-        return 'common'
-
+    weights = [
+        ('divine',    0.005),   # 0.5%
+        ('mythical',  0.010),   # 1.0%
+        ('legendary', 0.115),   # 11.5%
+        ('epic',      0.240),   # 24%
+        ('rare',      0.330),   # 33%
+        ('common',    0.300),   # 30%
+    ]
+    return roll(weights)
 
 def sacred_gacha():
-    rand_num = random.random()
-    if rand_num < 0.25:  # 25% шанс
-        return 'divine'
-    elif rand_num < 0.35:  # 35% шанс
-        return 'mythical'
-    else:  # 40% шанс
-        return 'legendary'
+    weights = [
+        ('divine',    0.10),    # 10%
+        ('mythical',  0.25),    # 25%
+        ('legendary', 0.65),    # 65%
+    ]
+    return roll(weights)
 
 
 async def card_gacha(user_id, callback):
@@ -395,7 +435,7 @@ async def card_gacha(user_id, callback):
     elif callback.data == "golden_key":
         if account['inventory']['items']['tickets']['keys'] < 1:
             await callback.answer(
-                text="❖ 📌 У вас нет  🧧 священнего билета. Приобретите его в рынке!",
+                text="❖ 📌 У вас нет  🧧 священнего билета. Приобретите его в 🏮 рынке!",
                 show_alert=True
             )
             return
@@ -406,7 +446,7 @@ async def card_gacha(user_id, callback):
     elif callback.data == "golden":
         if account['inventory']['items']['tickets']['golden'] < 1:
             await callback.answer(
-                text="❖ 📌 У вас нет  🎫 золотого билета. Приобретите его в рынке!",
+                text="❖ 📌 У вас нет  🎫 золотого билета. Приобретите его в 🏮 рынке!",
                 show_alert=True
             )
             return
@@ -417,7 +457,7 @@ async def card_gacha(user_id, callback):
     else:
         if account['inventory']['items']['tickets']['common'] < 1:
             await callback.answer(
-                text="❖ 📌 У вас нет  🎟 обычного билета. Приобретите его в рынке!",
+                text="❖ 📌 У вас нет  🎟 обычного билета. Приобретите его в 🏮 рынке!",
                 show_alert=True
             )
             return

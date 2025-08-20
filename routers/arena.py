@@ -30,18 +30,17 @@ async def arena(callback: CallbackQuery | Message, stop=0):
         intelligence = character_photo.get_stats(universe, character, 'arena')['intelligence']
         power = character_photo.get_stats(universe, character, 'arena')['power']
 
-        msg = (f"\n • ✊🏻 Сила: {strength}"
-               f"\n • 👣 Ловкость: {agility}"
-               f"\n • 🧠 Интелект: {intelligence}"
-               f"\n • ⚜️ Мощь: {power}")
+        msg = (f"\n  •  ✊🏻 Сила: {strength}"
+               f"\n  •  👣 Ловкость: {agility}"
+               f"\n  •  🧠 Интелект: {intelligence}"
+               f"\n  •  ⚜️ Мощь: {power}")
 
         pattern = dict(
             caption=f"❖ 🏟️ <b>Арена</b>  ⚔️"
                     f"\n── •✧✧• ────────────"
-                    f"\n<blockquote>❖🎴 <b>{character}</b>"
-                    f"\n❖🎐 <b>{rank}</b>"
+                    f"\n<blockquote>🎴 <b>{character}</b>"
+                    f"\n🎐 <b>{rank}</b>"
                     f"{msg}</blockquote>"
-                    f"\n── •✧✧• ────────────"
                     f"\n 👑 {wins} Побед | 🀄️ {exp} XP",
             parse_mode=ParseMode.HTML,
             reply_markup=inline_builder(
@@ -66,13 +65,22 @@ async def arena(callback: CallbackQuery | Message, stop=0):
     else:
         buttons = ["⚔️ Битва", "⛓ Рабыня", "🏆 Рейтинг", "🔙 Назад"]
         calls = ["battle_arena", "slave", "battle_rating", "tokio"]
+        strength = character_photo.get_stats(universe, character, 'arena')['strength']
+        agility = character_photo.get_stats(universe, character, 'arena')['agility']
+        intelligence = character_photo.get_stats(universe, character, 'arena')['intelligence']
+        power = character_photo.get_stats(universe, character, 'arena')['power']
+
+        msg = (f"\n  •  ✊🏻 Сила: {strength}"
+               f"\n  •  👣 Ловкость: {agility}"
+               f"\n  •  🧠 Интелект: {intelligence}"
+               f"\n  •  ⚜️ Мощь: {power}")
 
         pattern = dict(
             caption=f"❖  🃏 <b>Битва</b>  ⚔️"
                     f"\n── •✧✧• ────────────"
-                    f"\n❖🎴 <b>{character}</b>"
-                    f"\n❖🎐 <b>{rank}</b>"
-                    f"\n── •✧✧• ────────────"
+                    f"\n<blockquote>🎴 <b>{character}</b>"
+                    f"\n🎐 <b>{rank}</b>"
+                    f"{msg}</blockquote>"
                     f"\n 👑 {wins} Побед | 🀄️ {exp} XP",
             parse_mode=ParseMode.HTML,
             reply_markup=inline_builder(
@@ -115,9 +123,8 @@ async def b_arena(callback: CallbackQuery | Message):
     pattern = dict(
         caption=f"{txt}"
                 f"\n── •✧✧• ────────────"
-                f"\n<blockquote>❖⚔️ PvP - Битва против реального 👤 игрока который так же 🔎 ищет соперника"
-                f"\n❖✨ AI - Битва против 🤖 Искуственного Интелекта. Удобно для 🎯 тренировок</blockquote>"
-                f"\n── •✧✧• ────────────"
+                f"\n<blockquote>⚔️ PvP - Битва против реального 👤 игрока который так же 🔎 ищет соперника"
+                f"\n\n✨ AI - Битва против 🤖 Искуственного Интелекта. Удобно для 🎯 тренировок</blockquote>"
                 f"\n<i>🌊 В битве ⚔️ {in_battle} игроков</i> 🌊",
         parse_mode=ParseMode.HTML,
         reply_markup=inline_builder(

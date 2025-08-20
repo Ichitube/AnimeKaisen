@@ -284,9 +284,9 @@ async def fill_profile(message: Message, bot: Bot):
 async def call_button(message: Message):
     account = await mongodb.get_user(message.from_user.id)
     if account['universe'] == 'Allstars':
-        await message.answer(text='˗ˋˏ💮 Кнопки восстановленыˎˊ˗', reply_markup=menu_card_button())
+        await message.answer(text='˗ˋˏ🛠 Кнопки восстановленыˎˊ˗', reply_markup=menu_card_button())
     else:
-        await message.answer(text='˗ˋˏ💮 Кнопки восстановленыˎˊ˗', reply_markup=menu_button())
+        await message.answer(text='˗ˋˏ🛠 Кнопки восстановленыˎˊ˗', reply_markup=menu_button())
 
 
 """

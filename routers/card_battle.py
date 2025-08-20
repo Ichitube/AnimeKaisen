@@ -95,27 +95,21 @@ def account_text(ident):
     d4 = battle_data[ident]["deck"]["d4"]
     d5 = battle_data[ident]["deck"]["d5"]
     d6 = battle_data[ident]["deck"]["d6"]
-    text = (f".              <b>˗ˋˏ🃏 Ваша колода:ˎˊ˗</b>"
-            f"\n✧•───────────────────────•✧"
-            f"\n<blockquote expandable> • {d1.status}  {d1.name}"
-            f"\n ┗➤ ┏➤ • ♥️{d1.health} • ⚔️{d1.attack} • 🛡️{d1.defense}"
-            f"\n     ┗➤ • ✊{d1.strength} • 👣{d1.agility} • 🧠{d1.intelligence} ✧ {d1.clas}"
-            f"\n\n • {d2.status}  {d2.name} "
-            f"\n ┗➤ ┏➤ • ♥️{d2.health} • ⚔️{d2.attack} • 🛡️{d2.defense}"
-            f"\n     ┗➤ • ✊{d2.strength} • 👣{d2.agility} • 🧠{d2.intelligence} ✧ {d2.clas}"
-            f"\n\n • {d3.status}  {d3.name}"
-            f"\n ┗➤ ┏➤ • ♥️{d3.health} • ⚔️{d3.attack} • 🛡️{d3.defense}"
-            f"\n     ┗➤ • ✊{d3.strength} • 👣{d3.agility} • 🧠{d3.intelligence} ✧ {d3.clas}"
-            f"\n\n • {d4.status}  {d4.name}"
-            f"\n ┗➤ ┏➤ • ♥️{d4.health} • ⚔️{d4.attack} • 🛡️{d4.defense}"
-            f"\n     ┗➤ • ✊{d4.strength} • 👣{d4.agility} • 🧠{d4.intelligence} ✧ {d4.clas}"
-            f"\n\n • {d5.status}  {d5.name}"
-            f"\n ┗➤ ┏➤ • ♥️{d5.health} • ⚔️{d5.attack} • 🛡️{d5.defense}"
-            f"\n     ┗➤ • ✊{d5.strength} • 👣{d5.agility} • 🧠{d5.intelligence} ✧ {d5.clas}"
-            f"\n\n • {d6.status}  {d6.name}"
-            f"\n ┗➤ ┏➤ • ♥️{d6.health} • ⚔️{d6.attack} • 🛡️{d6.defense}"
-            f"\n     ┗➤ • ✊{d6.strength} • 👣{d6.agility} • 🧠{d6.intelligence} ✧ {d6.clas}</blockquote>"
-            f"\n✧•───────────────────────•✧")
+    text = (f"<b>˗ˋˏ🃏 Ваша колода:ˎˊ˗</b>"
+            f"\n┅┅━─━┅┄ ⟛ ┄┅━─━┅┅"
+            f"\n<blockquote>╭┈๋જ‌›<b>{d1.name}</b> ♥️{d1.health}"
+            f"\n{d1.status}┄⚔️{d1.attack} 🛡️{d1.defense} ✊{d1.strength} 👣{d1.agility} 🧠{d1.intelligence}"
+            f"\n╭┈๋જ‌›<b>{d2.name}</b> ♥️{d2.health} "
+            f"\n{d2.status}┄⚔️{d2.attack} 🛡️{d2.defense} ✊{d2.strength} 👣{d2.agility} 🧠{d2.intelligence}"
+            f"\n╭┈๋જ‌›<b>{d3.name}</b> ♥️{d3.health}"
+            f"\n{d3.status}┄⚔️{d3.attack} 🛡️{d3.defense} ✊{d3.strength} 👣{d3.agility} 🧠{d3.intelligence}"
+            f"\n╭┈๋જ‌›<b>{d4.name}</b> ♥️{d4.health}"
+            f"\n{d4.status}┄⚔️{d4.attack} 🛡️{d4.defense} ✊{d4.strength} 👣{d4.agility} 🧠{d4.intelligence}"
+            f"\n╭┈๋જ‌›<b>{d5.name}</b> ♥️{d5.health}"
+            f"\n{d5.status}┄⚔️{d5.attack} 🛡️{d5.defense} ✊{d5.strength} 👣{d5.agility} 🧠{d5.intelligence}"
+            f"\n╭┈๋જ‌›<b>{d6.name}</b> ♥️{d6.health}"
+            f"\n{d6.status}┄⚔️{d6.attack} 🛡️{d6.defense} ✊{d6.strength} 👣{d6.agility} 🧠{d6.intelligence}"
+            f"\n╰────────────╯ </blockquote expandable>")
     status = [d1.status, d2.status, d3.status, d4.status, d5.status, d6.status]
     user_cb = [f"{d1.cb}", f"{d2.cb}", f"{d3.cb}", f"{d4.cb}", f"{d5.cb}", f"{d6.cb}"]
     return text, status, user_cb, key
@@ -130,9 +124,12 @@ def deck_text(character, universe):
     attack = strength * 5 + agility * 5 + intelligence * 5
     defense = (strength + agility + (intelligence // 2)) // 4
 
-    text = (f" • 🎴 {character} "
-            f"\n ┗➤ • ♥️{hp} • ⚔️{attack} • 🛡️{defense}"
-            f"\n     ┗➤ • ✊{strength} • 👣{agility} • 🧠{intelligence} ✧ {clas}")
+    text = (f"\n╭┈๋જ‌›<b>{character}</b> ♥️{hp}"
+            f"\n🎴┄⚔️{attack} 🛡️{defense} ✊{strength} 👣{agility} 🧠{intelligence}"
+        # f" • 🎴 {character} "
+        #     f"\n ┗➤ • ♥️{hp} • ⚔️{attack} • 🛡️{defense}"
+        #     f"\n     ┗➤ • ✊{strength} • 👣{agility} • 🧠{intelligence} ✧ {clas}"
+            )
     return text
 
 
@@ -179,37 +176,37 @@ async def choose_card(callback: CallbackQuery):
     sixth = deck_data["d6"]
 
     if first == "empty":
-        f1_msg = f" • 🎴 <i> Пустой слот </i>"
+        f1_msg = "\n╭┈๋જ‌›<b><i> Пустое место </i></b> \n🎴┄ <i> empty </i>"
         f1_icon = "ℹ️"
     else:
         f1_msg = deck_text(first, universe)
         f1_icon = "✅"
     if second == "empty":
-        f2_msg = f" • 🎴 <i> Пустой слот </i>"
+        f2_msg = "\n╭┈๋જ‌›<b><i> Пустое место </i></b> \n🎴┄ <i> empty </i>"
         f2_icon = "ℹ️"
     else:
         f2_msg = deck_text(second, universe)
         f2_icon = "✅"
     if third == "empty":
-        f3_msg = f" • 🎴 <i> Пустой слот </i>"
+        f3_msg = "\n╭┈๋જ‌›<b><i> Пустое место </i></b> \n🎴┄ <i> empty </i>"
         f3_icon = "ℹ️"
     else:
         f3_msg = deck_text(third, universe)
         f3_icon = "✅"
     if fourth == "empty":
-        f4_msg = f" • 🎴 <i> Пустой слот </i>"
+        f4_msg = "\n╭┈๋જ‌›<b><i> Пустое место </i></b> \n🎴┄ <i> empty </i>"
         f4_icon = "ℹ️"
     else:
         f4_msg = deck_text(fourth, universe)
         f4_icon = "✅"
     if fifth == "empty":
-        f5_msg = f" • 🎴 <i> Пустой слот </i>"
+        f5_msg = "\n╭┈๋જ‌›<b><i> Пустое место </i></b> \n🎴┄ <i> empty </i>"
         f5_icon = "ℹ️"
     else:
         f5_msg = deck_text(fifth, universe)
         f5_icon = "✅"
     if sixth == "empty":
-        f6_msg = f" • 🎴 <i> Пустой слот </i>"
+        f6_msg = "\n╭┈๋જ‌›<b><i> Пустое место </i></b> \n🎴┄ <i> empty </i>"
         f6_icon = "ℹ️"
     else:
         f6_msg = deck_text(sixth, universe)
@@ -222,16 +219,15 @@ async def choose_card(callback: CallbackQuery):
 
     pattern = dict(
         caption=f"❖  🃏<b> Ваша колода:</b>"
-                f"\n✧•───────────────────────•✧"
-                f"\n<blockquote expandable>"
+                f"\n┅┅━─━┅┄ ⟛ ┄┅━─━┅┅"
+                f"<blockquote expandable>"
                 f"{f1_msg}"
-                f"\n\n{f2_msg}"
-                f"\n\n{f3_msg}"
-                f"\n\n{f4_msg}"
-                f"\n\n{f5_msg}"
-                f"\n\n{f6_msg}"
-                f"</blockquote>"
-                f"\n✧•───────────────────────•✧"
+                f"{f2_msg}"
+                f"{f3_msg}"
+                f"{f4_msg}"
+                f"{f5_msg}"
+                f"{f6_msg}"
+                f"\n╰──────────────────╯</blockquote>"
                 f"\n{msg}",
         reply_markup=inline_builder(
             [f"{f1_icon}", f"{f2_icon}", f"{f3_icon}",
@@ -361,7 +357,7 @@ async def inventory(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_media(photo, inline_id)
     await callback.message.edit_caption(inline_id, caption=f"🎴 {invent[0]}"
                                                            f"\n ── •✧✧• ────────────"
-                                                           f"{msg}"
+                                                           f"<blockquote>{msg}</blockquote>"
                                                            f"\n──❀*̥˚──◌──◌──❀*̥˚────"
                                                            f"\n❖ 🔖 1 из {len(invent)}",
                                         reply_markup=pagination_card())
@@ -407,7 +403,7 @@ async def inventory(callback: CallbackQuery, callback_data: Pagination, state: F
                 inline_id,
                 caption=f"🎴 {invent[page_num]}"
                         f"\n ── •✧✧• ────────────"
-                        f"{msg}"
+                        f"<blockquote>{msg}</blockquote>"
                         f"\n──❀*̥˚──◌──◌──❀*̥˚────"
                         f"\n❖ 🔖 {page_num + 1} из {len(invent)}",
                 reply_markup=pagination_card(page=page_num)

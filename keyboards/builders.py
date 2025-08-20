@@ -33,7 +33,7 @@ def menu_button():
             KeyboardButton(text='🎐 Баннеры'),
             KeyboardButton(text='🎌 Клан'),
             KeyboardButton(text='🏟️ Арена'),
-            KeyboardButton(text='🏪 Рынок'),
+            KeyboardButton(text='🏮 Рынок'),
         ],
         [
             KeyboardButton(text='🎴 Grab'),
@@ -64,7 +64,7 @@ def menu_card_button():
             KeyboardButton(text='🎐 Баннеры'),
             KeyboardButton(text='🎌 Клан'),
             KeyboardButton(text='🃏 Битва'),
-            KeyboardButton(text='🏪 Рынок'),
+            KeyboardButton(text='🏮 Рынок'),
         ],
         [
             KeyboardButton(text='🎴 Grab'),
@@ -291,6 +291,21 @@ def slaves_store(page: int = 0):
     )
     builder.row(
         InlineKeyboardButton(text='🔖 Купить', callback_data='buy_slave')
+    )
+    builder.row(
+        InlineKeyboardButton(text='🔙 Назад', callback_data="store")
+    )
+    return builder.as_markup()
+
+
+def excard_store(page: int = 0):
+    builder = InlineKeyboardBuilder()
+    builder.row(
+        InlineKeyboardButton(text='⬅️', callback_data=Pagination(action="prev_excard", page=page).pack()),
+        InlineKeyboardButton(text='➡️', callback_data=Pagination(action="next_excard", page=page).pack())
+    )
+    builder.row(
+        InlineKeyboardButton(text='170🌟', callback_data='buy_excard')
     )
     builder.row(
         InlineKeyboardButton(text='🔙 Назад', callback_data="store")

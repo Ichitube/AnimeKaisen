@@ -7,6 +7,18 @@
     <list default="true" id="950ee416-d3c6-4244-83ec-ae2022e2f546" name="Changes" comment="4/3">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/data/character_photo.py" beforeDir="false" afterPath="$PROJECT_DIR$/data/character_photo.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/handlers/chat_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/handlers/chat_commands.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/keyboards/builders.py" beforeDir="false" afterPath="$PROJECT_DIR$/keyboards/builders.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routers/arena.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/arena.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routers/banner.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/banner.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routers/card_battle.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/card_battle.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routers/gacha.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/gacha.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routers/slaves.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/slaves.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routers/tokio/boss.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/tokio/boss.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routers/tokio/dungeon.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/tokio/dungeon.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routers/tokio/home.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/tokio/home.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routers/tokio/store.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/tokio/store.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routers/tokio/tokio.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/tokio/tokio.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -50,7 +62,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "#2 on new-feature",
+    "git-widget-placeholder": "new-feature",
     "ignore.virus.scanning.warn.message": "true",
     "last_opened_file_path": "/home/dire/AnimeKaisen"
   }
@@ -115,7 +127,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-python-sdk-4c141bd692a7-e2d783800521-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-251.26927.90" />
+        <option value="bundled-python-sdk-d9fa9deec7cb-d902c0275401-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-252.23892.515" />
       </set>
     </attachedChunks>
   </component>
@@ -248,7 +260,15 @@
       <option name="project" value="LOCAL" />
       <updated>1755176512688</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="4/3">
+      <option name="closed" value="true" />
+      <created>1755194155000</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1755194155000</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">

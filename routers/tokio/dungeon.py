@@ -122,17 +122,15 @@ async def dungeon(callback: CallbackQuery | Message):
     pattern = dict(
         caption=f"❖ ⛩️ <b>๑۩Подземелье۩๑</b>"
                 f"\n── •✧✧• ────────────"
-                f"\n🕯 Авантюристы собирают 🗡"
-                f"\n💰 Ресурсы:"
-                f"\n<blockquote>💠 Нефриты: {current_nephritis} ⊱ <i>{nephritis_per_hour} в час</i>"
-                f"\n📀 Золото: {current_gold} ⊱ <i>{gold_per_hour} в час</i>"
-                f"\n💿 Серебро: {current_silver} ⊱ <i>{silver_per_hour} в час</i></blockquote>"
-                f"\n{text}"
-                f"\n── •✧✧• ────────────"
-                f"\n⚖️ Цены за ресурсы: "
-                f"\n<blockquote>💠 ⊱ 26 ¥"
-                f" 📀 ⊱ 10 ¥"
-                f" 💿 ⊱ 4 ¥</blockquote>",
+                f"\n🕯 Авантюристы 🗡 убивая 👾 монстров очищает подземелье, из убитых монстров выпадают 💰 Ресурсы"
+                f"\n<blockquote>╭┈๋જ‌›<b>Алмазы ⚖️ ⊱ 26 ¥💴</b> "
+                f"\n💎┄ <i>{nephritis_per_hour} в час</i> ⋗ {current_nephritis} "
+                f"\n╭┈๋જ‌›<b>Золото ⚖️ ⊱ 10 ¥💴</b> "
+                f"\n📀┄ <i>{gold_per_hour} в час</i> ⋗ {current_gold} "
+                f"\n╭┈๋જ‌›<b>Золото ⚖️ ⊱ 4 ¥💴</b> "
+                f"\n💿┄ <i>{silver_per_hour} в час</i> ⋗ {current_silver} "
+                f"\n╰──{text}──╯</blockquote>"
+                f"\nВы можете продать 💰 ресурсы на ⚖️ рынке за указанные цены выше",
         reply_markup=inline_builder(
             ["🕯 Авантюристы 🗡", "💰 Продать 💴", "⚜️ Рейтинг", "🔙 Назад", "📋 Правила"],
             ["deck_dungeon", "sell_resources", "campaign_rank", "tokio", "campaign_rules"],
@@ -287,20 +285,20 @@ async def sell_resources(callback: CallbackQuery):
     current_nephritis = max(0, int(account['campaign']['nephritis'] + (nephritis_per_hour * (elapsed_seconds // 60 // 60))))
     current_gold = max(0, int(account['campaign']['gold'] + (gold_per_hour * (elapsed_seconds // 60 // 60))))
     current_silver = max(0, int(account['campaign']['silver'] + (silver_per_hour * (elapsed_seconds // 60 // 60))))
+    power = first + second + third + fourth + fifth + sixth
+    text = f"⚜️ Сила отряда: {power}🗡"
 
     caption = (f"❖  ⛩️  <b>๑۩Подземелье۩๑</b>"
                 f"\n── •✧✧• ────────────"
-                f"\n🕯 Авантюристы собирают 🗡"
-                f"\n💰 Ресурсы:"
-                f"\n<blockquote>💠 Нефриты: {current_nephritis} ⊱ <i>{nephritis_per_hour} в час</i>"
-                f"\n📀 Золото: {current_gold} ⊱ <i>{gold_per_hour} в час</i>"
-                f"\n💿 Серебро: {current_silver} ⊱ <i>{silver_per_hour} в час</i></blockquote>"
-                f"\n⚜️ Сила отряда: {power}🗡"
-                f"\n── •✧✧• ────────────"
-                f"\n⚖️ Цены за ресурсы: "
-                f"\n<blockquote>💠 ⊱ 26 ¥"
-                f" 📀 ⊱ 10 ¥"
-                f" 💿 ⊱ 4 ¥</blockquote>")
+                f"\n🕯 Авантюристы 🗡 убивая 👾 монстров очищает подземелье, из убитых монстров выпадают 💰 Ресурсы"
+                f"\n<blockquote>╭┈๋જ‌›<b>Алмазы ⚖️ ⊱ 26 ¥💴</b> "
+                f"\n💎┄ <i>{nephritis_per_hour} в час</i> ⋗ {current_nephritis} "
+                f"\n╭┈๋જ‌›<b>Золото ⚖️ ⊱ 10 ¥💴</b> "
+                f"\n📀┄ <i>{gold_per_hour} в час</i> ⋗ {current_gold} "
+                f"\n╭┈๋જ‌›<b>Золото ⚖️ ⊱ 4 ¥💴</b> "
+                f"\n💿┄ <i>{silver_per_hour} в час</i> ⋗ {current_silver} "
+                f"\n╰──{text}──╯</blockquote>"
+                f"\nВы можете продать 💰 ресурсы на ⚖️ рынке за указанные цены выше")
 
     await callback.message.edit_caption(inline_message_id=callback.inline_message_id, caption=caption, reply_markup=inline_builder(
             ["🕯 Авантюристы 🗡", "💰 Продать 💴", "⚜️ Рейтинг", "🔙 Назад", "📋 Правила"],
@@ -351,9 +349,12 @@ def deck_text(character, universe):
     attack = strength * 5 + agility * 5 + intelligence * 5
     defense = (strength + agility + (intelligence // 2)) // 4
 
-    text = (f" • 🎴 {character} "
-            f"\n ┗➤ • ♥️{hp} • ⚔️{attack} • 🛡️{defense}"
-            f"\n     ┗➤ • ✊{strength} • 👣{agility} • 🧠{intelligence} ✧ {clas}")
+    text = (f"\n╭┈๋જ‌›<b>{character}</b> ♥️{hp}"
+            f"\n🎴┄⚔️{attack} 🛡️{defense} ✊{strength} 👣{agility} 🧠{intelligence}"
+        # f" • 🎴 {character} "
+        #     f"\n ┗➤ • ♥️{hp} • ⚔️{attack} • 🛡️{defense}"
+        #     f"\n     ┗➤ • ✊{strength} • 👣{agility} • 🧠{intelligence} ✧ {clas}"
+    )
     return text
 
 
@@ -409,7 +410,8 @@ async def choose_card(callback: CallbackQuery):
 
     for card in cards:
         if card == "empty":
-            messages.append(" • 🎴 <i> Пустое место </i>")
+            messages.append("\n╭┈๋જ‌›<b><i> Пустое место </i></b> "
+                "\n🎴┄ <i> empty </i>")
             icons.append("ℹ️")
             powers.append(0)
         else:
@@ -433,17 +435,15 @@ async def choose_card(callback: CallbackQuery):
 
     pattern = dict(
         caption=f"<b>❖ 🕯 Авантюристы 🗡</b>"
-                f"\n✧•───────────────────────•✧"
-                f"\n<blockquote expandable>"
+                f"\n┅┅━─━┅┄ ⟛ ┄┅━─━┅┅"
+                f"<blockquote expandable>"
                 f"{f1_msg}"
-                f"\n\n{f2_msg}"
-                f"\n\n{f3_msg}"
-                f"\n\n{f4_msg}"
-                f"\n\n{f5_msg}"
-                f"\n\n{f6_msg}"
-                f"</blockquote>"
-                f"\n ⚜️ Сила отряда: {power}🗡"
-                f"\n✧•───────────────────────•✧"
+                f"{f2_msg}"
+                f"{f3_msg}"
+                f"{f4_msg}"
+                f"{f5_msg}"
+                f"{f6_msg}"
+                f"\n╰──⚜️ Сила отряда: {power}🗡──╯</blockquote>"
                 f"\n{msg}",
         reply_markup=inline_builder(
             [f"{f1_icon}", f"{f2_icon}", f"{f3_icon}",

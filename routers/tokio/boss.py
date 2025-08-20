@@ -236,9 +236,12 @@ def deck_text(character, universe):
     attack = strength * 5 + agility * 5 + intelligence * 5
     defense = (strength + agility + (intelligence // 2)) // 4
 
-    text = (f" • 🎴 {character} "
-            f"\n ┗➤ • ♥️{hp} • ⚔️{attack} • 🛡️{defense}"
-            f"\n     ┗➤ • ✊{strength} • 👣{agility} • 🧠{intelligence} ✧ {clas}")
+    text = (f"\n╭┈๋જ‌›<b>{character}</b> " # ✧ {clas}
+            f"\n🎴┄♥️{hp} ⚔️{attack} 🛡️{defense} ✊{strength} 👣{agility} 🧠{intelligence}"
+            # f" • 🎴  "
+            # f"\n ┗➤ • ♥️{hp} • ⚔️{attack} • 🛡️{defense}"
+            # f"\n     ┗➤ • ✊{strength} • 👣{agility} • 🧠{intelligence} ✧ {clas}"
+            )
     return text
 
 
@@ -294,7 +297,8 @@ async def boss_squad(callback: CallbackQuery):
 
     for card in cards:
         if card == "empty":
-            messages.append(" • 🎴 <i> Пустое место </i>")
+            messages.append("\n╭┈๋જ‌›<b><i> Пустое место </i></b> "
+                "\n🎴┄ <i> empty </i>")
             icons.append("ℹ️")
             powers.append(0)
         else:
@@ -318,17 +322,15 @@ async def boss_squad(callback: CallbackQuery):
 
     pattern = dict(
         caption=f"<b>❖ 🏴 Отряд 🗡</b>"
-                f"\n✧•───────────────────────•✧"
-                f"\n<blockquote expandable>"
+                f"\n┅┅━─━┅┄ ⟛ ┄┅━─━┅┅"
+                f"<blockquote expandable>"
                 f"{f1_msg}"
-                f"\n\n{f2_msg}"
-                f"\n\n{f3_msg}"
-                f"\n\n{f4_msg}"
-                f"\n\n{f5_msg}"
-                f"\n\n{f6_msg}"
-                f"</blockquote>"
-                f"\n ⚜️ Сила отряда: {power}🗡"
-                f"\n✧•───────────────────────•✧"
+                f"{f2_msg}"
+                f"{f3_msg}"
+                f"{f4_msg}"
+                f"{f5_msg}"
+                f"{f6_msg}"
+                f"\n╰──⚜️ Сила отряда: {power}🗡──╯</blockquote>"
                 f"\n{msg}",
         reply_markup=inline_builder(
             [f"{f1_icon}", f"{f2_icon}", f"{f3_icon}",
