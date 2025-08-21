@@ -4,22 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="950ee416-d3c6-4244-83ec-ae2022e2f546" name="Changes" comment="4/3">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/character_photo.py" beforeDir="false" afterPath="$PROJECT_DIR$/data/character_photo.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/handlers/chat_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/handlers/chat_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/keyboards/builders.py" beforeDir="false" afterPath="$PROJECT_DIR$/keyboards/builders.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routers/arena.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/arena.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routers/banner.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/banner.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routers/card_battle.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/card_battle.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routers/gacha.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/gacha.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routers/slaves.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/slaves.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routers/tokio/boss.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/tokio/boss.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routers/tokio/dungeon.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/tokio/dungeon.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routers/tokio/home.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/tokio/home.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routers/tokio/store.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/tokio/store.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routers/tokio/tokio.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/tokio/tokio.py" afterDir="false" />
-    </list>
+    <list default="true" id="950ee416-d3c6-4244-83ec-ae2022e2f546" name="Changes" comment="4/3" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -55,18 +40,18 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python.main.executor": "Run",
-    "Python.test.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "new-feature",
-    "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "/home/dire/AnimeKaisen"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;new-feature&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/dire/AnimeKaisen&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\Projects\bots\" />
