@@ -174,6 +174,13 @@ characters = {
             "Megumi Fushiguro 🌠 ㊀",
             "Yuta Okkotsu 🌠",
             "Yuta Okkotsu 🌠 ㊀",
+            "Geto Suguru 🌠",
+            "Geto Suguru 🌠 ㊀",
+            "Geto Suguru 🌠 ㊁",
+            "Geto Suguru 🌠 ㊂",
+            "Geto Suguru 🌠 ㊃",
+            "Geto Suguru 🌠 ㊄",
+            "Geto Suguru 🌠 ㊅",
         ],
         "mythical": [
             "Gojo Satoru 🌌",
@@ -206,13 +213,19 @@ characters = {
             "Yuta Okkotsu 🌌 ㊁",
             "Yuta Okkotsu 🌌 ㊂",
             "Yuta Okkotsu 🌌 ㊃",
+            "Geto Suguru 🌌",
+            "Geto Suguru 🌌 ㊀",
+            "Geto Suguru 🌌 ㊁",
         ],
         "legendary": [
             "Sukuna x Itadori 🌅",
             "Gojo Satoru 🌅",
             "Gojo Satoru 🌅 ㊀",
             "Gojo Satoru 🌅 ㊁",
-            "Yuta Okkotsu 🌅"
+            "Yuta Okkotsu 🌅",
+            "Geto Suguru 🌅",
+            "Geto Suguru 🌅 ㊀",
+            "Geto Suguru 🌅 ㊁",
         ],
         "epic": [
             "Gojo Satoru 🎆",
@@ -280,7 +293,17 @@ characters = {
             "Megumi Fushiguro 🌁 ㊃",
             "Megumi Fushiguro 🌁 ㊄",
             "Megumi Fushiguro 🌁 ㊅",
-            "Megumi Fushiguro 🌁 ㊆"
+            "Megumi Fushiguro 🌁 ㊆",
+            "Geto Suguru 🌁",
+            "Geto Suguru 🌁 ㊀",
+            "Geto Suguru 🌁 ㊁",
+            "Geto Suguru 🌁 ㊂",
+            "Geto Suguru 🌁 ㊃",
+            "Geto Suguru 🌁 ㊄",
+            "Geto Suguru 🌁 ㊅",
+            "Geto Suguru 🌁 ㊆",
+            "Geto Suguru 🌁 ㊇",
+            "Geto Suguru 🌁 ㊈",
         ]
     },
     # 'Bleach': {
