@@ -1849,6 +1849,7 @@ def get_stats(universe, name, key):
                    'Toshiro Hitsuyaga 🌠': {'avatar': 'CgACAgIAAx0CfstymgACCvtl4fr3kR30xtesKEMVVwkQ5CNbQAACZUQAAr-XEUv73A0u5KLPsjQE', 'type': 'animation', 'gender': 'boy', 'universe': 'Bleach', 'rarity': 'Божественная', 'arena': {'class': 'Toshiro', 'ability': ['˹🗡Атака˼', '˹❄️Хёкецу˼', '˹❄️Рокуи Хёкецу˼', '˹🌫Тенсо Джурин˼', '˹🐉Хёринмару˼', '˹❄️Синку но Кори˼', '˹🧊Рёджин Хёхеки˼', '˹❆Дайгурен🪽Хёринмару˼'], 'strength': 65, 'agility': 87, 'intelligence': 80, 'power': 232, 'shield': 0, 'stun': 0}},
                    'Toshiro Hitsuyaga 🌠 ㊀': {'avatar': 'CgACAgIAAx0CfstymgACEPFmILbzqmjSBPn2jGXku2tvw8BigwAC5EcAAkXDCElu9plEyYLYczQE', 'type': 'animation', 'gender': 'boy', 'universe': 'Bleach', 'rarity': 'Божественная', 'arena': {'class': 'Toshiro', 'ability': ['˹🗡Атака˼', '˹❄️Хёкецу˼', '˹❄️Рокуи Хёкецу˼', '˹🌫Тенсо Джурин˼', '˹🐉Хёринмару˼', '˹❄️Синку но Кори˼', '˹🧊Рёджин Хёхеки˼', '˹❆Дайгурен🪽Хёринмару˼'], 'strength': 65, 'agility': 87, 'intelligence': 80, 'power': 232, 'shield': 0, 'stun': 0}},
                    'Ulquiorra Cifer 🌠': {'avatar': 'CgACAgIAAx0CfstymgACETJmIOSrwqCNT4xrWpS3Pp2rpm642wACxUkAAkXDCEneExC8UwABmJY0BA', 'type': 'animation', 'gender': 'boy', 'universe': 'Bleach', 'rarity': 'Божественная', 'arena': {'class': 'Ulquiorra', 'ability': ['˹🗡Атака˼', '˹Серо˼', '˹Мурсьелаго 🦇˼'], 'strength': 70, 'agility': 85, 'intelligence': 77, 'power': 232, 'shield': 0, 'stun': 0}},
+                   '⋆Urahara Kisuke 🌠': {'avatar': 'CgACAgIAAx0CfstymgACEUZmIPXU3Ur_DoL0BHp83eEqXekIUgACY0oAAkXDCEnMHghjaPLXazQE', 'type': 'animation', 'gender': 'boy', 'universe': 'Bleach', 'rarity': 'Божественная', 'arena': {'class': 'Urahara', 'ability': ['˹🗡Атака˼', '˹Джугеки Бьякурай˼', '˹Окасен˼', '˹Хайхен˼', '˹Фусатсу Какеи˼', '˹Какафумецу˼', '˹Данку ˼', '˹Бенхиме˼'], 'strength': 71, 'agility': 86, 'intelligence': 93, 'power': 250, 'shield': 200, 'stun': 0}},
                    'Urahara Kisuke 🌠': {'avatar': 'CgACAgIAAx0CfstymgACEUZmIPXU3Ur_DoL0BHp83eEqXekIUgACY0oAAkXDCEnMHghjaPLXazQE', 'type': 'animation', 'gender': 'boy', 'universe': 'Bleach', 'rarity': 'Божественная', 'arena': {'class': 'Urahara', 'ability': ['˹🗡Атака˼', '˹Джугеки Бьякурай˼', '˹Окасен˼', '˹Хайхен˼', '˹Фусатсу Какеи˼', '˹Какафумецу˼', '˹Данку ˼', '˹Бенхиме˼'], 'strength': 65, 'agility': 80, 'intelligence': 87, 'power': 232, 'shield': 0, 'stun': 0}},
                    'Unohana Retsu 🌠': {'avatar': 'CgACAgIAAx0CfstymgACEVdmIWc9AzMoyBj8SJx1Vxnn-QGYOwACuEAAAvmiEEmabu73--tOTDQE', 'type': 'animation', 'gender': 'girl', 'universe': 'Bleach', 'rarity': 'Божественная', 'arena': {'class': 'Unohana', 'ability': ['˹🗡Атака˼', '˹Гочью Теккан ˼', '˹Фусатсу Какеи˼', '˹ Данку ˼', '˹🐋 Миназуки˼', '˹🧊 Щит ˼', '˹Шинтен Райхо ˼', '˹Миназуки 🩸˼'], 'strength': 78, 'agility': 77, 'intelligence': 77, 'power': 232, 'shield': 0, 'stun': 0}},
                    'Aizen Sosuke 🌠': {'avatar': 'CgACAgIAAx0CfstymgACERhmINzY2DuLAAHGNlT5l1lPFCQu868AAn9JAAJFwwhJg5GwrXHegcM0BA', 'type': 'animation', 'gender': 'boy', 'universe': 'Bleach', 'rarity': 'Божественная', 'arena': {'class': 'Aizen', 'ability': ['˹🗡Атака˼', '˹Данку˼', '˹⚡️Райхоко˼', '˹🔶Мильон Эскудо˼', '˹◼️Курохицуги˼', '˹🐉Горьюу Теммецу˼'], 'strength': 65, 'agility': 87, 'intelligence': 80, 'power': 232, 'shield': 0, 'stun': 0}},
@@ -2262,6 +2263,13 @@ c_stats = {
                                                  '˹🦅 Нуэ˼', '˹🐸🪽 Гама˼', '˹🐘💦 Бансё˼', '˹🐍 Орочи˼',
                                                  '˹🕳 Теневой сад химер˼'], 'strength': 65, 'agility': 95,
                                      'intelligence': 90, 'power': 250, 'shield': 200, 'stun': 0}},
+    '⋆Urahara Kisuke 🌠': {'avatar': 'CgACAgIAAx0CfstymgACRcpoqLbLPIy0dJzmINWSupCmLtr1cQACiHwAAuqfQUm8rPMqRMvR2TYE',
+                          'type': 'animation', 'gender': 'boy', 'universe': 'Bleach', 'rarity': 'Божественная',
+                          'arena': {'class': 'Urahara',
+                                    'ability': ['˹🗡Атака˼', '˹Джугеки Бьякурай˼', '˹Окасен˼', '˹Хайхен˼',
+                                                '˹Фусатсу Какеи˼', '˹Какафумецу˼', '˹Данку ˼', '˹Бенхиме˼'],
+                                    'strength': 71, 'agility': 86, 'intelligence': 93, 'power': 250, 'shield': 200,
+                                    'stun': 0}},
 
 }
 

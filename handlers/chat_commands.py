@@ -288,6 +288,20 @@ async def call_button(message: Message):
     else:
         await message.answer(text='˗ˋˏ🛠 Кнопки восстановленыˎˊ˗', reply_markup=menu_button())
 
+@router.message(F.text.startswith('гиф') | F.text.startswith('Гиф'))
+async def give_character(message: Message):
+    user_id = message.from_user.id
+
+    text = message.text
+    match = re.search(r'гиф\s(.+)', text)
+    if not match:
+        await message.reply("❖ ✖️ Неверный формат команды.")
+        return
+
+    gif = match.group(1).strip()
+
+    await message.reply_animation(gif)
+
 
 """
 @router.message((F.text == 'инвентарь') | (F.text == 'Инвентарь') | (F.text == 'карты')
