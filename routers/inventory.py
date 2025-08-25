@@ -68,6 +68,13 @@ async def inventory(callback: CallbackQuery | Message):
                f"🎆 Эпические ⭐️ {total_epic}", f"🎇 Редкие ⭐️ {total_rare}", f"🌁 Обычные ⭐️ {total_common}", "🔙 Назад"]
     callbacks = ["divine", "mythical", "legendary", "epic", "rare", "common", "main_page"]
 
+    # buttons = ["🌠 Божественные", f"🌟 {total_divine}", "🌌 Мифические", f"⭐️ {total_mythical}", "🌅 Легендарные",
+    #            f"⭐️ {total_legendary}",
+    #            "🎆 Эпические", f"⭐️ {total_epic}", "🎇 Редкие", f"⭐️ {total_rare}", "🌁 Обычные", f"⭐️ {total_common}",
+    #            "🔙 Назад"]
+    # callbacks = ["divine", "divine", "mythical", "mythical", "legendary", "legendary", "epic", "epic", "rare", "rare",
+    #              "common", "common", "main_page"]
+
     if universe == "Allstars":
         if "halloween" in account['inventory']['characters']['Allstars']:
             total_halloween = len(account['inventory']['characters']['Allstars'].get('halloween', {}))

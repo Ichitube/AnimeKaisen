@@ -1729,7 +1729,211 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
 
 # Byakuya Kuchiki
 
+    elif action == '˹⚡️Бьякурай˼':
+        mana = await calculate_mana(self, 10)
+        if not mana:
+            return False, True
 
+        damage = self.attack * 2 + self.intelligence
+
+        calculate_shield(enemy, damage)
+
+        gif = 'CgACAgIAAx0CfstymgACRvJorGn1PCMzDc81LA48XfR85cyh3wACvZcAAu8IaUnRePtlwf-7sjYE'
+        caption = (f"Хадо #4 ⚡️Бьякурай"
+                   f"\n<blockquote expandable>Бьякуя нанес {damage} 🗡 урона противнику</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    elif action == '˹💥Сойкацу˼':
+        mana = await calculate_mana(self, 10)
+        if not mana:
+            return False, True
+
+        damage = (self.attack + self.intelligence) * 3
+
+        calculate_shield(enemy, damage)
+
+        gif = 'CgACAgIAAx0CfstymgACRvhorGoiwLvaW3aLR5VnC7423SxAowACwZcAAu8IaUkb3SJPUC8z3jYE'
+        caption = (f"Хадо #33 💥Сойкацу"
+                   f"\n<blockquote expandable>Бьякуя нанес {damage} 🗡 урона противнику</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    elif action == '˹🔰Данку˼':
+        mana = await calculate_mana(self, 30)
+        if not mana:
+            return False, True
+        energy = await calculate_energy(self, 25)
+        if not energy:
+            return True, False
+        hp = self.pre_hp - self.health
+        self.health += hp
+
+        gif = 'CgACAgIAAx0CfstymgACRvZorGoa2tmDCf2ZWZ764Rol4Ofv3QACwJcAAu8IaUnZj-P7YSbPJjYE'
+        caption = (f"Бакудо #81 🔰Данку"
+                   f"\n<blockquote expandable>Бьякуя блокировал {hp} 🗡 урона</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    elif action == '˹🌸Сенбонзакура🍃Кагеёши˼':
+        mana = await calculate_mana(self, 30)
+        if not mana:
+            return False, True
+        energy = await calculate_energy(self, 30)
+        if not energy:
+            return True, False
+
+        new_skills = ["˹🗡Атака˼", '˹Икка🗡Сенджинка˼', '˹🌸Гокей˼', '˹🌸Защитная атака˼', '˹🗡 Сенкей˼']
+        skills_change = Passive("🌸🍃", change_skills, undo_change_skills, 14, new_skills)
+        sage_boost = Passive("⇪🗡", increase_attack, decrease_attack, 14, 500, apply_once=True)
+
+        self.add_passive(skills_change)
+        self.add_passive(sage_boost)
+
+        gif = 'CgACAgIAAx0CfstymgACRn9oqjwSDjv3LZctBnJzLt5-m_yKWwACTIcAAj-1UEkKViJr7V7DPDYE'
+        caption = (f"Банкай: 🌸Сенбонзакура🍃Кагеёши"
+                   f"\n<blockquote expandable>Бьякуя получают новые способности и ⇪🗡500 урона на 14⏳</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    elif action == '˹Икка🗡Сенджинка˼':
+        mana = await calculate_mana(self, 25)
+        if not mana:
+            return False, True
+        energy = await calculate_energy(self, 20)
+        if not energy:
+            return True, False
+
+        stun = Passive("💫", bash, undo_bash, 3, 1, apply_once=True)
+        damage = self.attack + self.intelligence + self.strength + self.agility
+
+        calculate_shield(enemy, damage)
+
+        enemy.add_passive(stun)
+
+        gif = 'CgACAgIAAx0CfstymgACRntoqjv7rPerF_VpO4PJJ7m7JxKB5AACSocAAj-1UElaQsSal5YJBzYE'
+        caption = (f"Икка🗡Сенджинка"
+                   f"\n<blockquote expandable>Бьякуя нанес {damage} 🗡 урона и обездвижил противника на 1⏳</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    elif action == '˹🌸Гокей˼':
+        mana = await calculate_mana(self, 10)
+        if not mana:
+            return False, True
+        energy = await calculate_energy(self, 20)
+        if not energy:
+            return True, False
+
+        damage = (self.attack + self.intelligence) * 4
+
+        calculate_shield(enemy, damage)
+
+        gif = 'CgACAgIAAx0CfstymgACRnNoqjOlZfzKf_I2-k51DPmgbph1mgACBocAAj-1UEmQAAG9mDzZa7U2BA'
+        caption = (f"🌸Гокеи"
+                   f"\n<blockquote expandable>Бьякуя нанес {damage} 🗡 урона противнику</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    elif action == '˹🌸Защитная атака˼':
+        mana = await calculate_mana(self, 30)
+        if not mana:
+            return False, True
+        energy = await calculate_energy(self, 30)
+        if not energy:
+            return True, False
+        hp = self.pre_hp - self.health
+        self.health += hp
+
+        attack = self.attack * 3
+        self.add_passive(block)
+
+        calculate_shield(enemy, attack)
+
+        gif = 'CgACAgIAAx0CfstymgACRndoqjUP5OG5NXhcY4Kow0By9od2sAACEIcAAj-1UEl8tX5cfmWYpzYE'
+        caption = (f"🌸Защитная атака"
+                     f"\n<blockquote expandable>Бьякуя блокировал {hp} 🗡 урона и нанес {attack} 🗡 урона</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    elif action == '˹🗡🗡🗡 Сенкей 🗡🗡🗡˼':
+        mana = await calculate_mana(self, 30)
+        if not mana:
+            return False, True
+        energy = await calculate_energy(self, 30)
+        if not energy:
+            return True, False
+
+        new_skills = ["˹🗡Атака˼", '˹⚡️Бьякурай🗡Сенджинка˼', "˹🪽Шукей: Хакутейкен˼"]
+        skills_change = Passive("🗡🗡🗡", change_skills, undo_change_skills, 14, new_skills)
+        sage_boost = Passive("⇪🗡", increase_attack, decrease_attack, 14, 500, apply_once=True)
+        dec_def = Passive("⇩🛡", decrease_defense, increase_defense, 14, 300, apply_once=True)
+        dec_agl = Passive("⇩👣", decrease_agility, increase_agility, 14, 200, apply_once=True)
+
+        self.add_passive(skills_change)
+        enemy.add_passive(dec_def)
+        enemy.add_passive(dec_agl)
+        self.add_passive(sage_boost)
+
+        gif = 'CgACAgIAAx0CfstymgACRmxoqjMMkZpI_CwQSd5pVjwSLXQoOgAC_oYAAj-1UEn-4XDB6VNmmDYE'
+        caption = (f"🗡🗡🗡 Сенкей 🗡🗡🗡"
+                   f"\n<blockquote expandable>Арена смерти: Бьякуя получают новые способности и ⇪🗡500 урона на 14⏳"
+                   f"а также уменьшают ⇩👣 скорость и ⇩🛡 защиту противника на 14⏳</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    elif action == '˹⚡️Бьякурай🗡Сенджинка˼':
+        mana = await calculate_mana(self, 40)
+        if not mana:
+            return False, True
+        energy = await calculate_energy(self, 25)
+        if not energy:
+            return True, False
+
+        damage = self.attack * 2 + self.intelligence * 3
+        stun = Passive("🗡💫", bash, undo_bash, 2, 1, apply_once=True)
+
+        calculate_shield(enemy, damage)
+        enemy.add_passive(stun)
+
+        gif = 'CgACAgIAAx0CfstymgACRmdoqjL_UOU9flYbpkF-U8glR22TlAAC-4YAAj-1UElP90JaW92cfTYE'
+        caption = (f"⚡️Бьякурай🗡Сенджинка"
+                   f"\n<blockquote expandable>Бьякуя нанес {damage} 🗡 урона и обездвижил противника на 2⏳</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    elif action == '˹🪽Шукей: Хакутейкен˼':
+        mana = await calculate_mana(self, 40)
+        if not mana:
+            return False, True
+        energy = await calculate_energy(self, 30)
+        if not energy:
+            return True, False
+
+        new_skills = ["˹🗡Атака🪽˼"]
+        skills_change = Passive("🪽", change_skills, undo_change_skills, 2, new_skills)
+        sage_boost = Passive("⇪🗡🪽", increase_attack, decrease_attack, 2, 2000, apply_once=True)
+
+        self.add_passive(skills_change)
+        self.add_passive(sage_boost)
+
+        gif = 'CgACAgIAAx0CfstymgACRmpoqjMMJpZzZraftNzhbxnU9ZK8NQAC_YYAAj-1UEnxoMphDVr2gjYE'
+        caption = (f"🪽Шукей: Хакутейкен"
+                     f"\n<blockquote expandable>Бьякуя получают новую мощь и ⇪🗡🪽 2000 урона на 2⏳</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    elif action == '˹🗡Атака🪽˼':
+
+        damage = self.attack + self.intelligence * 5
+
+        calculate_shield(enemy, damage)
+
+        gif = 'CgACAgIAAx0CfstymgACRnloqjv03CyH_PLr--dbyIh1ifUMlQACSYcAAj-1UEkhMd3S16fb9jYE'
+        caption = (f"🗡Атака🪽"
+                   f"\n<blockquote expandable>Бьякуя нанес {damage} 🗡 урона противнику</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
 # Naruto
 
