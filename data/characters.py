@@ -1566,7 +1566,172 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
 
         await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
-# NarutoS
+# Rukia Kuchiki
+
+    elif action == '˹хаинава˼':
+        mana = await calculate_mana(self, 15)
+        if not mana:
+            return False, True
+        energy = await calculate_energy(self, 10)
+        if not energy:
+            return True, False
+
+        stun = Passive("💫Бакудо", bash, undo_bash, 2, 1, apply_once=True)
+
+        enemy.add_passive(stun)
+
+        gif = 'CgACAgIAAx0CfstymgACRkdoqhud-xBTA4hm4XW7mO6mBbyhbQACDYYAAj-1UEmeyuMiNAUUIjYE'
+        caption = (f"Бакудо #4 Хаинава"
+                   f"\n<blockquote expandable>Рукия наложила Бакудо обездвижая противника на 2⏳</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    elif action == '˹💦Сойкацу˼':
+        mana = await calculate_mana(self, 20)
+        if not mana:
+            return False, True
+        energy = await calculate_energy(self, 10)
+        if not energy:
+            return True, False
+
+        damage = self.attack // 2 + self.intelligence + self.strength + self.agility
+
+        calculate_shield(enemy, damage)
+
+        gif = 'CgACAgIAAx0CfstymgACRjhoqhtI9478ZdYX87Lj4VuxL7rVVQACBIYAAj-1UEn7pckhk1deqTYE'
+        caption = (f"Хадо #33 💦Сойкацу"
+                   f"\n<blockquote expandable>Рукия нанесла {damage} 🗡 урона</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    elif action == '˹Рикуджокоро˼':
+        mana = await calculate_mana(self, 25)
+        if not mana:
+            return False, True
+        energy = await calculate_energy(self, 15)
+        if not energy:
+            return True, False
+
+        stun = Passive("💫Бакудо", bash, undo_bash, 3, 1, apply_once=True)
+
+        enemy.add_passive(stun)
+
+        gif = 'CgACAgIAAx0CfstymgACRjpoqhtRqN5AdjbZ7GxC_0hSayBI4QACBYYAAj-1UEn6g1rzs_kdWzYE'
+        caption = (f"Бакудо #61 Рикуджокоро"
+                   f"\n<blockquote expandable>Рукия наложила Бакудо обездвижая противника на 3⏳</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    elif action == '˹💧Сорен Сойкацу˼':
+        mana = await calculate_mana(self, 25)
+        if not mana:
+            return False, True
+        energy = await calculate_energy(self, 15)
+        if not energy:
+            return True, False
+
+        damage = self.attack + self.intelligence * 2 + self.strength + self.agility
+
+        calculate_shield(enemy, damage)
+
+        gif = 'CgACAgIAAx0CfstymgACRjxoqhtgjaNcRtt-X7E1p9BtUI4S-AACB4YAAj-1UEmUJMP52-oPBjYE'
+        caption = (f"Хадо #73 💧Сорен Сойкацу"
+                   f"\n<blockquote expandable>Рукия нанесла {damage} 🗡 урона</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    elif action == '˹🌫🌪Цукиширо˼':
+        mana = await calculate_mana(self, 25)
+        if not mana:
+            return False, True
+        energy = await calculate_energy(self, 20)
+        if not energy:
+            return True, False
+
+        stun = Passive("❄️Заморозка", bash, undo_bash, 1, 1, apply_once=True)
+        damage = self.attack + self.intelligence + self.strength + self.agility * 2
+
+        calculate_shield(enemy, damage)
+
+        enemy.add_passive(stun)
+
+        gif = 'CgACAgIAAx0CfstymgACRk1oqhu8P8hHFm-QxhzG649yWuQ9xwACEYYAAj-1UEnj2iAMlZ43CjYE'
+        caption = (f"🌫🌪Цукиширо"
+                   f"\n<blockquote expandable>Рукия нанесла {damage} 🗡 урона и замарозила противника на 1⏳</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    elif action == '˹🧊🌫Хакурен˼':
+        mana = await calculate_mana(self, 30)
+        if not mana:
+            return False, True
+        energy = await calculate_energy(self, 30)
+        if not energy:
+            return True, False
+
+        stun = Passive("❄️Заморозка", bash, undo_bash, 3, 1, apply_once=True)
+        damage = (self.attack + self.intelligence + self.strength + self.agility) * 2
+
+        calculate_shield(enemy, damage)
+
+        enemy.add_passive(stun)
+
+        gif = 'CgACAgIAAx0CfstymgACRktoqhu3xpSjUk3NoxMzx5CUtdTIcAACEIYAAj-1UEkoRKJfO_9P2DYE'
+        caption = (f"🧊🌫Хакурен"
+                   f"\n<blockquote expandable>Рукия нанесла {damage} 🗡 урона и замарозила противника на 1⏳</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    elif action == '˹🧊Заморозка тела˼':
+        mana = await calculate_mana(self, 30)
+        if not mana:
+            return False, True
+        energy = await calculate_energy(self, 25)
+        if not energy:
+            return True, False
+        hp = self.pre_hp - self.health
+        attack = self.attack * 3
+
+        block = Passive("❄️", block_hp, fix_effects, 4, hp, apply_once=True)
+        self.add_passive(block)
+
+        calculate_shield(enemy, attack)
+
+        gif = 'CgACAgIAAx0CfstymgACRkloqhuoQk51Ag1UMEA15CwG3WI7UwACD4YAAj-1UEneOw39Rb_DKTYE'
+        caption = (f"🧊Заморозка тела"
+                   f"\n<blockquote expandable>Рукия замораживая свое тело становится неуязвимым к уронам в течении 4⏳ ходов</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    elif action == '˹Хакка❆но❆Тогаме˼':
+        mana = await calculate_mana(self, 65)
+        if not mana:
+            return False, True
+        energy = await calculate_energy(self, 40)
+        if not energy:
+            return True, False
+
+        stun = Passive("❄️Заморозка", bash, undo_bash, 5, 1, apply_once=True)
+        damage = (self.attack + self.intelligence + self.strength + self.agility) * 5
+        attack_up = Passive("⇪🗡", increase_attack, decrease_attack, 5, 400, apply_once=True)
+        dec_def = Passive("⇩🛡", decrease_defense, increase_defense, 5, 500, apply_once=True)
+        self.add_passive(attack_up)
+        calculate_shield(enemy, damage)
+        enemy.add_passive(stun)
+        enemy.add_passive(dec_def)
+
+        gif = 'CgACAgIAAx0CfstymgACRlFoqhvfcS4pdAEf-m3jXUhjvF2u9gACFoYAAj-1UEnu6-xxl8DDGjYE'
+        caption = (f"Банкай❆: Хакка но Тогаме"
+                   f"\n<blockquote expandable>Рукия нанесла {damage} 🗡 урона и заморозила противника а так же снимают защиту противника на 5⏳"
+                   f"\n🗡Урон ⇪400 5⏳</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+# Byakuya Kuchiki
+
+
+
+# Naruto
 
 # Naruto Uzumaki
 
@@ -2652,7 +2817,7 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
         mana = await calculate_mana(self, 20)
         if not mana:
             return False, True
-        energy = await calculate_energy(self, 10)
+        energy = await calculate_energy(self, 25)
         if not energy:
             return True, False
         hp = self.pre_hp - self.health
@@ -2660,7 +2825,7 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
 
         gif = 'CgACAgIAAx0CfstymgACReJoqMbltcmvDqWVX7mi1OFgpfCYagACY30AAuqfQUlx7Y4cbOcZCzYE'
         caption = (f"✇Камуи"
-                   f"\n<blockquote expandable>Какаши с помощью Камуи блокировал {hp} 🗡 урона</blockquote>")
+                   f"\n<blockquote expandable>Какаши избежал 🗡 атаку с помощью ✇Камуи </blockquote>")
 
         await send_action(bot, self, enemy, chat_id, gif, caption, ai)
 
@@ -2926,7 +3091,251 @@ async def turn(self, bot, action, enemy, chat_id, ai=None):
 
 # Obito Uchiha
 
-# Jujutsu Kaisen
+    elif action == '˹🔥гокакью˼':
+        mana = await calculate_mana(self, 20)
+        if not mana:
+            return False, True
+        energy = await calculate_energy(self, 5)
+        if not energy:
+            return True, False
+
+        damage = self.attack * 5 + self.intelligence * 3
+        burn_effect = 120  # шанс поджечь врага и нанести урон в течение нескольких ходов
+
+        enemy.add_passive(Passive("🔥Ожог", decrease_hp, fix_effects, 5, burn_effect))
+
+        calculate_shield(enemy, damage)
+
+        gif = 'CgACAgIAAx0CfstymgACRhBoqdRSUYQTv18qVagXuitRvNdgRQACeXkAAj-1SEm5xz_3_P-L9DYE'
+        caption = (f"🔥гокакью но дзюцу"
+                   f"\n<blockquote expandable>Обито использует гокакью но дзюцу, нанося {damage} "
+                   f"🗡 урона и поджигая врага"
+                   f"\n\n🔥Ожог {burn_effect} 💔 на 5⏳</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    elif action == '˹🔥Бакуфу Ранбу˼':
+        mana = await calculate_mana(self, 20)
+        if not mana:
+            return False, True
+        energy = await calculate_energy(self, 5)
+        if not energy:
+            return True, False
+
+        damage = self.attack * 5 + self.intelligence * 5 + self.agility * 2
+
+        calculate_shield(enemy, damage)
+
+        gif = 'CgACAgIAAx0CfstymgACRgJoqdQAAZG2LH6sjVgGcigHayjOA58AAm95AAI_tUhJVmsITejesqo2BA'
+        caption = (f"🔥Бакуфу Ранбу"
+                   f"\n<blockquote expandable>Обито использует Бакуфу Ранбу, нанося {damage} "
+                   f"🗡 урона </blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    elif action == '˹✇ Камуи˼':
+
+        mana = await calculate_mana(self, 20)
+
+        if not mana:
+            return False, True
+
+        energy = await calculate_energy(self, 25)
+
+        if not energy:
+            return True, False
+
+        hp = self.pre_hp - self.health
+
+        self.health += hp
+
+        calculate_shield(enemy, hp)
+
+        gif = 'CgACAgIAAx0CfstymgACRhJoqdRbFoOlZkqzlGQck2nn4DlQ3QACfXkAAj-1SEnPDfBf_RJuxjYE'
+
+        caption = (f"✇ Камуи"
+
+                   f"\n<blockquote expandable>Обито избежал атаку с помощью ✇Камуи</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    elif action == '˹🦊 Девятихвостый˼':
+
+        mana = await calculate_mana(self, 40)
+
+        if not mana:
+            return False, True
+
+        energy = await calculate_energy(self, 20)
+
+        if not energy:
+            return True, False
+
+        damage = (self.agility + self.intelligence + self.strength) * 4
+
+        dragon = Passive("🦊🗡", decrease_hp, fix_effects, 7, damage)
+
+        enemy.add_passive(dragon)
+
+        gif = 'CgACAgIAAx0CfstymgACRgZoqdQdZnRaJpGsv_9bl5RuYlxEtAACc3kAAj-1SEl7y_DdzHf8iTYE'
+
+        caption = (f"👾 Десятихвостый"
+
+                   f"\n<blockquote expandable>Обито призывают Девятихвостого: наносят {damage} "
+
+                   f"🗡 урона 7⏳ ходов</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    elif action == '˹🔰Учиха Каенджин˼':
+
+        mana = await calculate_mana(self, 45)
+
+        if not mana:
+            return False, True
+
+        energy = await calculate_energy(self, 35)
+
+        if not energy:
+            return True, False
+
+        hp = self.pre_hp - self.health
+
+        self.health += hp
+
+        calculate_shield(enemy, hp)
+
+        gif = 'CgACAgIAAx0CfstymgACRgxoqdQ9luWDLKAjhx33dlCJLhWwVwACd3kAAj-1SElEyIdXC-X86TYE'
+
+        caption = (f"🔰Учиха Каенджин"
+
+                   f"\n<blockquote expandable>Обито создал барьер и отразил атаку нанося {hp} 🗡 урона обратно противнику</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+
+    elif action == '˹👾 Десятихвостый˼':
+
+        mana = await calculate_mana(self, 50)
+
+        if not mana:
+            return False, True
+
+        energy = await calculate_energy(self, 25)
+
+        if not energy:
+            return True, False
+
+        damage = (self.agility + self.intelligence + self.strength) * 6
+
+        dragon = Passive("👾🗡", decrease_hp, fix_effects, 8, damage)
+
+        enemy.add_passive(dragon)
+
+        gif = 'CgACAgIAAx0CfstymgACRgZoqdQdZnRaJpGsv_9bl5RuYlxEtAACc3kAAj-1SEl7y_DdzHf8iTYE'
+
+        caption = (f"👾 Десятихвостый"
+
+                   f"\n<blockquote expandable>Обито призывают десятихвостого: наносят {damage} "
+
+                   f"🗡 урона 8⏳ ходов</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    elif action == '˹❟🌑❟Джинчуурики˼':
+        mana = await calculate_mana(self, 40)
+        if not mana:
+            return False, True
+        energy = await calculate_energy(self, 45)
+        if not energy:
+            return True, False
+
+        new_skills = ["˹🗡Атака˼", '˹💦 Выстрелы˼', '˹☄️Метеорит˼', '˹💥🗡Взрывная атака˼']
+        skills_change = Passive("❟🌑❟", change_skills, fix_effects, 14, new_skills)
+        inc_def = Passive("❟🌑❟", increase_defense, decrease_defense, 14, 400)
+        inc_atk = Passive("❟🌑❟", increase_attack, decrease_attack, 14, 400)
+
+        self.add_passive(inc_atk)
+        self.add_passive(inc_def)
+        self.add_passive(skills_change)
+
+        gif = 'CgACAgIAAx0CfstymgACRhZoqdR7XHDyir6kvWN3Cvx0BAMXqwACf3kAAj-1SEmILKvgb6_RdTYE'
+        caption = (f"❟🌑❟ Джинчуурики"
+                     f"\n<blockquote expandable>Обито становится Джинчуурики хвостатых и увеличивает атаку на ⇪400🗡 и защиту на ⇪400🛡"
+                        f"а так же получают новые способности в течении 14⏳ ходов</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    elif action == '˹🧬Нунобоко но Кен˼':
+        mana = await calculate_mana(self, 35)
+        if not mana:
+            return False, True
+
+        energy = await calculate_energy(self, 25)
+        if not energy:
+            return True, False
+
+        inc_atk = Passive("🧬", increase_attack, decrease_attack, 10, 800)
+
+        self.add_passive(inc_atk)
+
+        gif = 'CgACAgIAAx0CfstymgACRhRoqdRqqNQ_jcYygbc77brzWX7dDgACfnkAAj-1SElpJ3B1YNxGbzYE'
+        caption = (f"🧬Нунобоко но Кен"
+                   f"\n<blockquote expandable>Обито использует меч Нунобоко но Кен: увеличивает атаку на ⇪800🗡 на 10⏳</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    elif action == '˹🌺🌱Джуби˼':
+        mana = await calculate_mana(self, 35)
+        if not mana:
+            return False, True
+
+        energy = await calculate_energy(self, 45)
+        if not energy:
+            return True, False
+
+        stun = Passive("🌺🌱💫", bash, undo_bash, 4, 1, apply_once=True)
+        dec_eng = Passive("⇩🪫", decrease_energy, fix_effects, 6, 15, apply_once=True)
+        dec_mana = Passive("⇩🧪", decrease_mana, fix_effects, 6, 25, apply_once=True)
+
+        enemy.add_passive(stun)
+        enemy.add_passive(dec_eng)
+        enemy.add_passive(dec_mana)
+
+        gif = 'CgACAgIAAx0CfstymgACRgpoqdQ3WFv1bjvT-AdAlieBxgI39gACdnkAAj-1SEkhi6BS4zHdpjYE'
+        caption = (f"🌺🌱Джуби"
+                   f"\n<blockquote expandable>Обито использует 🌺🌱Джуби: притягивает и обездвиживает противника на 4⏳ и "
+                   f"снижает ⇩🪫15 энергию и ⇩🧪25 ману противника️ в течении 6⏳ ходов</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    elif action == '˹🔰Барьер˼':
+
+        mana = await calculate_mana(self, 45)
+
+        if not mana:
+            return False, True
+
+        energy = await calculate_energy(self, 35)
+
+        if not energy:
+            return True, False
+
+        hp = self.pre_hp - self.health
+
+        self.health += hp
+
+        calculate_shield(enemy, hp)
+
+        gif = 'CgACAgIAAx0CfstymgACRg5oqdRKpNEd5WNoX2DhT-5Qx4Od5AACeHkAAj-1SEntiidd6MWNMTYE'
+
+        caption = (f"🔰Учиха Каенджин"
+
+                   f"\n<blockquote expandable>Обито создал барьер и отразил атаку нанося {hp} 🗡 урона обратно противнику</blockquote>")
+
+        await send_action(bot, self, enemy, chat_id, gif, caption, ai)
+
+    # Jujutsu Kaisen
 
 # Gojo Satoru
 
