@@ -4,13 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="950ee416-d3c6-4244-83ec-ae2022e2f546" name="Changes" comment="4/3">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/mongodb.py" beforeDir="false" afterPath="$PROJECT_DIR$/data/mongodb.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routers/inventory.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/inventory.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routers/navigation.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/navigation.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routers/tokio/dungeon.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/tokio/dungeon.py" afterDir="false" />
-    </list>
+    <list default="true" id="950ee416-d3c6-4244-83ec-ae2022e2f546" name="Changes" comment="4/3" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -300,7 +294,15 @@
       <option name="project" value="LOCAL" />
       <updated>1756137178712</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="4/3">
+      <option name="closed" value="true" />
+      <created>1756699629202</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1756699629202</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
