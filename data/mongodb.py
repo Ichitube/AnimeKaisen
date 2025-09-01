@@ -262,6 +262,9 @@ async def send_rating(var, account, icon):
     higher_pts_count = await db.users.count_documents({var: {'$gt': account['campaign']['power']}})
 
     user_position = higher_pts_count + 1
+    user_name = account['name']
+    user_power = account['campaign']['power']
+    level = await profile.level(account['campaign']['level'])
 
     cursor = db.users.find()
 
@@ -273,11 +276,11 @@ async def send_rating(var, account, icon):
     index = 1
     async for account in top_accounts_cursor:
         level = await profile.level(account['campaign']['level'])
-        rating_table += f"{index}. {account['name']} - {account['campaign']['power']} {icon} ⛩️ {level} \n"
+        rating_table += (f"╭┈๋જ‌›{account['name']} "
+                         f"\n{index}┄{account['campaign']['power']} {icon} ⛩️ {level} \n")
         index += 1
 
-    rating_table += f"\nВаша место в рейтинге: {user_position}"
-
+    rating_table += f"╰── Вы: {user_position}. {user_name} - {user_power} {icon} ──╯"
     return rating_table
 
 
@@ -288,10 +291,9 @@ async def wins_rating(var, account, icon):
         name = account['name']
         wins = account['battle']['stats']['wins']
         user_rank = await profile.rerank_battle(account['stats']['rank'])
-        text = (f"──────────────────"
-                f"\n❖ Ваша место в рейтинге: \n{user_position}. {name} - {wins} {icon} Побед • {user_rank}")
+        text = f"╰── Вы: {user_position}. {name} - {wins} {icon} Побед • {user_rank} ──╯"
     else:
-        text = "\n❖ Вы не зарегистрированы"
+        text = "╰── Вы не зарегистрированы ──╯"
     cursor = db.users.find()
 
     sorted_cursor = cursor.sort(var, -1)
@@ -302,8 +304,8 @@ async def wins_rating(var, account, icon):
     index = 1
     async for account in top_accounts_cursor:
         rank = await profile.rerank_battle(account['stats']['rank'])
-        rating_table += (f"{index}. {account['name']} - "
-                         f"{account['battle']['stats']['wins']} {icon} Побед • {rank} \n")
+        rating_table += (f"╭┈๋જ‌›{account['name']} - "
+                         f"\n{index}┄{account['battle']['stats']['wins']} {icon} Побед • {rank} \n")
         index += 1
 
     table = "<blockquote>" + rating_table + "</blockquote>" + f"{text}"

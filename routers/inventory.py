@@ -40,7 +40,7 @@ async def get_inventory(user_id, rarity):
 )
 @router.callback_query(F.data == "inventory")
 async def inventory(callback: CallbackQuery | Message):
-    media_id = "CgACAgIAAxkBAAIVCmXMvbzs7hde-fvY9_4JCwU8W6HpAAKgOwACeyZoSuedvZenkxDNNAQ"
+    media_id = "CgACAgIAAx0CfstymgACRv5orIILKQTm88Zac71MqWBr9tYTQwAC8ZkAAu8IaUknwseMmKsSyTYE"
     user_id = callback.from_user.id
     account = await mongodb.get_user(user_id)
     universe = account['universe']
@@ -227,7 +227,7 @@ async def inventory(callback: CallbackQuery | Message, state: FSMContext):
             await callback.answer("❖ ✖️ Это не ваш инвентарь", show_alert=True)
             return
     await state.update_data(user_id=user_id)
-    media_id = "CgACAgIAAxkBAAIVCmXMvbzs7hde-fvY9_4JCwU8W6HpAAKgOwACeyZoSuedvZenkxDNNAQ"
+    media_id = "CgACAgIAAx0CfstymgACRv5orIILKQTm88Zac71MqWBr9tYTQwAC8ZkAAu8IaUknwseMmKsSyTYE"
     user_id = callback.from_user.id
     account = await mongodb.get_user(user_id)
     universe = account['universe']

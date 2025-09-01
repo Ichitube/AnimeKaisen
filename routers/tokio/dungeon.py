@@ -301,9 +301,9 @@ async def sell_resources(callback: CallbackQuery):
                 f"\nВы можете продать 💰 ресурсы на ⚖️ рынке за указанные цены выше")
 
     await callback.message.edit_caption(inline_message_id=callback.inline_message_id, caption=caption, reply_markup=inline_builder(
-            ["🕯 Авантюристы 🗡", "💰 Продать 💴", "⚜️ Рейтинг", "🔙 Назад", "📋 Правила"],
-            ["deck_dungeon", "sell_resources", "campaign_rank", "tokio", "campaign_rules"],
-            row_width=[1, 2, 2]))
+            ["🕯 Авантюристы 🗡", "💰 Продать 💴", "📋 Правила", "🔙 Назад"], # , "⚜️ Рейтинг"
+            ["deck_dungeon", "sell_resources", "campaign_rules", "tokio"], # "campaign_rank"
+            row_width=[1, 2, 1]))
     await callback.answer(f"❖ 💰 Ресурсы проданы за {total_money}¥ 💴", show_alert=True)
 
 
@@ -312,14 +312,15 @@ async def campaign_rank(callback: CallbackQuery):
     account = await mongodb.get_user(callback.from_user.id)
     rating = await mongodb.send_rating("campaign.power", account, '⚜️')
 
-    media = InputMediaAnimation(media="CgACAgIAAxkBAAIVQ2XOBCFYSQfjZfxblsVAZJ3PNGQWAAKIRwAC8utxSsak7XpiV9MnNAQ")
+    media = InputMediaAnimation(media="CgACAgIAAx0CfstymgACRwABaKyCDrQV6vglI9aMJ9esarQbaO0AAvKZAALvCGlJzouYInNTMGQ2BA")
     await callback.message.edit_media(media=media)
 
     await callback.message.edit_caption(
-        caption=f"❖  ⚜️  <b>Рейтинг самых сильных игроков</b>"
-                f"\n── •✧✧• ────────────"
-                f"<blockquote>{rating}</blockquote>"
-                f"\n── •✧✧• ────────────",
+        caption=f"❖  ⚜️  <b>Рейтинг сильных игроков</b>"
+                f"\n┅┅━─━┅┄ ⟛ ┄┅━─━┅┅"
+                f"<blockquote expandable>"
+                f"{rating}"
+                f"</blockquote>",
         parse_mode=ParseMode.HTML,
         reply_markup=inline_builder(
             ["🔙 Назад"],
