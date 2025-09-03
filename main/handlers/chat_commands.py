@@ -8,7 +8,7 @@ from aiogram.filters import Command
 from aiogram.types import Message
 from data import characters, character_photo
 from data import mongodb
-from keyboards.builders import reply_builder, inline_builder, menu_button, Ability, rm
+from keyboards.builders import reply_builder, inline_builder, menu_button, Ability, rm, menu_card_button
 from recycling import profile
 from filters.chat_type import ChatTypeFilter
 
@@ -59,18 +59,18 @@ async def main_chat(message: Message):
                 total_characters += len(characters[outer_key][inner_key])
 
         pattern = dict(
-            caption=f"\n── •✧✧• ────────────"
+            caption=# f"\n── •✧✧• ────────────"
                     f"\n 🪪  〢 Профиль {account['name']} "
                     f"\n── •✧✧• ────────────"
-                    f"\n\n❖🎴 <b>{character}</b>"
-                    f"\n❖🗺 Вселенная: {universe}"
-                    f"\n❖🎐 <b>{rank}</b>"
-                    f"\n❖⛩️ <b>{level}</b>"
-                    f"\n\n── •✧✧• ────────────"
+                    f"\n<blockquote>🎴 <b>{character}</b>"
+                    f"\n🗺 Вселенная: {universe}"
+                    f"\n🎐 <b>{rank}</b>"
+                    f"\n⛩️ <b>{level}</b></blockquote>"
+                    f"\n── •✧✧• ────────────"
                     f"\n<i><b>❃💴 {account['account']['money']} ¥ ❃ {account['campaign']['power']} ⚜️ Мощи"
                     f"\n❃🀄️ {account['stats']['exp']} XP ❃ {total_characters} 🃏 Карт</b></i>",
             parse_mode=ParseMode.HTML,
-            reply_markup=goto_bot()
+            # reply_markup=goto_bot()
         )
         if avatar_type == 'photo':
             await message.answer_photo(avatar, **pattern)
@@ -282,8 +282,39 @@ async def fill_profile(message: Message, bot: Bot):
 
 @router.message(ChatTypeFilter(chat_type=["private"]), Command("menu_button"))
 async def call_button(message: Message):
-    await message.answer(text='˗ˋˏ💮 Кнопки восстановленыˎˊ˗', reply_markup=menu_button())
+    account = await mongodb.get_user(message.from_user.id)
+    if account['universe'] == 'Allstars':
+        await message.answer(text='˗ˋˏ🛠 Кнопки восстановленыˎˊ˗', reply_markup=menu_card_button())
+    else:
+        await message.answer(text='˗ˋˏ🛠 Кнопки восстановленыˎˊ˗', reply_markup=menu_button())
 
+@router.message(F.text.startswith('гиф') | F.text.startswith('Гиф'))
+async def give_character(message: Message):
+    user_id = message.from_user.id
+
+    text = message.text
+    match = re.search(r'гиф\s(.+)', text)
+    if not match:
+        await message.reply("❖ ✖️ Неверный формат команды.")
+        return
+
+    gif = match.group(1).strip()
+
+    await message.reply_animation(gif)
+
+@router.message(F.text.startswith('ф') | F.text.startswith('ф'))
+async def give_character(message: Message):
+    user_id = message.from_user.id
+
+    text = message.text
+    match = re.search(r'ф\s(.+)', text)
+    if not match:
+        await message.reply("❖ ✖️ Неверный формат команды.")
+        return
+
+    photo = match.group(1).strip()
+
+    await message.reply_photo(photo)
 
 """
 @router.message((F.text == 'инвентарь') | (F.text == 'Инвентарь') | (F.text == 'карты')
