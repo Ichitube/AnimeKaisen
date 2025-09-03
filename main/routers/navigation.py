@@ -44,26 +44,22 @@ async def ranks(callback: CallbackQuery):
 
 
 @router.callback_query(F.data == "battle_rating")
-async def campaign_rank(callback: CallbackQuery):
+async def battle_rating(callback: CallbackQuery):
     account = await mongodb.get_user(callback.from_user.id)
-    rating = await mongodb.wins_rating("battle.stats.wins", account, '👑')
+    rating = await mongodb.wins_rat(account)
 
-    media = InputMediaAnimation(media="CgACAgIAAxkBAAIVQ2XOBCFYSQfjZfxblsVAZJ3PNGQWAAKIRwAC8utxSsak7XpiV9MnNAQ")
+    media = InputMediaAnimation(media="CgACAgIAAx0CfstymgACRwABaKyCDrQV6vglI9aMJ9esarQbaO0AAvKZAALvCGlJzouYInNTMGQ2BA")
     await callback.message.edit_media(media=media)
 
     await callback.message.edit_caption(
-        caption=f"❖  🏆  <b>Рейтинг сильных игроков</b>"
-                f"\n── •✧✧• ────────────"
-                f"{rating}"
-                f"\n── •✧✧• ────────────"
-                f"\n👑 Победы: {account['battle']['stats']['wins']}   ☠️ Ничьи: {account['battle']['stats']['ties']}",
-        parse_mode=ParseMode.HTML,
+        caption=rating,
         reply_markup=inline_builder(
             ["🔙 Назад", "🎐 Ранги"],
             ["arena", "battle_system"],
             row_width=[2])
     )
     await callback.answer()
+
 
 
 @router.callback_query(F.data == "battle_rules")
