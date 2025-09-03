@@ -16,10 +16,7 @@ router = Router()
 
 
 @router.message(ChatTypeFilter(chat_type=["private"]), Command("menu"))
-@router.message(
-    ChatTypeFilter(chat_type=["private"]),
-    F.text == "🪪 〢 Профиль"
-)
+@router.message(ChatTypeFilter(chat_type=["private"]), F.text == "🪪 〢 Профиль")
 @router.callback_query(F.data == "main_page")
 async def main_menu(message: Message | CallbackQuery):
     user_id = message.from_user.id
@@ -66,20 +63,20 @@ async def main_menu(message: Message | CallbackQuery):
                 total_characters += len(characters[outer_key][inner_key])
 
         pattern = dict(
-            caption=f"\n── •✧✧• ────────────"
+            caption=#f"\n── •✧✧• ────────────"
                     f"\n 🪪  〢 Профиль {account['name']} {emoji}"
                     f"\n── •✧✧• ────────────"
-                    f"\n\n❖🎴 <b>{character}</b>"
-                    f"\n❖🗺 Вселенная: {universe}"
-                    f"\n❖🎐 <b>{rank}</b>"
-                    f"\n❖⛩️ <b>{level}</b>"
-                    f"\n\n── •✧✧• ────────────"
+                    f"\n<blockquote>🎴 <b>{character}</b>"
+                    f"\n🗺 Вселенная: {universe}"
+                    f"\n🎐 <b>{rank}</b>"
+                    f"\n⛩️ <b>{level}</b></blockquote>"
+                    f"\n── •✧✧• ────────────"
                     f"\n<i><b>❃💴 {account['account']['money']} ¥ ❃ {account['campaign']['power']} ⚜️ Мощи"
                     f"\n❃🀄️ {account['stats']['exp']} XP ❃ {total_characters} 🃏 Карт</b></i>",
             parse_mode=ParseMode.HTML,
             reply_markup=inline_builder(
-                ["🏟️ Арена", "💮 Меню", "⛩️ Подземелье", "🪄 Крафт", "🥡 Инвентарь", "⚙️ Настройки", "🎁 Рефераль"],
-                ["arena", "tokio", "dungeon", "craft", "inventory", "settings", "referral"],
+                [f"{character} 🗯", "🎐 Баннеры", "〽️ Меню", "📜 Квесты", "🪄 Крафт", "🥡 Инвентарь", "⚙️ Настройки", "🎁 Рефераль"],
+                ["talk_with", "banner", "tokio", "quests", "craft", "inventory", "settings", "referral"],
                 row_width=[1, 2, 2, 2])
         )
         if isinstance(message, CallbackQuery):
@@ -133,19 +130,20 @@ async def referral_link(callback: CallbackQuery):
     media = InputMediaAnimation(media="CgACAgIAAx0CfstymgACBb9lzLfhJnj3lcZBeK1j3YTPUX6wfgACYkYAAsywaUpw0JLo7c7pRzQE")
     count = len(account['account']['referrals'])
     deep_link = f'https://t.me/AnimeKaisenbot?start={user_id}'
-    text = (f'\n── •✧✧• ────────────'
-            f'\n ❃  🎐 Ты получил особое приглашение в сообщество Аниме битвы. '
-            f'\n\n ❃  ⛩️ Там ты можешь насладиться плавной 🔮 Гачой, собирать своих 🎴 Персонажей, сражаться в '
-            f'🏟️ Арене с другими игроками, стать самым ⚜️ сильным игроком и найти друзей'
-            f'\n\n ❃  Заходи по моей ссылке ниже и получай 🎁 Бонусы при регистрации: \n\n'
-            f' ⋗ {deep_link} '
+    text = (f'\n🎐 Ты получил особое приглашение в сообщество Multiverse!'
+            f'\n🪽 Multiverse это мир где можешь насладиться плавной 🔮 Гачой, собирать своих 🎴 Персонажей, сражаться в '
+            f'🏟️ Арене с другими игроками, стать ⚜️ сильным игроком, побеждать боссы 👾, вступить в кланы 🏯 и '
+            f'найти друзей'
+            f'\n Заходи по моей ссылке ниже и получай 🎁 Бонусы при регистрации:'
+            f'\n{deep_link} '
             f'\n── •✧✧• ────────────'
             f'\nБудем рады тебя видеть :)')
 
     def share_keyboard():
         buttons = [
             [
-                InlineKeyboardButton(text="🎁 Получить", switch_inline_query=f"{text}"),
+                InlineKeyboardButton(text="👥 Рейтинг", callback_data="invite_rating"),
+                InlineKeyboardButton(text="🎁 Получить", switch_inline_query=f"{text}")
             ],
             [
                 InlineKeyboardButton(text="📦 Промокод", callback_data="promocode"),
@@ -158,17 +156,38 @@ async def referral_link(callback: CallbackQuery):
         return keyboard
 
     await callback.message.edit_media(media)
-    await callback.message.edit_caption(caption='\n── •✧✧• ────────────'
-                                        f'\n ❃ 🎁 Вы получите 🧧 священный билет за каждых 3 приглашенных игроков. '
-                                        f'\n\n ❃ ⛩️ Условия:'
-                                        f'\n\n  ❖ Новые игроки считаються приглашенными только после того, как они '
-                                        f'зарегистрировались по вашей реферальной ссылке и получили 🎴 первую карту'
-                                        f'\n  ❖ Игроки которые уже зарегистрировались не считаються приглашенными'
-                                        f'\n  ❖ Приглашая игроков вы поддерживаете развитие игры'
-                                        f'\n\n ❃ 🎐 Ваша реферальная ссылка:'
-                                        f'\n\n ⋗ {deep_link} '
+    await callback.message.edit_caption(caption=
+                                        f'\n ❖ ⛩️ Условия:'
                                         f'\n── •✧✧• ────────────'
-                                        f'\n вы пригласили {count} человек', reply_markup=share_keyboard())
+                                        f'\n<blockquote expandable> • 🎁 Вы получите 🧧 священный билет за каждых 3 приглашенных игроков и 🌟 звезды телеграм если попадите в топ 👥 рейтинга приглашений'
+                                        f'\n • ✅ Новые игроки считаються приглашенными только после того, '
+                                        f'как они зарегистрировались по вашей реферальной ссылке и получили 🎴 первую карту.'
+                                        f'\n • ⏱️ Рейтинг будет сбрасываться каждые две недели'
+                                        f'\n • 📎 Игроки которые уже зарегистрировались не считаються приглашенными.'
+                                        f'\n • 👥 Приглашая игроков вы поддерживаете развитие игры</blockquote>'
+                                        f'\n🎐 Ваша реферальная ссылка:'
+                                        f'\n<code>{deep_link}</code>'
+                                        f'\n(Нажмите чтобы скопировать)'
+                                        f'\n── •✧✧• ────────────'
+                                        f'\n👥 вы пригласили {count} человек', reply_markup=share_keyboard())
+
+
+@router.callback_query(F.data == "invite_rating")
+async def invite_rating_handler(callback: CallbackQuery, bot: Bot):
+    account = await mongodb.get_user(callback.from_user.id)
+    rating = await mongodb.invite_rating("account.referrals", account)
+
+    await callback.message.edit_caption(
+        caption=rating,
+        parse_mode="HTML",
+        reply_markup=inline_builder(
+            ["🔙 Назад"],
+            ["referral"],
+            row_width=[1])
+    )
+    await callback.answer()
+
+
 
 
 @router.callback_query(F.data == "promocode")
