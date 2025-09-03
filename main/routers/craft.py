@@ -23,26 +23,25 @@ async def craft_menu(callback: CallbackQuery):
     pattern = dict(
         caption=f"❖  🪄  <b>Крафт</b>"
                 f"\n── •✧✧• ────────────"
-                f"\n❃ 🧩 Стоимость крафта 🃏 карт 🂡: "
-                f"\n\n  🌠 Божественных карт 🂡: 6000 🧩"
-                f"\n\n  🌌 Мифических карт 🂡: 3500 🧩"
-                f"\n\n  🌅 Легендарных карт 🂡: 2000 🧩"
-                f"\n\n  🎆 Эпических карт 🂡: 200 🧩"
-                f"\n\n  🎇 Редких карт 🂡: 50 🧩"
-                f"\n\n  🌁 Обычных карт 🂡: 20 🧩"
+                f"\n❃ 🧩 Стоимость крафта 🃏 карт 🂡: <blockquote>"
+                # f"\n\n  🌠 Божественных карт 🂡: 6000 🧩"
+                # f"\n\n  🌌 Мифических карт 🂡: 3500 🧩"
+                f"\n  🌅 Легендарных карт 🂡: 2000 🧩"
+                f"\n  🎆 Эпических карт 🂡: 200 🧩"
+                f"\n  🎇 Редких карт 🂡: 50 🧩"
+                f"\n  🌁 Обычных карт 🂡: 20 🧩</blockquote>"
                 f"\n── •✧✧• ────────────"
                 f"\n❖  У вас есть: <b>{fragments}</b> 🧩 осколков",
-        parse_mode=ParseMode.HTML,
         reply_markup=inline_builder(
-            ["🌠 Скрафтить", "🌌 Скрафтить", "🌅 Скрафтить", "🎆 Скрафтить", "🎇 Скрафтить", "🌁 Скрафтить", "🔙 Назад"],
-            ["craft_divine", "craft_mythical", "craft_legendary",
+            ["🌅 Скрафтить", "🎆 Скрафтить", "🎇 Скрафтить", "🌁 Скрафтить", "🔙 Назад"],
+            ["craft_legendary",
              "craft_epic", "craft_rare", "craft_common", "main_page"],
             row_width=[2]
-            )
+            )  # "🌠 Скрафтить", "🌌 Скрафтить", "craft_divine", "craft_mythical",
     )
 
     media_id = "AgACAgIAAx0CfstymgACGthmw1rLV0WxGrbzW3MkaOQIfIaRXwACkuExG8b4GEq8rJRTnK_PFQEAAwIAA3kAAzUE"
-    media = InputMediaPhoto(media=media_id, has_spoiler=True)
+    media = InputMediaPhoto(media=media_id)
     await callback.message.edit_media(media, inline_id)
     await callback.message.edit_caption(inline_id, **pattern)
 
@@ -90,7 +89,7 @@ async def craft_card(callback: CallbackQuery):
         return False
 
     if await is_in_inventory():
-        msg = (f"\n❖ ✖️ Вам попалась повторка"
+        msg = (f"\n❖ ♻️ Вам попалась повторка"
                f"\n❖ 🧩 Осколки не потрачены")
     else:
         await mongodb.update_user(user_id, {"account.fragments": fragments})
@@ -99,10 +98,10 @@ async def craft_card(callback: CallbackQuery):
         await mongodb.update_value(user_id, {'account.characters': 1})
         msg = (f"\n❖ ✨ Редкость: {rarity}"
                f"\n❖ 🗺 Вселенная: {ch_universe}"
-               f"\n\n   ✊🏻 Сила: {strength}"
-               f"\n   👣 Ловкость: {agility}"
-               f"\n   🧠 Интелект: {intelligence}"
-               f"\n   ⚜️ Мощь: {power}"
+               f"\n • ✊🏻 Сила: {strength}"
+               f"\n • 👣 Ловкость: {agility}"
+               f"\n • 🧠 Интелект: {intelligence}"
+               f"\n • ⚜️ Мощь: {power}"
                f"\n──❀*̥˚──◌──◌──❀*̥˚────"
                f"\n + {power} ⚜️ Мощи")
 
@@ -110,7 +109,7 @@ async def craft_card(callback: CallbackQuery):
         caption=f"\n ── •✧✧• ────────────"
                 f"\n  🃏  〢 {character} "
                 f"\n ── •✧✧• ────────────"
-                f"{msg}",
+                f"<blockquote>{msg}</blockquote>",
         reply_markup=inline_builder(["🎴 Навыки", " 🔙 "],
                                     [Ability(action="ability", universe=universe,
                                              character=character, back='craft'), "craft"],
