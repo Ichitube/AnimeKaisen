@@ -2,6 +2,8 @@ import re
 
 from motor.motor_asyncio import AsyncIOMotorClient
 from recycling import profile
+from aiogram import Bot
+from datetime import datetime, timedelta
 
 client = AsyncIOMotorClient("mongodb+srv://dire:1243qwtr@animekaisen.8r7or8e.mongodb.net/?retryWrites=true&w=majority&appName=AnimeKaisen")  #mongodb+srv://dire:1243qwtr@animekaisen.8r7or8e.mongodb.net/?retryWrites=true&w=majority,
 
@@ -10,6 +12,8 @@ db = client["AnimeKaisen"]
 collection = db["users"]
 chat_collection = db["chats"]
 promo_collection = db["promo"]
+user_bosses = db["user_bosses"]
+clans = db["clans"]
 
 
 emoji_pattern = re.compile(
@@ -35,13 +39,15 @@ async def input_user(user_id: int, name, universe, character, power):
         'character': {
             universe: character
         },
+        'clan': '',
         'account': {
             'prime': False,
             'money': 1000,
             'fragments': 0,
             'clan': '',
             'referrals': [],
-            'awards': []
+            'awards': [],
+            'clan_coins': 0
         },
         'stats': {
             'rank': 1,
@@ -91,18 +97,94 @@ async def input_user(user_id: int, name, universe, character, power):
     await db.users.insert_one(full_data)
 
 
+async def get_user_boss(user_id: int):
+    boss = await db.user_bosses.find_one({"user_id": user_id})
+    return boss
+
+
+async def create_or_update_user_boss(user_id: int, boss_id: int, boss_hp: int):
+    return await db.user_bosses.update_one(
+        {"user_id": user_id},
+        {
+            "$set": {
+                "boss_id": boss_id,
+                "current_hp": boss_hp,
+                "damage_dealt": 0,
+                "last_spawn": datetime.utcnow()
+            }
+        },
+        upsert=True
+    )
+
+
+async def clan_exists(name):
+    return await db.clans.find_one({"_id": name}) is not None
+
+
+async def create_clan(data):
+    await db.clans.insert_one(data)
+
+
 async def get_user(user_id: int):
     user = await db.users.find_one({"_id": user_id})
     return user
+
+
+async def get_clan(chat_id):
+    clan = await db.clans.find_one({"_id": chat_id})
+    return clan
 
 
 async def update_user(user_id: int, data: dict):
     await db.users.update_one({"_id": user_id}, {"$set": data})
 
 
+async def update_clan(clan_name: str, data: dict):
+    await db.clans.update_one({"_id": clan_name}, {"$set": data})
+
+
+async def delete_clan(clan_name: str):
+    """
+    Удаляет клан из базы данных.
+    """
+    result = await db.clans.delete_one({"_id": clan_name})
+    if result.deleted_count == 0:
+        raise ValueError("✖️ Клан не найден для удаления!")
+
+
+async def rename_clan(old_name: str, new_name: str):
+    """
+    Переименовывает клан: копирует данные клана под новым _id и удаляет старый.
+    Также обновляет клан у всех участников.
+    """
+
+    # Ищем клан по старому имени
+    clan = await db.clans.find_one({"_id": old_name})
+    if not clan:
+        raise ValueError("✖️ Клан не найден!")
+
+    # Проверяем, что нового имени ещё нет
+    existing = await db.clans.find_one({"_id": new_name})
+    if existing:
+        raise ValueError("✖️ Клан с таким именем уже существует!")
+
+    # Копируем клан под новым именем
+    clan["_id"] = new_name
+    await db.clans.insert_one(clan)
+
+    # Удаляем старый клан
+    await db.clans.delete_one({"_id": old_name})
+
+    # Обновляем клан у всех участников
+    members = clan.get("members", [])
+    for uid in members:
+        await db.users.update_one({"_id": uid}, {"$set": {"clan": new_name}})
+
+
+
 async def set_money(message):
     result = await db.users.update_many(
-        {"account.money": {"$gt": 10000}},  # Условие: money больше 100000
+        {"account.money": {"$gt": 50000}},  # Условие: money больше 100000
         {"$set": {"account.money": 100}}  # Действие: установить money в 100
     )
 
@@ -180,6 +262,9 @@ async def send_rating(var, account, icon):
     higher_pts_count = await db.users.count_documents({var: {'$gt': account['campaign']['power']}})
 
     user_position = higher_pts_count + 1
+    user_name = account['name']
+    user_power = account['campaign']['power']
+    level = await profile.level(account['campaign']['level'])
 
     cursor = db.users.find()
 
@@ -191,11 +276,11 @@ async def send_rating(var, account, icon):
     index = 1
     async for account in top_accounts_cursor:
         level = await profile.level(account['campaign']['level'])
-        rating_table += f"{index}. {account['name']} - {account['campaign']['power']} {icon} ⛩️ {level} \n"
+        rating_table += (f"╭┈๋જ‌›{account['name']} "
+                         f"\n{index}┄{account['campaign']['power']} {icon} ⛩️ {level} \n")
         index += 1
 
-    rating_table += f"\nВаша место в рейтинге: {user_position}"
-
+    rating_table += f"╰── Вы: {user_position}. {user_name} - {user_power} {icon} ──╯"
     return rating_table
 
 
@@ -206,10 +291,9 @@ async def wins_rating(var, account, icon):
         name = account['name']
         wins = account['battle']['stats']['wins']
         user_rank = await profile.rerank_battle(account['stats']['rank'])
-        text = (f"──────────────────"
-                f"\n❖ Ваша место в рейтинге: \n{user_position}. {name} - {wins} {icon} Побед • {user_rank}")
+        text = f"╰── Вы: {user_position}. {name} - {wins} {icon} Побед • {user_rank} ──╯"
     else:
-        text = "\n❖ Вы не зарегистрированы"
+        text = "╰── Вы не зарегистрированы ──╯"
     cursor = db.users.find()
 
     sorted_cursor = cursor.sort(var, -1)
@@ -220,13 +304,363 @@ async def wins_rating(var, account, icon):
     index = 1
     async for account in top_accounts_cursor:
         rank = await profile.rerank_battle(account['stats']['rank'])
-        rating_table += (f"{index}. {account['name']} - "
-                         f"{account['battle']['stats']['wins']} {icon} Побед • {rank} \n")
+        rating_table += (f"╭┈๋જ‌›{account['name']} - "
+                         f"\n{index}┄{account['battle']['stats']['wins']} {icon} Побед • {rank} \n")
         index += 1
 
-    rating_table += f"{text}"
+    table = "<blockquote>" + rating_table + "</blockquote>" + f"{text}"
 
-    return rating_table
+    return table
+
+ADMIN_ID = 6462809130
+
+async def auto_reset_rating(bot, rating_type: str, field: str, reset_value, days: int = 14):
+    """
+    rating_type: 'referrals' или 'wins'
+    field: поле в MongoDB ('account.referrals' или 'battle.stats.wins')
+    reset_value: [] для списка, 0 для int
+    days: период сброса (по умолчанию 14 дней)
+    """
+
+    current_date = datetime.today().date()
+    meta_id = f"{rating_type}_reset"
+
+    reset_info = await db.meta.find_one({"_id": meta_id})
+    if not reset_info:
+        next_reset = datetime.combine(current_date, datetime.min.time()) + timedelta(days=days)
+        await db.meta.update_one({"_id": meta_id}, {"$set": {"next_reset": next_reset}}, upsert=True)
+        return None  # ещё рано сбрасывать
+
+    next_reset = reset_info["next_reset"]
+
+    if datetime.now() >= next_reset:
+        # готовим топ-10
+        if rating_type == "referrals":
+            pipeline = [
+                {
+                    "$addFields": {
+                        "count": {
+                            "$cond": {
+                                "if": {"$isArray": "$account.referrals"},
+                                "then": {"$size": "$account.referrals"},
+                                "else": 0
+                            }
+                        }
+                    }
+                },
+                {"$sort": {"count": -1}},
+                {"$limit": 10}
+            ]
+        else:  # wins
+            pipeline = [
+                {"$addFields": {"count": "$battle.stats.wins"}},
+                {"$sort": {"count": -1}},
+                {"$limit": 10}
+            ]
+
+        winners = db.users.aggregate(pipeline)
+
+        # сообщение для админа
+        text_admin = f"🏆 Итоги рейтинга {rating_type}\n\n"
+        index = 1
+        rewards = {1: "🌟 ×150", 2: "🌟 ×100", 3: "🌟 ×50"}
+
+        async for acc in winners:
+            reward = rewards.get(index, "🌟 ×25")
+            text_admin += (
+                f"{index}. {acc['name']} (ID: {acc['_id']}) — "
+                f"{acc.get('count', 0)} 👥/🏆 {reward}\n"
+            )
+            index += 1
+
+        await bot.send_message(ADMIN_ID, text_admin, parse_mode="HTML")
+
+        # сообщение всем пользователям
+        all_users = db.users.find()
+        async for user in all_users:
+            try:
+                await bot.send_message(
+                    user["_id"],
+                    f"♻️ Акция {rating_type} завершена!\n\n"
+                    f"🏆 Скоро начнётся новый рейтинг, готовьтесь!"
+                )
+            except Exception as e:
+                print(f"Не удалось отправить {user['_id']}: {e}")
+
+        # сброс значений
+        await db.users.update_many({}, {"$set": {field: reset_value}})
+
+        # устанавливаем новую дату сброса
+        new_reset = datetime.combine(current_date, datetime.min.time()) + timedelta(days=days)
+        await db.meta.update_one({"_id": meta_id}, {"$set": {"next_reset": new_reset}})
+
+async def invite_rating(var, account):
+    # авто-сброс рефералов
+    await auto_reset_rating(Bot, "referrals", "account.referrals", [])
+
+    # достаём дату следующего сброса
+    reset_info = await db.meta.find_one({"_id": "referrals_reset"})
+    next_reset = reset_info["next_reset"] if reset_info else None
+
+    pipeline = [
+        {
+            "$addFields": {
+                "referrals_count": {
+                    "$cond": {
+                        "if": {"$isArray": "$account.referrals"},
+                        "then": {"$size": "$account.referrals"},
+                        "else": 0
+                    }
+                }
+            }
+        },
+        {"$sort": {"referrals_count": -1}},
+        {"$limit": 10}
+    ]
+    winners = db.users.aggregate(pipeline)
+
+    text = "🏆 <b>Рейтинг приглашений</b>\n<blockquote>"
+    index = 1
+    rewards = {1: "🌟 ×150", 2: "🌟 ×100", 3: "🌟 ×50"}
+
+    async for acc in winners:
+        reward = rewards.get(index, "🌟 ×25")
+
+        if index == 1:
+            place = "🥇"
+        elif index == 2:
+            place = "🥈"
+        elif index == 3:
+            place = "🥉"
+        else:
+            place = f"{index}."
+
+        text += f"{place} {acc['name']} — {acc.get('referrals_count', 0)} человек 👥 {reward}\n"
+        index += 1
+
+    # позиция текущего пользователя
+    user_refs = len(account.get("account", {}).get("referrals", []))
+    higher_pts_count = await db.users.count_documents({
+        "$expr": {
+            "$gt": [
+                {
+                    "$cond": {
+                        "if": {"$isArray": "$account.referrals"},
+                        "then": {"$size": "$account.referrals"},
+                        "else": 0
+                    }
+                },
+                user_refs
+            ]
+        }
+    })
+    user_position = higher_pts_count + 1
+    user_name = account['name']
+
+    text += f"╰── Вы: {user_position}. {user_name} — {user_refs} человек 👥 ──╯"
+    text += "</blockquote>"
+
+    # добавляем таймер
+    if next_reset:
+
+        if next_reset:
+            delta = next_reset - datetime.now()
+            days = delta.days
+            hours, remainder = divmod(delta.seconds, 3600)
+            minutes = remainder // 60
+
+            if days > 0:
+                left_text = f"{days} дн. {hours} ч. {minutes} мин."
+            elif hours > 0:
+                left_text = f"{hours} ч. {minutes} мин."
+            else:
+                left_text = f"{minutes} мин."
+
+            text += f"\n♻️ До сброса: ⏱️ {left_text}"
+
+    return text
+
+
+
+async def reset_referrals(account):
+    pipeline = [
+        {
+            "$addFields": {
+                "referrals_count": {
+                    "$cond": {
+                        "if": {"$isArray": "$account.referrals"},
+                        "then": {"$size": "$account.referrals"},
+                        "else": 0
+                    }
+                }
+            }
+        },
+        {"$sort": {"referrals_count": -1}},
+        {"$limit": 10}
+    ]
+    winners = db.users.aggregate(pipeline)
+
+    text = "🏆 <b>Итоги рейтинга приглашений</b>\n<blockquote>"
+    index = 1
+    rewards = {1: "🌟 ×150", 2: "🌟 ×100", 3: "🌟 ×50"}
+
+    async for acc in winners:
+        reward = rewards.get(index, "🌟 ×25")
+
+        if index == 1:
+            place = "🥇."
+        elif index == 2:
+            place = "🥈."
+        elif index == 3:
+            place = "🥉."
+        else:
+            place = f"{index}."
+
+        text += f"{place} {acc['name']} — {acc.get('referrals_count', 0)} человек 👥 {reward}\n"
+        index += 1
+
+    # позиция текущего пользователя
+    user_refs = len(account.get("account", {}).get("referrals", []))
+    higher_pts_count = await db.users.count_documents({
+        "$expr": {
+            "$gt": [
+                {
+                    "$cond": {
+                        "if": {"$isArray": "$account.referrals"},
+                        "then": {"$size": "$account.referrals"},
+                        "else": 0
+                    }
+                },
+                user_refs
+            ]
+        }
+    })
+    user_position = higher_pts_count + 1
+    user_name = account['name']
+
+    text += f"╰── Вы: {user_position}. {user_name} — {user_refs} человек 👥 ──╯"
+    text += "</blockquote>\n❇️ Победители получат награды"
+
+    # сброс
+    await db.users.update_many({}, {"$set": {"account.referrals": []}})
+
+    return text
+
+
+async def wins_rat(account):
+    # авто-сброс побед
+    await auto_reset_rating(Bot, "wins", "battle.stats.wins", 0)
+
+    # достаём дату следующего сброса
+    reset_info = await db.meta.find_one({"_id": "wins_reset"})
+    next_reset = reset_info["next_reset"] if reset_info else None
+
+    pipeline = [
+        {"$addFields": {"wins_count": "$battle.stats.wins"}},
+        {"$sort": {"wins_count": -1}},
+        {"$limit": 10}
+    ]
+    winners = db.users.aggregate(pipeline)
+
+    text = "🏆 <b>Рейтинг побед</b>\n<blockquote>"
+    index = 1
+    rewards = {1: "🌟 ×150", 2: "🌟 ×100", 3: "🌟 ×50"}
+
+    async for acc in winners:
+        reward = rewards.get(index, "🌟 ×25")
+
+        if index == 1:
+            place = "🥇"
+        elif index == 2:
+            place = "🥈"
+        elif index == 3:
+            place = "🥉"
+        else:
+            place = f"{index}."
+
+        text += f"{place} {acc['name']} — {acc.get('wins_count', 0)} Побед 🏆 {reward}\n"
+        index += 1
+
+    # позиция текущего пользователя
+    user_wins = account.get("battle", {}).get("stats", {}).get("wins", 0)
+    higher_pts_count = await db.users.count_documents(
+        {"battle.stats.wins": {"$gt": user_wins}}
+    )
+    user_position = higher_pts_count + 1
+    user_name = account['name']
+
+    text += f"╰── Вы: {user_position}. {user_name} — {user_wins} Побед 🏆 ──╯"
+    text += "</blockquote>"
+
+    # добавляем таймер
+    # добавляем таймер
+    if next_reset:
+
+        if next_reset:
+            delta = next_reset - datetime.now()
+            days = delta.days
+            hours, remainder = divmod(delta.seconds, 3600)
+            minutes = remainder // 60
+
+            if days > 0:
+                left_text = f"{days} дн. {hours} ч. {minutes} мин."
+            elif hours > 0:
+                left_text = f"{hours} ч. {minutes} мин."
+            else:
+                left_text = f"{minutes} мин."
+
+            text += f"\n♻️ До сброса: ⏱️ {left_text}"
+
+    return text
+
+
+async def reset_wins(account):
+    pipeline = [
+        {
+            "$addFields": {
+                "wins_count": "$battle.stats.wins"
+            }
+        },
+        {"$sort": {"wins_count": -1}},
+        {"$limit": 10}
+    ]
+    winners = db.users.aggregate(pipeline)
+
+    text = "🏆 <b>Итоги рейтинга побед</b>\n<blockquote>"
+    index = 1
+    rewards = {1: "🌟 ×150", 2: "🌟 ×100", 3: "🌟 ×50"}
+
+    async for acc in winners:
+        reward = rewards.get(index, "🌟 ×25")
+
+        if index == 1:
+            place = "🥇."
+        elif index == 2:
+            place = "🥈."
+        elif index == 3:
+            place = "🥉."
+        else:
+            place = f"{index}."
+
+        text += f"{place} {acc['name']} — {acc.get('wins_count', 0)} Побед 🏆 {reward}\n"
+        index += 1
+
+    # позиция текущего пользователя
+    user_wins = account.get("battle", {}).get("stats", {}).get("wins", 0)
+    higher_pts_count = await db.users.count_documents(
+        {"battle.stats.wins": {"$gt": user_wins}}
+    )
+    user_position = higher_pts_count + 1
+    user_name = account['name']
+
+    text += f"\n╰── Вы: {user_position}. {user_name} — {user_wins} Побед 🏆 ──╯"
+    text += "</blockquote>\n❇️ Победители получат награды"
+
+    # сброс побед всем
+    await db.users.update_many({}, {"$set": {"battle.stats.wins": 0}})
+
+    return text
+
 
 
 # здесь обработка чатов
@@ -283,11 +717,11 @@ async def chat_rating(chat_id, icon):
 
 
 async def update_get_card(user_id, date):
-    db.users.update_one({'_id': user_id}, {'$set': {'last_call_time': date}}, upsert=True)
+    await db.users.update_one({'_id': user_id}, {'$set': {'last_call_time': date}}, upsert=True)
 
 
 async def update_time(user_id, data, date):
-    db.users.update_one({'_id': user_id}, {'$set': {data: date}}, upsert=True)
+    await db.users.update_one({'_id': user_id}, {'$set': {data: date}}, upsert=True)
 
 
 async def clear_slaves_for_all_users():
@@ -382,3 +816,17 @@ async def migrate_characters():
                 {"_id": user["_id"]},
                 {"$set": {"universe": "Allstars"}}
             )
+
+
+async def get_top10_text() -> str:
+    cursor = db.users.find({"campaign.power": {"$exists": True}}).sort("campaign.power", -1).limit(5)
+    top_accounts = await cursor.to_list(length=5)
+
+    result = [
+        f"{i + 1}. 🪪 {acc.get('name', 'Неизвестно')} ᐷ ⚜️ {acc.get('campaign', {}).get('power', 0)}"
+        for i, acc in enumerate(top_accounts)
+    ]
+
+    return "\n".join(result)
+
+
