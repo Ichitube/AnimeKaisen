@@ -18,7 +18,7 @@ async def home(callback: CallbackQuery):
     account = await mongodb.get_user(callback.from_user.id)
     homes = account['inventory']['home']
     if homes == []:
-        await callback.answer(f"❖  ✖️ У вас нет домов, купите в рынке 🔑", show_alert=True)
+        await callback.answer(f"❖  🔑 У вас нет домов, купите в 🏮 рынке", show_alert=True)
         return
     result = character_photo.home_stats(homes[0])
     photo = InputMediaAnimation(media=result[0])
