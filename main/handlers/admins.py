@@ -5,12 +5,16 @@ from aiogram import Router, Bot
 
 from aiogram.types import Message
 from aiogram.filters import Command
-
+# from keyboards.builders import inline_builder
 from data import mongodb
+from data.mongodb import db
 
 router = Router()
 
 admins = [6946183730, 6462809130]
+
+from datetime import datetime, timedelta
+from aiogram import Bot
 
 
 @router.message(Command("cheat_defense"))
@@ -27,6 +31,28 @@ async def file_id(message: Message):
         await mongodb.give_to_all({"account.money": 5000}, message)
     else:
         await message.reply(text="❖ ✖️ Ты не админ")
+
+
+@router.message(Command("reset_refs"))
+async def reset_refs_cmd(message: Message):
+    user_id = message.from_user.id
+    account = await mongodb.get_user(user_id)
+    if message.from_user.id in admins:  # проверка на админа
+        text = await mongodb.reset_referrals(account)
+        await message.answer(text, parse_mode="HTML", reply_markup=None, disable_web_page_preview=True)
+    else:
+        await message.reply("❖ ✖️ Ты не админ")
+
+
+@router.message(Command("reset_wins"))
+async def reset_wins(message: Message):
+    users_id = message.from_user.id
+    account = await mongodb.get_user(users_id)
+    if message.from_user.id in admins:  # проверка на админа
+        text = await mongodb.reset_wins(account)
+        await message.answer(text, parse_mode="HTML", reply_markup=None, disable_web_page_preview=True)
+    else:
+        await message.reply("❖ ✖️ Ты не админ")
 
 
 @router.message(Command("users"))
@@ -101,7 +127,7 @@ async def chats_count(message: Message):
 
 
 @router.message(Command("post"))
-async def fill_profile(message: Message):
+async def fill_profile(bot: Bot, message: Message):
     if message.from_user.id == 6946183730:
         # Извлекаем message_id из команды
         command_parts = message.text.split()
@@ -131,7 +157,7 @@ async def fill_profile(message: Message):
 
 
 @router.message(Command("message"))
-async def send_message_to_all(message: Message):
+async def send_message_to_all(bot: Bot, message: Message):
     if message.from_user.id in admins:
         # Извлекаем текст сообщения из команды
         command_parts = message.text.split(maxsplit=1)
