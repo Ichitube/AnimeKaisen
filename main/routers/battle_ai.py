@@ -8,9 +8,9 @@ from aiogram.types import CallbackQuery, Message
 from data import characters, character_photo
 from data import mongodb
 from routers.arena import arena
-from filters.chat_type import ChatTypeFilter, CallbackChatTypeFilter
-from keyboards.builders import reply_builder, inline_builder, menu_button, Ability, rm
-from routers import main_menu, gacha
+from filters.chat_type import ChatTypeFilter
+from keyboards.builders import reply_builder, inline_builder, menu_card_button
+from routers import gacha
 
 router = Router()
 
@@ -20,22 +20,22 @@ user_data = {}
 
 win_text = ("👑 Победа: 💀Соперник мертв"
             "\n<blockquote expandable>── •✧✧• ────────────"
-            "\n  + 100🀄️ xp, "
-            "\n  + 200💴 ¥</blockquote>")
+            "\n  + 10🀄️ xp, "
+            "\n  + 20💴 ¥</blockquote>")
 lose_text = ("💀 Поражение"
              "\n<blockquote expandable>── •✧✧• ────────────"
-             "\n  + 55🀄️ xp, "
-             "\n  + 100💴 ¥</blockquote>")
+             "\n  + 5🀄️ xp, "
+             "\n  + 10💴 ¥</blockquote>")
 draw_text = ("☠️ Ничья"
              "\n<blockquote expandable>── •✧✧• ────────────"
-             "\n  + 80🀄️ xp, "
-             "\n  + 150💴 ¥</blockquote>")
+             "\n  + 8🀄️ xp, "
+             "\n  + 15💴 ¥</blockquote>")
 surrender_text = "🏴‍☠️ Поражение"
 surrender_r_text = ("👑 Победа: 🏴‍☠️Соперник сдался"
                     "\n<blockquote expandable>── •✧✧• ────────────"
                     "\n  + 100🀄️ xp, "
                     "\n  + 200💴 ¥</blockquote>")
-time_out_text = ("👑 Победа: 🕘Время вышло"
+time_out_text = ("👑 Победа: ⏱️Время вышло"
                  "\n<blockquote expandable>── •✧✧• ────────────"
                  "\n  + 100🀄️ xp, "
                  "\n  + 200💴 ¥</blockquote>")
@@ -62,6 +62,7 @@ win_animation = "CgACAgQAAx0CfstymgACDfFmFCIV11emoqYRlGWGZRTtrA46oQACAwMAAtwWDVN
 lose_animation = "CgACAgQAAx0CfstymgACDfJmEvqMok4D9NPyOY0bevepOE4LpQAC9gIAAu-0jFK0picm9zwgKzQE"
 draw_animation = "CgACAgQAAx0CfstymgACDfFmFCIV11emoqYRlGWGZRTtrA46oQACAwMAAtwWDVNLf3iCB-QL9jQE"
 
+
 @router.message(ChatTypeFilter(chat_type=["private"]), Command("ai_battle"))
 @router.callback_query(F.data == "ai_battle")
 async def search_opponent(callback: CallbackQuery | Message, bot: Bot):
@@ -69,12 +70,12 @@ async def search_opponent(callback: CallbackQuery | Message, bot: Bot):
     account = await mongodb.get_user(user_id)
     universe = account['universe']
 
-    if account['universe'] in ['Allstars', 'Allstars(old)']:
-        await callback.answer(
-            text="💢 Пока доступно в вашой вселеноой!",
-            show_alert=True
-        )
-        return
+    # if account['universe'] in ['Allstars', 'Allstars(old)']:
+    #     await callback.answer(
+    #         text="💢 Пока не доступно в вашой вселеноой!",
+    #         show_alert=True
+    #     )
+    #     return
 
     if isinstance(callback, CallbackQuery):
         await callback.message.delete()
@@ -92,23 +93,22 @@ async def search_opponent(callback: CallbackQuery | Message, bot: Bot):
     rarity = random.choice(rarity_levels)
 
     # Рандомно выбираем персонажа из выбранной категории редкости
-    character = random.choice(gacha.characters[universee][rarity])
+
+    def rar(r):
+        if r == "Божественная":
+            return "divine"
+        elif r == "Мифическая":
+            return "mythical"
+        elif r == "Легендарная":
+            return "legendary"
+        elif r == "Эпическая":
+            return "epic"
+        elif r == "Редкая":
+            return "rare"
+        elif r == "Обычная":
+            return "common"
 
     if account["battle"]["battle"]["status"] == 0:
-        rival = {"_id": user_id * 10,
-                 "name": "AI ✨",
-                 "universe": universee,
-                 "character": {
-                     universee: character},
-                 "battle": {
-                     "battle": {
-                         "status": 0,
-                         "turn": False,
-                         "rid": "",
-                         "round": 1
-                     }
-                 },
-        }
 
         await mongodb.update_user(user_id, {"battle.battle.status": 1})
 
@@ -122,6 +122,22 @@ async def search_opponent(callback: CallbackQuery | Message, bot: Bot):
         slave = None
         if account['inventory']['slaves']:
             slave = account['inventory']['slaves'][0]
+
+        r_character = random.choice(gacha.characters[universee][rar(character_photo.get_stats(universe, character, 'rarity'))])
+        rival = {"_id": user_id * 10,
+                 "name": "AI ✨",
+                 "universe": universee,
+                 "character": {
+                     universee: r_character},
+                 "battle": {
+                     "battle": {
+                         "status": 0,
+                         "turn": False,
+                         "rid": "",
+                         "round": 1
+                        }
+                    },
+                 }
 
         b_character = characters.Character(ident, name, character, strength, agility, intelligence, ability, 1,
                                            False, ident * 10, slave, 0)
@@ -172,7 +188,7 @@ async def search_opponent(callback: CallbackQuery | Message, bot: Bot):
         # Инициализируем состояние пользователя
         user_data[r_ident] = {rb_character.b_round: False}
         user_data[user_id] = {b_character.b_round: True}
-        await ai(rb_character, bot)
+        await ai(rb_character, bot, callback, account)
 
     elif account["battle"]["battle"]["status"] == 1:
         if isinstance(callback, CallbackQuery):
@@ -193,7 +209,7 @@ async def search_opponent(callback: CallbackQuery | Message, bot: Bot):
             await callback.answer(text="💢 Вы уже находитесь в битве!")
 
 
-async def ai(character, bot):
+async def ai(character, bot, callback, account):
     try:
         r_character = battle_data.get(character.rid)
 
@@ -255,11 +271,11 @@ async def ai(character, bot):
                 user_data[r_character.rid][character.b_round] = False
                 # Запускаем таймер
                 await bot.send_message(r_character.ident, "⏳ Ход соперника")
-                await ai(character, bot)
+                await ai(character, bot, callback, account)
 
         if character.health <= 0 and r_character.health <= 0:
             await bot.send_animation(chat_id=r_character, animation=draw_animation,
-                                     caption=draw_text, reply_markup=menu_button())
+                                     caption=draw_text, reply_markup=menu_card_button())
 
             await mongodb.update_many(
                 {"_id": {"$in": [character.rid]}},
@@ -268,7 +284,7 @@ async def ai(character, bot):
 
             await mongodb.update_many(
                 {"_id": {"$in": [character.rid]}},
-                {"$inc": {"stats.exp": 80, "battle.stats.ties": 1, "account.money": 150}}
+                {"$inc": {"stats.exp": 8, "battle.stats.ties": 1, "account.money": 15}}
             )
 
             current_date = datetime.today().date()
@@ -278,26 +294,7 @@ async def ai(character, bot):
         elif character.health <= 0:
             if character.b_round != r_character.b_round:
                 await bot.send_animation(chat_id=character.rid, animation=win_animation,
-                                         caption=win_text, reply_markup=menu_button())
-
-                await mongodb.update_many(
-                    {"_id": {"$in": [character.rid]}},
-                    {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
-                )
-
-                await mongodb.update_value(character.rid, {"stats.exp": 20})
-                await mongodb.update_value(character.rid, {"account.money": 40})
-                current_date = datetime.today().date()
-                current_datetime = datetime.combine(current_date, datetime.time(datetime.now()))
-                await mongodb.update_user(character.rid, {"tasks.last_arena_fight": current_datetime})
-
-            else:
-                await ai_send_round_photo()
-
-        elif r_character.health <= 0:
-            if character.b_round != r_character.b_round:
-                await bot.send_animation(chat_id=character.rid, animation=lose_animation,
-                                         caption=lose_text, reply_markup=menu_button())
+                                         caption=win_text, reply_markup=menu_card_button())
 
                 await mongodb.update_many(
                     {"_id": {"$in": [character.rid]}},
@@ -312,13 +309,32 @@ async def ai(character, bot):
 
             else:
                 await ai_send_round_photo()
+
+        elif r_character.health <= 0:
+            if character.b_round != r_character.b_round:
+                await bot.send_animation(chat_id=character.rid, animation=lose_animation,
+                                         caption=lose_text, reply_markup=menu_card_button())
+
+                await mongodb.update_many(
+                    {"_id": {"$in": [character.rid]}},
+                    {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
+                )
+
+                await mongodb.update_value(character.rid, {"stats.exp": 5})
+                await mongodb.update_value(character.rid, {"account.money": 10})
+                current_date = datetime.today().date()
+                current_datetime = datetime.combine(current_date, datetime.time(datetime.now()))
+                await mongodb.update_user(character.rid, {"tasks.last_arena_fight": current_datetime})
+
+            else:
+                await ai_send_round_photo()
         else:
             await ai_send_round_photo()
 
     except AttributeError as e:
         # Обработка ошибки AttributeError
         await callback.message.answer("❖ 🔂 Идёт разработка бота связи с чем битва была остановлена",
-                                      reply_markup=menu_button())
+                                      reply_markup=menu_card_button())
         await mongodb.update_many(
             {"_id": {"$in": [account["_id"]]}},
             {"$set": {"battle.battle.status": 0, "battle.battle.rid": ""}}
