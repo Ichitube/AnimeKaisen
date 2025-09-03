@@ -22,81 +22,560 @@ async def check_user_subscription(user_id: int, bot):
 router = Router()
 
 characters = {
-    'Bleach': {
-        'divine': ['Toshiro Hitsuyaga 🌠', 'Unohana Retsu 🌠', 'Ulquiorra Cifer 🌠', 'Urahara Kisuke🌠', 'Toshiro Hitsuyaga🌠', 'Aizen Sosuke🌠', 'Aizen Sosuke 🌠', 'Aizen Sosuke 🌠 ', 'Aizen Sosuke  🌠', 'Ichigo Kurosaki 🌠', 'Ichigo Kurosaki  🌠', 'Ichigo Kurosaki 🌠 ', 'Ichigo Kurosaki🌠 ', 'Ichigo Kurosaki🌠'],
-        'mythical': ['Toshiro Hitsuyaga 🌌', 'Unohana Retsu 🌌', 'Urahara Kisuke🌌', 'Urahara Kisuke 🌌', 'Urahara Kisuke 🌌 ', 'Urahara Kisuke  🌌', 'Ulquiorra Cifer 🌌', 'Ulquiorra Cifer🌌', 'Aizen Sosuke 🌌', 'Aizen Sosuke🌌', 'Aizen Sosuke 🌌 ', 'Ichigo Kurosaki 🌌', 'Ichigo Kurosaki  🌌', 'Ichigo Kurosaki 🌌 '],
-        'legendary': ['Ichigo Kurosaki 🌅', 'Ulquiorra Cifer 🌅', 'Toshiro Hitsuyaga 🌅', 'Aizen Sosuke 🌅', 'Kurosaki Ichigo 🌅'],
-        'epic': ['Toshiro Hitsuyaga 🎆', 'Toshiro Hitsuyaga🎆', 'Aizen Sosuke 🎆', 'Ichigo Kurosaki 🎆', 'Ichigo Kurosaki 🎆', 'Ichigo Kurosaki🎆'],
-        'rare': ['Toshiro Hitsuyaga 🎇', 'Unohana Retsu 🎇', 'Toshiro Hitsuyaga🎇', 'Urahara Kisuke 🎇', 'Ichigo Kurosaki 🎇', 'Ichigo Kurosaki🎇', 'Ichigo Kurosaki 🎇 '],
-        'common': ['Toshiro Hitsuyaga 🌁', 'Ulquiorra Cifer 🌁', 'Unohana Retsu 🌁', 'Unohana Retsu🌁', 'Ulquiorra Cifer🌁', 'Urahara Kisuke 🌁', 'Urahara Kisuke🌁', 'Aizen Sosuke 🌁', 'Aizen Sosuke🌁', 'Unohana Retsu 🌁 ', 'Toshiro Hitsuyaga🌁', 'Toshiro Hitsuyaga 🌁 ', 'Toshiro Hitsuyaga  🌁', 'Ichigo Kurosaki 🌁', 'Ichigo Kurosaki🌁', 'Ichigo Kurosaki 🌁 ', 'Ichigo Kurosaki  🌁']
+    "Bleach": {
+        "divine": [
+            "Toshiro Hitsuyaga 🌠",
+            "Toshiro Hitsuyaga 🌠 ㊀",
+            "Ulquiorra Cifer 🌠",
+            "Urahara Kisuke 🌠",
+            "Unohana Retsu 🌠",
+            "Aizen Sosuke 🌠",
+            "Aizen Sosuke 🌠 ㊀",
+            "Aizen Sosuke 🌠 ㊁",
+            "Aizen Sosuke 🌠 ㊂",
+            "Ichigo Kurosaki 🌠",
+            "Ichigo Kurosaki 🌠 ㊀",
+            "Ichigo Kurosaki 🌠 ㊁",
+            "Ichigo Kurosaki 🌠 ㊂",
+            "Ichigo Kurosaki 🌠 ㊃",
+            "Rukia Kuchiki 🌠",
+            "Rukia Kuchiki 🌠 ㊀",
+            "Rukia Kuchiki 🌠 ㊁",
+            "Rukia Kuchiki 🌠 ㊂",
+            "Rukia Kuchiki 🌠 ㊃",
+            "Rukia Kuchiki 🌠 ㊄",
+            "Byakuya Kuchiki 🌠",
+            "Byakuya Kuchiki 🌠 ㊀",
+            "Byakuya Kuchiki 🌠 ㊃",
+            "Byakuya Kuchiki 🌠 ㊄",
+            "Byakuya Kuchiki 🌠 ㊅",
+        ],
+        "mythical": [
+            "Toshiro Hitsuyaga 🌌",
+            "Ulquiorra Cifer 🌌",
+            "Ulquiorra Cifer 🌌 ㊀",
+            "Urahara Kisuke 🌌",
+            "Urahara Kisuke 🌌 ㊀",
+            "Urahara Kisuke 🌌 ㊁",
+            "Urahara Kisuke 🌌 ㊂",
+            "Unohana Retsu 🌌",
+            "Aizen Sosuke 🌌",
+            "Aizen Sosuke 🌌 ㊀",
+            "Aizen Sosuke 🌌 ㊁",
+            "Ichigo Kurosaki 🌌",
+            "Ichigo Kurosaki 🌌 ㊀",
+            "Ichigo Kurosaki 🌌 ㊁",
+            "Rukia Kuchiki 🌌",
+            "Rukia Kuchiki 🌌 ㊀",
+            "Rukia Kuchiki 🌌 ㊁",
+            "Rukia Kuchiki 🌌 ㊂",
+            "Rukia Kuchiki 🌌 ㊃",
+            "Rukia Kuchiki 🌌 ㊄",
+            "Rukia Kuchiki 🌌 ㊅",
+            "Byakuya Kuchiki 🌌",
+            "Byakuya Kuchiki 🌌 ㊀",
+            "Byakuya Kuchiki 🌌 ㊁",
+            "Byakuya Kuchiki 🌌 ㊂",
+            "Byakuya Kuchiki 🌌 ㊃",
+            "Byakuya Kuchiki 🌌 ㊄",
+        ],
+        "legendary": [
+            "Ichigo Kurosaki 🌅",
+            "Ulquiorra Cifer 🌅",
+            "Aizen Sosuke 🌅",
+            "Kurosaki Ichigo 🌅",
+            "Toshiro Hitsuyaga 🌅",
+            "Byakuya Kuchiki 🌅",
+        ],
+        "epic": [
+            "Toshiro Hitsuyaga 🎆",
+            "Toshiro Hitsuyaga 🎆 ㊀",
+            "Aizen Sosuke 🎆",
+            "Ichigo Kurosaki 🎆",
+            "Ichigo Kurosaki 🎆 ㊀",
+            "Rukia Kuchiki 🎆",
+        ],
+        "rare": [
+            "Toshiro Hitsuyaga 🎇",
+            "Toshiro Hitsuyaga 🎇 ㊀",
+            "Urahara Kisuke 🎇",
+            "Unohana Retsu 🎇",
+            "Unohana Retsu 🎇 ㊀",
+            "Ichigo Kurosaki 🎇",
+            "Ichigo Kurosaki 🎇 ㊀",
+            "Ichigo Kurosaki 🎇 ㊁",
+            "Aizen Sosuke 🎇",
+            "Aizen Sosuke 🎇 ㊀",
+            "Ulquiorra Cifer 🎇",
+            "Ulquiorra Cifer 🎇 ㊀",
+            "Rukia Kuchiki 🎇",
+            "Rukia Kuchiki 🎇 ㊀",
+            "Rukia Kuchiki 🎇 ㊁",
+            "Byakuya Kuchiki 🎇",
+            "Byakuya Kuchiki 🎇 ㊀",
+        ],
+        "common": [
+            "Toshiro Hitsuyaga 🌁",
+            "Toshiro Hitsuyaga 🌁 ㊀",
+            "Toshiro Hitsuyaga 🌁 ㊁",
+            "Toshiro Hitsuyaga 🌁 ㊂",
+            "Urahara Kisuke 🌁",
+            "Urahara Kisuke 🌁 ㊀",
+            "Unohana Retsu 🌁",
+            "Unohana Retsu 🌁 ㊀",
+            "Unohana Retsu 🌁 ㊁",
+            "Ulquiorra Cifer 🌁",
+            "Ulquiorra Cifer 🌁 ㊀",
+            "Aizen Sosuke 🌁",
+            "Aizen Sosuke 🌁 ㊀",
+            "Ichigo Kurosaki 🌁",
+            "Ichigo Kurosaki 🌁 ㊀",
+            "Ichigo Kurosaki 🌁 ㊁",
+            "Ichigo Kurosaki 🌁 ㊂",
+            "Rukia Kuchiki 🌁",
+            "Rukia Kuchiki 🌁 ㊀",
+            "Rukia Kuchiki 🌁 ㊁",
+            "Rukia Kuchiki 🌁 ㊂",
+            "Rukia Kuchiki 🌁 ㊃",
+            "Rukia Kuchiki 🌁 ㊄",
+            "Rukia Kuchiki 🌁 ㊅",
+            "Byakuya Kuchiki 🌁",
+            "Byakuya Kuchiki 🌁 ㊀",
+            "Byakuya Kuchiki 🌁 ㊁",
+            "Byakuya Kuchiki 🌁 ㊂",
+            "Byakuya Kuchiki 🌁 ㊃"
+            "Byakuya Kuchiki 🌁 ㊄",
+            "Byakuya Kuchiki 🌁 ㊅"
+            "Byakuya Kuchiki 🌁 ㊆"
+        ]
     },
-    'Naruto': {
-        'divine': ['Naruto Uzumaki 🌠', 'Uchiha▫️ 🌠', 'Naruto▫️ 🌠', 'Sasuke 🌠', 'Uchiha Sasuke◾️ 🌠', 'Uchiha◾️ 🌠', 'Sasuke Uchiha 🌠', 'Uzumaki Naruto 🌠', 'Naruto 🌠', 'Naruto Uzumaki◾️ 🌠', 'Naruto◾️ 🌠', 'Uchiha Sasuke 🌠'],
-        'mythical': ['Naruto Uzumaki 🌌', 'Sasuke Uchiha 🌌', 'Naruto▫️ 🌌', 'Sasuke 🌌', 'Uchiha Sasuke◾️ 🌌', 'Sasuke◾️ 🌌', 'Sasuke▫️ 🌌', 'Sasuke Uchiha◾️ 🌌', 'Uchiha Sasuke▫️ 🌌', 'Naruto 🌌', 'Uzumaki Naruto 🌌', 'Naruto Uzumaki◾️ 🌌', 'Uchiha Sasuke 🌌'],
-        'legendary': ['Naruto Uzumaki 🌅', 'Uchiha Sasuke 🌅'],
-        'epic': ['Naruto Uzumaki 🎆', 'Uchiha Sasuke 🎆'],
-        'rare': ['Naruto Uzumaki 🎇', 'Uchiha Sasuke◾️ 🎇', 'Sasuke◾️ 🎇', 'Uzumaki Naruto 🎇', 'Uchiha Sasuke 🎇', 'Sasuke Uchiha 🎇', 'Sasuke 🎇', 'Uchiha Sasuke 🎇'],
-        'common': ['Naruto Uzumaki 🌁', 'Sasuke Uchiha 🌁', 'Sasuke 🌁', 'Sasuke◾️ 🌁', 'Sasuke Uchiha◾️ 🌁', 'Naruto Uzumaki◾️ 🌁', 'Naruto 🌁', 'Uzumaki Naruto 🌁', 'Uchiha Sasuke 🌁', 'Uchiha Sasuke◾️ 🌁']
+    "Naruto": {
+        "divine": [
+            "Naruto Uzumaki 🌠",
+            "Naruto Uzumaki 🌠 ㊀",
+            "Naruto Uzumaki 🌠 ㊁",
+            "Naruto Uzumaki 🌠 ㊂",
+            "Naruto Uzumaki 🌠 ㊃",
+            "Naruto Uzumaki 🌠 ㊄",
+            "Uchiha Sasuke 🌠",
+            "Uchiha Sasuke 🌠 ㊀",
+            "Uchiha Sasuke 🌠 ㊁",
+            "Uchiha Sasuke 🌠 ㊂",
+            "Uchiha Sasuke 🌠 ㊃",
+            "Uchiha Sasuke 🌠 ㊄",
+            "Itachi Uchiha 🌠",
+            "Itachi Uchiha 🌠 ㊀",
+            "Itachi Uchiha 🌠 ㊁",
+            "Itachi Uchiha 🌠 ㊂",
+            "Itachi Uchiha 🌠 ㊃",
+            "Itachi Uchiha 🌠 ㊄",
+            "Itachi Uchiha 🌠 ㊅",
+            "Obito Uchiha 🌠",
+            "Obito Uchiha 🌠 ㊀",
+            "Obito Uchiha 🌠 ㊁",
+            "Obito Uchiha 🌠 ㊂",
+            "Obito Uchiha 🌠 ㊃",
+            "Obito Uchiha 🌠 ㊄",
+            "Obito Uchiha 🌠 ㊅",
+            "Madara Uchiha 🌠",
+            "Madara Uchiha 🌠 ㊀",
+            "Madara Uchiha 🌠 ㊁",
+            "Madara Uchiha 🌠 ㊂",
+            "Madara Uchiha 🌠 ㊃",
+            "Madara Uchiha 🌠 ㊄",
+            "Madara Uchiha 🌠 ㊅",
+            "Kakashi Hatake 🌠",
+            "Kakashi Hatake 🌠 ㊀",
+            "Kakashi Hatake 🌠 ㊁",
+            "Kakashi Hatake 🌠 ㊂",
+            "Kakashi Hatake 🌠 ㊃",
+            "Kakashi Hatake 🌠 ㊄",
+        ],
+        "mythical": [
+            "Itachi Uchiha 🌌",
+            "Itachi Uchiha 🌌 ㊀",
+            "Itachi Uchiha 🌌 ㊁",
+            "Itachi Uchiha 🌌 ㊂",
+            "Itachi Uchiha 🌌 ㊃",
+            "Itachi Uchiha 🌌 ㊄",
+            "Itachi Uchiha 🌌 ㊅",
+            "Itachi Uchiha 🌌 ㊆",
+            "Itachi Uchiha 🌌 ㊇",
+            "Itachi Uchiha 🌌 ㊈",
+            "Obito Uchiha 🌌",
+            "Obito Uchiha 🌌 ㊀",
+            "Obito Uchiha 🌌 ㊁",
+            "Obito Uchiha 🌌 ㊂",
+            "Obito Uchiha 🌌 ㊃",
+            "Obito Uchiha 🌌 ㊄",
+            "Obito Uchiha 🌌 ㊅",
+            "Obito Uchiha 🌌 ㊆",
+            "Obito Uchiha 🌌 ㊇",
+            "Obito Uchiha 🌌 ㊈",
+            "Obito Uchiha 🌌 ㊉",
+            "Obito Uchiha 🌌 ㊉㊀",
+            "Madara Uchiha 🌌",
+            "Madara Uchiha 🌌 ㊀",
+            "Madara Uchiha 🌌 ㊁",
+            "Madara Uchiha 🌌 ㊂",
+            "Madara Uchiha 🌌 ㊃",
+            "Madara Uchiha 🌌 ㊄",
+            "Madara Uchiha 🌌 ㊅",
+            "Kakashi Hatake 🌌",
+            "Kakashi Hatake 🌌 ㊀",
+            "Kakashi Hatake 🌌 ㊁",
+            "Kakashi Hatake 🌌 ㊂",
+            "Kakashi Hatake 🌌 ㊃",
+            "Kakashi Hatake 🌌 ㊄",
+            "Kakashi Hatake 🌌 ㊅",
+            "Naruto Uzumaki 🌌",
+            "Naruto Uzumaki 🌌 ㊀",
+            "Naruto Uzumaki 🌌 ㊁",
+            "Naruto Uzumaki 🌌 ㊂",
+            "Naruto Uzumaki 🌌 ㊃",
+            "Uchiha Sasuke 🌌",
+            "Uchiha Sasuke 🌌 ㊀",
+            "Uchiha Sasuke 🌌 ㊁",
+            "Uchiha Sasuke 🌌 ㊂",
+            "Uchiha Sasuke 🌌 ㊃",
+            "Uchiha Sasuke 🌌 ㊄",
+            "Uchiha Sasuke 🌌 ㊅",
+            "Uchiha Sasuke 🌌 ㊆",
+            "Uchiha Sasuke 🌌 ㊇",
+        ],
+        "legendary": [
+            "Naruto Uzumaki 🌅",
+            "Uchiha Sasuke 🌅"
+            "Itachi Uchiha 🌅",
+            "Itachi Uchiha 🌅 ㊀",
+            "Itachi Uchiha 🌅 ㊁",
+            "Obito Uchiha 🌅",
+            "Madara Uchiha 🌅",
+            "Kakashi Hatake 🌅"
+            "Kakashi Hatake 🌅 ㊀",
+        ],
+        "epic": [
+            "Naruto Uzumaki 🎆",
+            "Uchiha Sasuke 🎆",
+            "Itachi Uchiha 🎆",
+            "Obito Uchiha 🎆",
+        ],
+        "rare": [
+            "Naruto Uzumaki 🎇",
+            "Naruto Uzumaki 🎇 ㊀",
+            "Uchiha Sasuke 🎇",
+            "Uchiha Sasuke 🎇 ㊀",
+            "Uchiha Sasuke 🎇 ㊁",
+            "Uchiha Sasuke 🎇 ㊂",
+            "Uchiha Sasuke 🎇 ㊃",
+            "Itachi Uchiha 🎇",
+            "Itachi Uchiha 🎇 ㊀",
+            "Itachi Uchiha 🎇 ㊁",
+            "Obito Uchiha 🎇",
+        ],
+        "common": [
+            "Naruto Uzumaki 🌁",
+            "Naruto Uzumaki 🌁 ㊀",
+            "Naruto Uzumaki 🌁 ㊁",
+            "Naruto Uzumaki 🌁 ㊂",
+            "Uchiha Sasuke 🌁",
+            "Uchiha Sasuke 🌁 ㊀",
+            "Uchiha Sasuke 🌁 ㊁",
+            "Uchiha Sasuke 🌁 ㊂",
+            "Uchiha Sasuke 🌁 ㊃",
+            "Uchiha Sasuke 🌁 ㊄",
+            "Itachi Uchiha 🌁",
+            "Itachi Uchiha 🌁 ㊀",
+            "Itachi Uchiha 🌁 ㊁",
+            "Itachi Uchiha 🌁 ㊂",
+            "Itachi Uchiha 🌁 ㊃",
+            "Itachi Uchiha 🌁 ㊄",
+            "Obito Uchiha 🌁",
+            "Obito Uchiha 🌁 ㊀",
+            "Obito Uchiha 🌁 ㊁",
+            "Obito Uchiha 🌁 ㊂",
+            "Obito Uchiha 🌁 ㊃",
+            "Obito Uchiha 🌁 ㊄",
+            "Obito Uchiha 🌁 ㊅",
+            "Obito Uchiha 🌁 ㊆",
+            "Madara Uchiha 🌁",
+            "Madara Uchiha 🌁 ㊀",
+            "Madara Uchiha 🌁 ㊁",
+            "Madara Uchiha 🌁 ㊂",
+            "Madara Uchiha 🌁 ㊃",
+            "Kakashi Hatake 🌁",
+            "Kakashi Hatake 🌁 ㊀",
+            "Kakashi Hatake 🌁 ㊁",
+            "Kakashi Hatake 🌁 ㊂",
+            "Kakashi Hatake 🌁 ㊃",
+            "Kakashi Hatake 🌁 ㊄",
+        ]
     },
+    "Jujutsu Kaisen": {
+        "divine": [
+            "Gojo Satoru 🌠",
+            "Gojo Satoru 🌠 ㊀",
+            "Gojo Satoru 🌠 ㊁",
+            "Gojo Satoru 🌠 ㊃",
+            "Gojo Satoru 🌠 ㊄",
+            "Sukuna x Itadori 🌠",
+            "Sukuna x Itadori 🌠 ㊀",
+            "Sukuna x Itadori 🌠 ㊁",
+            "Sukuna x Itadori 🌠 ㊃",
+            "Sukuna x Itadori 🌠 ㊄",
+            "Megumi Fushiguro 🌠",
+            "Megumi Fushiguro 🌠 ㊀",
+            "Yuta Okkotsu 🌠",
+            "Yuta Okkotsu 🌠 ㊀",
+            "Geto Suguru 🌠",
+            "Geto Suguru 🌠 ㊀",
+            "Geto Suguru 🌠 ㊁",
+            "Geto Suguru 🌠 ㊂",
+            "Geto Suguru 🌠 ㊃",
+            "Geto Suguru 🌠 ㊄",
+            "Geto Suguru 🌠 ㊅",
+        ],
+        "mythical": [
+            "Gojo Satoru 🌌",
+            "Gojo Satoru 🌌 ㊀",
+            "Gojo Satoru 🌌 ㊁",
+            "Gojo Satoru 🌌 ㊃",
+            "Gojo Satoru 🌌 ㊄",
+            "Gojo Satoru 🌌 ㊅",
+            "Gojo Satoru 🌌 ㊆",
+            "Gojo Satoru 🌌 ㊇",
+            "Gojo Satoru 🌌 ㊈",
+            "Gojo Satoru 🌌 ㊉",
+            "Gojo Satoru 🌌 ㊉㊀",
+            "Gojo Satoru 🌌 ㊉㊁",
+            "Sukuna x Itadori 🌌",
+            "Sukuna x Itadori 🌌 ㊀",
+            "Sukuna x Itadori 🌌 ㊁",
+            "Sukuna x Itadori 🌌 ㊂",
+            "Sukuna x Itadori 🌌 ㊃",
+            "Sukuna x Itadori 🌌 ㊄",
+            "Sukuna x Itadori 🌌 ㊅",
+            "Sukuna x Itadori 🌌 ㊆",
+            "Sukuna x Itadori 🌌 ㊇",
+            "Megumi Fushiguro 🌌",
+            "Megumi Fushiguro 🌌 ㊀",
+            "Megumi Fushiguro 🌌 ㊁",
+            "Megumi Fushiguro 🌌 ㊂",
+            "Megumi Fushiguro 🌌 ㊃",
+            "Yuta Okkotsu 🌌",
+            "Yuta Okkotsu 🌌 ㊁",
+            "Yuta Okkotsu 🌌 ㊂",
+            "Yuta Okkotsu 🌌 ㊃",
+            "Geto Suguru 🌌",
+            "Geto Suguru 🌌 ㊀",
+            "Geto Suguru 🌌 ㊁",
+        ],
+        "legendary": [
+            "Sukuna x Itadori 🌅",
+            "Gojo Satoru 🌅",
+            "Gojo Satoru 🌅 ㊀",
+            "Gojo Satoru 🌅 ㊁",
+            "Yuta Okkotsu 🌅",
+            "Geto Suguru 🌅",
+            "Geto Suguru 🌅 ㊀",
+            "Geto Suguru 🌅 ㊁",
+        ],
+        "epic": [
+            "Gojo Satoru 🎆",
+            "Gojo Satoru 🎆 ㊀",
+            "Gojo Satoru 🎆 ㊁",
+            "Gojo Satoru 🎆 ㊂",
+            "Sukuna x Itadori 🎆",
+            "Sukuna x Itadori 🎆 ㊀",
+            "Sukuna x Itadori 🎆 ㊁",
+            "Yuta Okkotsu 🎆",
+            "Yuta Okkotsu 🎆 ㊁",
+            "Yuta Okkotsu 🎆 ㊂",
+            "Yuta Okkotsu 🎆 ㊃",
+            "Megumi Fushiguro 🎆",
+        ],
+        "rare": [
+            "Gojo Satoru 🎇 ㊀",
+            "Gojo Satoru 🎇 ㊁",
+            "Gojo Satoru 🎇 ㊂",
+            "Gojo Satoru 🎇 ㊃",
+            "Gojo Satoru 🎇 ㊄",
+            "Gojo Satoru 🎇 ㊅",
+            "Gojo Satoru 🎇",
+            "Sukuna x Itadori 🎇 ㊀",
+            "Sukuna x Itadori 🎇 ㊁",
+            "Sukuna x Itadori 🎇 ㊂",
+            "Sukuna x Itadori 🎇 ㊃",
+            "Yuta Okkotsu 🎇",
+            "Yuta Okkotsu 🎇 ㊀",
+            "Yuta Okkotsu 🎇 ㊁",
+            "Yuta Okkotsu 🎇 ㊂",
+            "Megumi Fushiguro 🎇"
+        ],
+        "common": [
+            "Gojo Satoru 🌁",
+            "Gojo Satoru 🌁 ㊀",
+            "Gojo Satoru 🌁 ㊁",
+            "Gojo Satoru 🌁 ㊂",
+            "Gojo Satoru 🌁 ㊃",
+            "Gojo Satoru 🌁 ㊄",
+            "Gojo Satoru 🌁 ㊅",
+            "Gojo Satoru 🌁 ㊆",
+            "Gojo Satoru 🌁 ㊇",
+            "Gojo Satoru 🌁 ㊈",
+            "Sukuna x Itadori 🌁",
+            "Sukuna x Itadori 🌁 ㊀",
+            "Sukuna x Itadori 🌁 ㊁",
+            "Sukuna x Itadori 🌁 ㊂",
+            "Sukuna x Itadori 🌁 ㊃",
+            "Sukuna x Itadori 🌁 ㊄",
+            "Sukuna x Itadori 🌁 ㊅",
+            "Sukuna x Itadori 🌁 ㊆",
+            "Sukuna x Itadori 🌁 ㊇",
+            "Yuta Okkotsu 🌁",
+            "Yuta Okkotsu 🌁 ㊀",
+            "Yuta Okkotsu 🌁 ㊁",
+            "Yuta Okkotsu 🌁 ㊂",
+            "Yuta Okkotsu 🌁 ㊃",
+            "Yuta Okkotsu 🌁 ㊄",
+            "Yuta Okkotsu 🌁 ㊅",
+            "Megumi Fushiguro 🌁",
+            "Megumi Fushiguro 🌁 ㊀",
+            "Megumi Fushiguro 🌁 ㊁",
+            "Megumi Fushiguro 🌁 ㊂",
+            "Megumi Fushiguro 🌁 ㊃",
+            "Megumi Fushiguro 🌁 ㊄",
+            "Megumi Fushiguro 🌁 ㊅",
+            "Megumi Fushiguro 🌁 ㊆",
+            "Geto Suguru 🌁",
+            "Geto Suguru 🌁 ㊀",
+            "Geto Suguru 🌁 ㊁",
+            "Geto Suguru 🌁 ㊂",
+            "Geto Suguru 🌁 ㊃",
+            "Geto Suguru 🌁 ㊄",
+            "Geto Suguru 🌁 ㊅",
+            "Geto Suguru 🌁 ㊆",
+            "Geto Suguru 🌁 ㊇",
+            "Geto Suguru 🌁 ㊈",
+        ]
+    },
+    # 'Bleach': {
+    #     'divine': ['Toshiro Hitsuyaga 🌠', 'Unohana Retsu 🌠', 'Ulquiorra Cifer 🌠', 'Urahara Kisuke🌠', 'Toshiro Hitsuyaga🌠', 'Aizen Sosuke🌠', 'Aizen Sosuke 🌠', 'Aizen Sosuke 🌠 ', 'Aizen Sosuke  🌠', 'Ichigo Kurosaki 🌠', 'Ichigo Kurosaki  🌠', 'Ichigo Kurosaki 🌠 ', 'Ichigo Kurosaki🌠 ', 'Ichigo Kurosaki🌠'],
+    #     'mythical': ['Toshiro Hitsuyaga 🌌', 'Unohana Retsu 🌌', 'Urahara Kisuke🌌', 'Urahara Kisuke 🌌', 'Urahara Kisuke 🌌 ', 'Urahara Kisuke  🌌', 'Ulquiorra Cifer 🌌', 'Ulquiorra Cifer🌌', 'Aizen Sosuke 🌌', 'Aizen Sosuke🌌', 'Aizen Sosuke 🌌 ', 'Ichigo Kurosaki 🌌', 'Ichigo Kurosaki  🌌', 'Ichigo Kurosaki 🌌 '],
+    #     'legendary': ['Ichigo Kurosaki 🌅', 'Ulquiorra Cifer 🌅', 'Toshiro Hitsuyaga 🌅', 'Aizen Sosuke 🌅', 'Kurosaki Ichigo 🌅'],
+    #     'epic': ['Toshiro Hitsuyaga 🎆', 'Toshiro Hitsuyaga🎆', 'Aizen Sosuke 🎆', 'Ichigo Kurosaki 🎆', 'Ichigo Kurosaki 🎆', 'Ichigo Kurosaki🎆'],
+    #     'rare': ['Toshiro Hitsuyaga 🎇', 'Unohana Retsu 🎇', 'Toshiro Hitsuyaga🎇', 'Urahara Kisuke 🎇', 'Ichigo Kurosaki 🎇', 'Ichigo Kurosaki🎇', 'Ichigo Kurosaki 🎇 '],
+    #     'common': ['Toshiro Hitsuyaga 🌁', 'Ulquiorra Cifer 🌁', 'Unohana Retsu 🌁', 'Unohana Retsu🌁', 'Ulquiorra Cifer🌁', 'Urahara Kisuke 🌁', 'Urahara Kisuke🌁', 'Aizen Sosuke 🌁', 'Aizen Sosuke🌁', 'Unohana Retsu 🌁 ', 'Toshiro Hitsuyaga🌁', 'Toshiro Hitsuyaga 🌁 ', 'Toshiro Hitsuyaga  🌁', 'Ichigo Kurosaki 🌁', 'Ichigo Kurosaki🌁', 'Ichigo Kurosaki 🌁 ', 'Ichigo Kurosaki  🌁']
+    # },
+    # 'Naruto': {
+    #     'divine': ['Naruto Uzumaki 🌠', 'Uchiha▫️ 🌠', 'Naruto▫️ 🌠', 'Sasuke 🌠', 'Uchiha Sasuke◾️ 🌠', 'Uchiha◾️ 🌠', 'Sasuke Uchiha 🌠', 'Uzumaki Naruto 🌠', 'Naruto 🌠', 'Naruto Uzumaki◾️ 🌠', 'Naruto◾️ 🌠', 'Uchiha Sasuke 🌠'],
+    #     'mythical': ['Naruto Uzumaki 🌌', 'Sasuke Uchiha 🌌', 'Naruto▫️ 🌌', 'Sasuke 🌌', 'Uchiha Sasuke◾️ 🌌', 'Sasuke◾️ 🌌', 'Sasuke▫️ 🌌', 'Sasuke Uchiha◾️ 🌌', 'Uchiha Sasuke▫️ 🌌', 'Naruto 🌌', 'Uzumaki Naruto 🌌', 'Naruto Uzumaki◾️ 🌌', 'Uchiha Sasuke 🌌'],
+    #     'legendary': ['Naruto Uzumaki 🌅', 'Uchiha Sasuke 🌅'],
+    #     'epic': ['Naruto Uzumaki 🎆', 'Uchiha Sasuke 🎆'],
+    #     'rare': ['Naruto Uzumaki 🎇', 'Uchiha Sasuke◾️ 🎇', 'Sasuke◾️ 🎇', 'Uzumaki Naruto 🎇', 'Uchiha Sasuke 🎇', 'Sasuke Uchiha 🎇', 'Sasuke 🎇', 'Uchiha Sasuke 🎇'],
+    #     'common': ['Naruto Uzumaki 🌁', 'Sasuke Uchiha 🌁', 'Sasuke 🌁', 'Sasuke◾️ 🌁', 'Sasuke Uchiha◾️ 🌁', 'Naruto Uzumaki◾️ 🌁', 'Naruto 🌁', 'Uzumaki Naruto 🌁', 'Uchiha Sasuke 🌁', 'Uchiha Sasuke◾️ 🌁']
+    # },
     'Allstars': {
         'soccer': ['Gojo Satoru ⚽', 'Sukuna ⚽'],
-        'halloween': ['Ichigo Kurosaki 👻', 'Rukia Kuchiki 👻', 'Ichigo 👻', 'Kurosaki Ichigo 👻', 'Hawk 👻', 'Zoro 👻', 'Sanji 👻', 'Luffi 👻', 'Kimiko 👻', 'Sasuke 👻', 'Gojo 👻', 'Gojo Satoru👻', 'Sukuna 👻', 'Ryomen Sukuna 👻', 'Megumi 👻', 'Rukia Kuchiki 👻', 'Kuchiki Rukia 👻', 'Robin 👻', 'Nami 👻', 'Kugisaki 👻', 'Kugisaki Nobara👻', 'Nobara Kugisaki 👻', '2b 👻', '2B 👻'],
-        'divine': ['Sylpha 🌠', 'Hinata Shoyo 🌠', 'Suguru Geto 🌠', 'Neji Hyuga 🌠', 'Suzuya Juzo 🌠', 'Juzo 🌠', 'Juzo Suzuya 🌠', 'Inoske 🌠', 'Todoroki Touya 🌠', 'Mirai Niki 🌠', 'Mich Atsumu 🌠', 'Kurumi Tokisaki 🌠', 'Grimmjow 🌠', 'Zoro 🌠', 'Madara Uchiha 🌠', 'Blyu Lok 🌠', 'Mouchiro Tokito 🌠', 'Goku 🌠', 'Gojo Satoru 🌠', 'Ayanokoji  🌠', 'Nagi Seishiro 🌠', 'Anos Voldigoad 🌠', 'Inosuke 🌠', 'Dabi Mha 🌠', 'Sanemi Shinazigawa 🌠', 'Shanks 🌠', 'Lucifer 🌠', 'Sukuna 🌠', 'Muzan Kibutsiju 🌠', 'Yuta Okkotsu 🌠', 'Obito Uchiha 🌠', 'Will Serfort 🌠', 'Neito Monoma 🌠', 'Sae Itoshi 🌠', 'Choso 🌠', 'Ayanokoji 🌠', 'Polnareff 🌠', 'Jony 🌠', 'Rimuru Tempest 🌠', 'Sid Kageno 🌠', 'So Jin Wu 🌠', 'Zenitsu 🌠', 'Kaneki Ken 🌠', 'Shinobu Kocho 🌠', 'Kyouko Hori 🌠', 'Aliya 🌠', 'Hizuru Minakata 🌠', 'Shizuku 🌠', 'Yoruichi 🌠'],
-        'mythical': ['Guts 🌌', 'Gojo 🌌', 'L 🌌', 'Brodyaga 🌌', 'Akashi 🌌', 'Kaneki Ken 🌌', 'Tomura 🌌', 'Dazai 🌌', 'Soshiro 🌌', 'Kaneki 🌌', 'Arima Kishou 🌌', 'Guts  🌌', 'Yuta Okkotsu 🌌', 'Yato 🌌', 'Gyro 🌌', 'Sendju 🌌', 'Nakoshi 🌌', 'Zoro 🌌', 'Nagi 🌌', 'Kitano 🌌', 'Asta 🌌', 'Rimuru Tempest 🌌', 'Ryunosuke 🌌', 'Melodias 🌌', 'Naruto Uzumaki 🌌', 'Levi Ackerman 🌌', 'Arturia Pendragon 🌌', 'Marin Katigawa 🌌', 'Arturia 🌌', 'Kiga 🌌', 'Raphtalia 🌌', 'Shikimori 🌌', 'Mikasa 🌌', 'Albedo 🌌', 'Fubuki 🌌', 'Lane 🌌', 'Mey 🌌', 'Yoruichi Shihoin 🌌', 'Nezuko 🌌', 'Kugisaki Nobara 🌌', 'Kurumi Tokisaki 🌌'],
-        'legendary': ['F1 🌅', 'F2 🌅', 'F3 🌅', 'F4 🌅', 'F5 🌅', 'F6 🌅', 'F7 🌅', 'F8 🌅', 'F9 🌅', 'F10 🌅', 'F11 🌅', 'F12 🌅', 'F13 🌅', 'F14 🌅', 'F15 🌅', 'F16 🌅', 'F17 🌅', 'F18 🌅', 'F19 🌅', 'F20 🌅', 'F21 🌅', 'F22 🌅', 'F23 🌅', 'F24 🌅', 'F25 🌅', 'F26 🌅', 'F27 🌅', 'F28 🌅', 'F29 🌅', 'F30 🌅', 'F31 🌅', 'F32 🌅', 'F33 🌅'],
-        'epic': ['Todoroki Shoto 🎆', 'Yuta Okkotsu 🎆', 'Sven 🎆', 'Juggernaut 🎆', 'Void 🎆', 'Chaos Knight 🎆', 'Axe 🎆', 'Luffi 🎆', 'Zeus 🎆', 'Sukuna 🎆', 'Phantom Assassin 🎆', 'Visage 🎆', 'Storm Spirit 🎆', 'Kunkka 🎆', 'Shadow Fiend 🎆', 'Magnus 🎆', 'Tusk 🎆', 'Lo 🎆', 'Spectrum 🎆', 'Arc Warden 🎆', 'Marci 🎆', 'Lina 🎆', 'Drow Ranger 🎆', 'Keeper of Light 🎆'],
-        'rare': ['Shinobu Kocho 🎇', 'Miwa Kasumi 🎇', 'Muerta 🎇', 'Undying 🎇', 'Prophet 🎇', 'Razor 🎇', 'Wind Ranger 🎇', 'Luna 🎇', 'Spectre 🎇', 'Tinker 🎇', 'Bat Rider 🎇', 'Lifestealer 🎇', 'Giyu Tomioka 🎇', 'Musashi Miyamoto 🎇', 'TBlade 🎇', 'Faceless Void 🎇', 'Disruptor 🎇', 'Terrorblade 🎇'],
-        'common': ['Uchiha Sasuke 🌁', 'Naruto Uzumaki 🌁', 'Zenitsu 🌁', 'Shoto Todoroki 🌁', 'Lance Crown 🌁', 'Megumi Fushiguro 🌁', 'Levi Ackerman 🌁', 'Nanami Kento 🌁', 'Todoroki 🌁', 'Miyamoto Musashi 🌁', 'Toji Fushiguro 🌁', 'Feitan Portor 🌁', 'Kaneki Ken 🌁', 'Seidou Takizawa 🌁', 'Gojo Satoru 🌁', 'Gaara 🌁', '02 🌁', 'Power 🌁', 'Yoru 🌁', 'Kugisaki Nobara 🌁', 'Hinata Hyuga 🌁', 'Sakura Haruno 🌁', 'Maki Zenin 🌁']
+        'halloween': ['Ichigo Kurosaki 👻', 'Rukia Kuchiki 👻', 'Ichigo 👻', 'Kurosaki Ichigo 👻', 'Hawk 👻', 'Zoro 👻', 'Sanji 👻', 'Luffi 👻', 'Kimiko 👻', 'Sasuke 👻', 'Gojo 👻', 'Gojo Satoru👻', 'Sukuna 👻', 'Ryomen Sukuna 👻', 'Megumi 👻', 'Kuchiki Rukia 👻', 'Robin 👻', 'Nami 👻', 'Kugisaki 👻', 'Kugisaki Nobara👻', 'Nobara Kugisaki 👻', '2b 👻', '2B 👻'],
+        'divine': ['Arima Kishou 🌠', 'Uruma Shun 🌠', 'Gojo Satoru 🌠', 'Kaneki Ken 🌠', 'Gojo Satoru ▫️ ▫️ 🌠', 'Koji 🌠', 'Ulquiorra 🌠', 'Kurumi Tokisaki 🌠', 'Gabimaru 🌠', 'Renji 🌠', 'Grimmjow 🌠', 'Megumi Fushiguro 🌠', 'Geto Suguru ▫️ 🌠', 'Rangiku Matsumoto 🌠', 'Shutara Senjumaru 🌠', 'Gojo Satoru ▫️ ▫️ ▫️ 🌠', 'Gorgon 🌠', 'Urahara Kisuke 🌠', 'Rukia Kuchiki 🌠', 'Inoue Orihime 🌠', 'Soifon 🌠', 'Urahara Kisuke ▫️ 🌠', 'Yagami Light ▫️ 🌠', 'Sukuna 🌠', 'Aizen Sosuke 🌠', 'Yuta Okkotsu ▫️ 🌠', 'Yuta Okkotsu 🌠', 'Kakashi Hatake 🌠', 'Seishiro Nagi 🌠', 'Mitsuri Kanroji 🌠', 'Rengoku Kyojuro ▫️ 🌠', 'Temari Nara 🌠', 'Yagami Light 🌠', 'Tengen Uzui ▫️ 🌠', 'Itachi Uchiha 🌠', 'Geto Suguru 🌠', 'Rengoku Kyojuro 🌠', 'Yami Sukehiro 🌠', 'Choso Kamo 🌠', 'Gojo Satoru ▫️ 🌠', 'Uchiha Madara 🌠', 'Shinobu Kocho 🌠', 'Toji Fushiguro 🌠', 'Tengen Uzui 🌠', 'Toji Fushiguro ▫️ 🌠', 'Sylpha 🌠', 'Hinata Shoyo 🌠', 'Suguru Geto 🌠', 'Neji Hyuga 🌠', 'Suzuya Juzo 🌠', 'Juzo 🌠', 'Juzo Suzuya 🌠', 'Inoske 🌠', 'Todoroki Touya 🌠', 'Mirai Niki 🌠', 'Mich Atsumu 🌠', 'Zoro 🌠', 'Madara Uchiha 🌠', 'Blyu Lok 🌠', 'Mouchiro Tokito 🌠', 'Goku 🌠', 'Ayanokoji  🌠', 'Nagi Seishiro 🌠', 'Anos Voldigoad 🌠', 'Inosuke 🌠', 'Dabi Mha 🌠', 'Sanemi Shinazigawa 🌠', 'Shanks 🌠', 'Lucifer 🌠', 'Muzan Kibutsiju 🌠', 'Obito Uchiha 🌠', 'Will Serfort 🌠', 'Neito Monoma 🌠', 'Sae Itoshi 🌠', 'Choso 🌠', 'Ayanokoji 🌠', 'Polnareff 🌠', 'Jony 🌠', 'Rimuru Tempest 🌠', 'Sid Kageno 🌠', 'So Jin Wu 🌠', 'Zenitsu 🌠', 'Kyouko Hori 🌠', 'Aliya 🌠', 'Hizuru Minakata 🌠', 'Shizuku 🌠', 'Yoruichi 🌠'],
+        'mythical': ['L 🌌', 'Juuzou Suzuya 🌌', 'Shinobu Kocho 🌌', 'Manjiro Sano 🌌', 'Eren Yeager ▫️ 🌌', 'Furina 🌌', 'Kurumi Tokisaki 🌌', 'Zenitsu Agatsuma 🌌', 'Apex girl 🌌', 'Mugetsu 🌌', 'Ichigo Kurosaki 🌌', 'Hokushin Mei 🌌', 'Delta 🌌', 'Scaramouche 🌌', 'Blade 🌌', 'Knave 🌌', 'Kazuha 🌌', 'Kaveh 🌌', 'Zhongli 🌌', 'Rei Ayanami 🌌', 'Ayato Kamisato 🌌', 'Sukuna 🌌', 'Makima ▫️ ▫️ 🌌', 'Yuta Okkotsu 🌌', 'Levi Ackerman ▫️ 🌌', 'Jean Kirstein 🌌', 'Mikasa Ackerman 🌌', 'Yuta Okkotsu ▫️ 🌌', 'Uruma Shun 🌌', 'Tanjiro Kamado ▫️ 🌌', 'Gojo Satoru 🌌', 'Guts 🌌', 'Akashi Seijuro 🌌', 'Yagami Light ▫️ 🌌', 'Garou 🌌', 'Urahara Kisuke 🌌', 'Itachi Uchiha 🌌', 'Yuta Okkotsu ▫️ ▫️ 🌌', 'Yato Noragami 🌌', 'Kaneki Ken ▫️ 🌌', 'Hisoka Morow 🌌', 'Kaneki Ken ▫️ ▫️ 🌌', 'Todoroki Shoto 🌌', 'Yagami Light 🌌', 'Makima ▫️ 🌌', 'Arima Kishou 🌌', 'Uchiha Madara 🌌', 'Kaneki Ken 🌌', 'Genos 🌌', '2B 🌌', 'Kokushibo 🌌', 'Power 🌌', 'Touya Todoroki 🌌', 'Makima 🌌', 'Ken Ryuguji 🌌', 'Kakashi Hatake ▫️ 🌌', 'Kakashi Hatake ▫️ ▫️ 🌌', 'Aki Hayakawa 🌌', 'Tanjiro Kamado 🌌', 'Eren Yeager 🌌', 'Kakashi Hatake 🌌', 'Levi Ackerman 🌌', 'Nobara Kugisaki 🌌', 'Gojo 🌌', 'Brodyaga 🌌', 'Akashi 🌌', 'Tomura 🌌', 'Dazai 🌌', 'Soshiro 🌌', 'Kaneki 🌌', 'Guts  🌌', 'Yato 🌌', 'Gyro 🌌', 'Sendju 🌌', 'Nakoshi 🌌', 'Zoro 🌌', 'Nagi 🌌', 'Kitano 🌌', 'Asta 🌌', 'Rimuru Tempest 🌌', 'Ryunosuke 🌌', 'Melodias 🌌', 'Naruto Uzumaki 🌌', 'Arturia Pendragon 🌌', 'Marin Katigawa 🌌', 'Arturia 🌌', 'Kiga 🌌', 'Raphtalia 🌌', 'Shikimori 🌌', 'Mikasa 🌌', 'Albedo 🌌', 'Fubuki 🌌', 'Lane 🌌', 'Mey 🌌', 'Yoruichi Shihoin 🌌', 'Nezuko 🌌', 'Kugisaki Nobara 🌌'],
+        'legendary': ['F1 🌅', 'F2 🌅', 'F3 🌅', 'F4 🌅', 'F5 🌅', 'F6 🌅', 'F7 🌅', 'F8 🌅', 'F9 🌅', 'F10 🌅', 'F11 🌅', 'F12 🌅', 'F13 🌅', 'F14 🌅', 'F15 🌅', 'F16 🌅', 'F17 🌅', 'F18 🌅', 'F19 🌅', 'F20 🌅', 'F21 🌅', 'F22 🌅', 'F23 🌅', 'F24 🌅', 'F25 🌅', 'F26 🌅', 'F27 🌅', 'F28 🌅', 'F29 🌅', 'F30 🌅', 'F31 🌅', 'F32 🌅', 'F33 🌅', 'Artoria pendragon 🌅', 'Ichigo Kurosaki 🌅', 'Bell Cranel 🌅', 'Yuta Okkotsu 🌅', 'Roronoa Zoro 🌅', 'Todoroki Shoto 🌅', 'Giyu Tomioka 🌅', 'Zenitsu Agatsuma 🌅', 'Artoria pendragon ▫️ ▫️ ▫️ 🌅', 'Kurama 🌅', 'Monkey D. Luffy ▫️▫️ 🌅', 'Artoria pendragon ▫️ 🌅', 'Artoria pendragon ▫️ ▫️ 🌅', 'Monkey D. Luffy 🌅', 'Sukuna 🌅', 'Itachi Uchiha 🌅', 'Sasuke Uchiha 🌅', 'Naruto Uzumaki 🌅', 'Son Jin Woo 🌅', 'Son Jin Woo ▫️ 🌅', 'Sanji 🌅', 'Mikasa Ackerman 🌅', 'Garou 🌅', 'Shanks 🌅', 'Monkey D. Luffy ▫️ 🌅', 'Zenitsu 🌅', 'Goku 🌅', 'Orachimaru 🌅'],
+        'epic': ['Yuta Okkotsu 🎆', 'Ichigo Kurosaki 🎆', 'Yamamoto Genryuusai 🎆', 'Yuta Okkotsu ▫️ 🎆', 'Bakugo Katsuki 🎆', 'Isagi Yoichi 🎆', 'Phantom x ? 🎆', 'Ichigo x Legion 🎆', 'SF x ? 🎆', 'Kiper x ? 🎆', 'Aizen x Juggernaut 🎆', 'Zoldyck x Storm 🎆', 'Visage x ? 🎆', 'Tusk x ? 🎆', 'Yamamoto x Ember 🎆', 'Kunkka x ? 🎆', 'Sukuna x BloodSeeker 🎆', 'Zeus x ? 🎆', 'Todoroki Shoto 🎆', 'Sven 🎆', 'Juggernaut 🎆', 'Void 🎆', 'Chaos Knight 🎆', 'Axe 🎆', 'Luffi 🎆', 'Zeus 🎆', 'Sukuna 🎆', 'Phantom Assassin 🎆', 'Visage 🎆', 'Storm Spirit 🎆', 'Kunkka 🎆', 'Shadow Fiend 🎆', 'Magnus 🎆', 'Tusk 🎆', 'Lo 🎆', 'Spectrum 🎆', 'Arc Warden 🎆', 'Marci 🎆', 'Lina 🎆', 'Drow Ranger 🎆', 'Keeper of Light 🎆'],
+        'rare': ['Toshiro Hitsugaya 🎇', 'Kaneki Ken 🎇', 'Hyakkimaru 🎇', 'Uruma Shun 🎇', 'Makima 🎇', 'Crystal Maiden 🎇', 'Gojo x Visage 🎇', 'Arima x Druid 🎇', 'Void x ? 🎇', 'Sukuna x Techies 🎇', 'Gin x Ancient 🎇', 'Sukuna x Morphling 🎇', 'Spectre 🎇', 'Benimaru x Razor 🎇', 'Genos x Axe 🎇', 'Takizawa x Knight 🎇', 'Shinobu Kocho 🎇', 'Miwa Kasumi 🎇', 'Muerta 🎇', 'Undying 🎇', 'Prophet 🎇', 'Razor 🎇', 'Wind Ranger 🎇', 'Luna 🎇', 'Tinker 🎇', 'Bat Rider 🎇', 'Lifestealer 🎇', 'Giyu Tomioka 🎇', 'Musashi Miyamoto 🎇', 'TBlade 🎇', 'Faceless Void 🎇', 'Disruptor 🎇', 'Terrorblade 🎇'],
+        'common': ['Yuta Okkotsu 🌁', 'Seishiro Nagi 🌁', 'Kaneki Ken 🌁', 'Uchiha Madara 🌁', 'Manjiro Sano 🌁', 'Itoshi Rin 🌁', 'Benimaru Shinmon 🌁', 'Aki Hayakawa ▫️ 🌁', 'Izuku Midoriya 🌁', 'Deku 🌁', 'Sukuna 🌁', 'Eren Yeager 🌁', 'Aki Hayakawa 🌁', 'Juuzou Suzuya 🌁', 'Toji Fushiguro 🌁', 'Gojo Satoru 🌁', 'Makima 🌁', 'Unohana Retsu 🌁', 'Toshiro Hitsugaya 🌁', 'Arima Kishou 🌁', 'Hyakkimaru 🌁', 'Levi Ackerman 🌁', 'Uchiha Sasuke 🌁', 'Naruto Uzumaki 🌁', 'Zenitsu 🌁', 'Shoto Todoroki 🌁', 'Lance Crown 🌁', 'Megumi Fushiguro 🌁', 'Nanami Kento 🌁', 'Todoroki 🌁', 'Miyamoto Musashi 🌁', 'Feitan Portor 🌁', 'Seidou Takizawa 🌁', 'Gaara 🌁', '02 🌁', 'Power 🌁', 'Yoru 🌁', 'Kugisaki Nobara 🌁', 'Hinata Hyuga 🌁', 'Sakura Haruno 🌁', 'Maki Zenin 🌁']
     },
-    'Allstars(old)': {
-        'divine': ['Arima Kishou 🌠', 'Uruma Shun 🌠', 'Gojo Satoru 🌠', 'Kaneki Ken 🌠', 'Gojo Satoru ▫️ ▫️ 🌠', 'Koji 🌠', 'Ulquiorra 🌠', 'Kurumi Tokisaki 🌠', 'Gabimaru 🌠', 'Renji 🌠', 'Grimmjow 🌠', 'Megumi Fushiguro 🌠', 'Geto Suguru ▫️ 🌠', 'Rangiku Matsumoto 🌠', 'Shutara Senjumaru 🌠', 'Gojo Satoru ▫️ ▫️ ▫️ 🌠', 'Gorgon 🌠', 'Urahara Kisuke 🌠', 'Rukia Kuchiki 🌠', 'Inoue Orihime 🌠', 'Soifon 🌠', 'Urahara Kisuke ▫️ 🌠', 'Yagami Light ▫️ 🌠', 'Sukuna 🌠', 'Aizen Sosuke 🌠', 'Yuta Okkotsu ▫️ 🌠', 'Yuta Okkotsu 🌠', 'Kakashi Hatake 🌠', 'Seishiro Nagi 🌠', 'Mitsuri Kanroji 🌠', 'Rengoku Kyojuro ▫️ 🌠', 'Temari Nara 🌠', 'Yagami Light 🌠', 'Tengen Uzui ▫️ 🌠', 'Itachi Uchiha 🌠', 'Geto Suguru 🌠', 'Rengoku Kyojuro 🌠', 'Yami Sukehiro 🌠', 'Choso Kamo 🌠', 'Gojo Satoru ▫️ 🌠', 'Uchiha Madara 🌠', 'Shinobu Kocho 🌠', 'Toji Fushiguro 🌠', 'Tengen Uzui 🌠', 'Toji Fushiguro ▫️ 🌠'],  # Самый редкий уровень
-        'mythical': ['L 🌌', 'Juuzou Suzuya 🌌', 'Shinobu Kocho 🌌', 'Manjiro Sano 🌌', 'Eren Yeager ▫️ 🌌', 'Furina 🌌', 'Kurumi Tokisaki 🌌', 'Zenitsu Agatsuma 🌌', 'Apex girl 🌌', 'Mugetsu 🌌', 'Ichigo Kurosaki 🌌', 'Hokushin Mei 🌌', 'Delta 🌌', 'Scaramouche 🌌', 'Blade 🌌', 'Knave 🌌', 'Kazuha 🌌', 'Kaveh 🌌', 'Zhongli 🌌', 'Rei Ayanami 🌌', 'Ayato Kamisato 🌌', 'Sukuna 🌌', 'Makima ▫️ ▫️ 🌌', 'Yuta Okkotsu 🌌', 'Levi Ackerman ▫️ 🌌', 'Jean Kirstein 🌌', 'Mikasa Ackerman 🌌', 'Yuta Okkotsu ▫️ 🌌', 'Uruma Shun 🌌', 'Tanjiro Kamado ▫️ 🌌', 'Gojo Satoru 🌌', 'Guts 🌌', 'Akashi Seijuro 🌌', 'Yagami Light ▫️ 🌌', 'Garou 🌌', 'Urahara Kisuke 🌌', 'Itachi Uchiha 🌌', 'Yuta Okkotsu ▫️ ▫️ 🌌', 'Yato Noragami 🌌', 'Kaneki Ken ▫️ 🌌', 'Hisoka Morow 🌌', 'Kaneki Ken ▫️ ▫️ 🌌', 'Todoroki Shoto 🌌', 'Yagami Light 🌌', 'Makima ▫️ 🌌', 'Arima Kishou 🌌', 'Uchiha Madara 🌌', 'Kaneki Ken 🌌', 'Genos 🌌', '2B 🌌', 'Kokushibo 🌌', 'Power 🌌', 'Touya Todoroki 🌌', 'Makima 🌌', 'Ken Ryuguji 🌌', 'Kakashi Hatake ▫️ 🌌', 'Kakashi Hatake ▫️ ▫️ 🌌', 'Aki Hayakawa 🌌', 'Tanjiro Kamado 🌌', 'Eren Yeager 🌌', 'Kakashi Hatake 🌌', 'Levi Ackerman 🌌', 'Nobara Kugisaki 🌌'],
-        'legendary': ['Artoria pendragon 🌅', 'Ichigo Kurosaki 🌅', 'Bell Cranel 🌅', 'Yuta Okkotsu 🌅', 'Roronoa Zoro 🌅', 'Todoroki Shoto 🌅', 'Giyu Tomioka 🌅', 'Zenitsu Agatsuma 🌅', 'Artoria pendragon ▫️ ▫️ ▫️ 🌅', 'Kurama 🌅', 'Monkey D. Luffy ▫️▫️ 🌅', 'Artoria pendragon ▫️ 🌅', 'Artoria pendragon ▫️ ▫️ 🌅', 'Monkey D. Luffy 🌅', 'Sukuna 🌅', 'Itachi Uchiha 🌅', 'Sasuke Uchiha 🌅', 'Naruto Uzumaki 🌅', 'Son Jin Woo 🌅', 'Son Jin Woo ▫️ 🌅', 'Sanji 🌅', 'Mikasa Ackerman 🌅', 'Garou 🌅', 'Shanks 🌅', 'Monkey D. Luffy ▫️ 🌅', 'Zenitsu 🌅', 'Goku 🌅', 'Orachimaru 🌅'],
-        'epic': ['Yuta Okkotsu 🎆', 'Ichigo Kurosaki 🎆', 'Yamamoto Genryuusai 🎆', 'Yuta Okkotsu ▫️ 🎆', 'Bakugo Katsuki 🎆', 'Isagi Yoichi 🎆', 'Phantom x ? 🎆', 'Ichigo x Legion 🎆', 'SF x ? 🎆', 'Kiper x ? 🎆', 'Aizen x Juggernaut 🎆', 'Zoldyck x Storm 🎆', 'Visage x ? 🎆', 'Tusk x ? 🎆', 'Yamamoto x Ember 🎆', 'Kunkka x ? 🎆', 'Sukuna x BloodSeeker 🎆', 'Zeus x ? 🎆'],
-        'rare': ['Toshiro Hitsugaya 🎇', 'Kaneki Ken 🎇', 'Hyakkimaru 🎇', 'Uruma Shun 🎇', 'Makima 🎇', 'Crystal Maiden 🎇', 'Gojo x Visage 🎇', 'Arima x Druid 🎇', 'Void x ? 🎇', 'Sukuna x Techies 🎇', 'Gin x Ancient 🎇', 'Sukuna x Morphling 🎇', 'Spectre 🎇', 'Benimaru x Razor 🎇', 'Genos x Axe 🎇', 'Takizawa x Knight 🎇'],
-        'common': ['Yuta Okkotsu 🌁', 'Seishiro Nagi 🌁', 'Kaneki Ken 🌁', 'Uchiha Madara 🌁', 'Manjiro Sano 🌁', 'Itoshi Rin 🌁', 'Benimaru Shinmon 🌁', 'Aki Hayakawa ▫️ 🌁', 'Izuku Midoriya 🌁', 'Deku 🌁', 'Sukuna 🌁', 'Eren Yeager 🌁', 'Aki Hayakawa 🌁', 'Juuzou Suzuya 🌁', 'Toji Fushiguro 🌁', 'Gojo Satoru 🌁', 'Makima 🌁', 'Unohana Retsu 🌁', 'Toshiro Hitsugaya 🌁', 'Arima Kishou 🌁', 'Hyakkimaru 🌁', 'Levi Ackerman 🌁'],
-    },
+    # 'Allstars(old)': {
+    #     'divine': ['Arima Kishou 🌠', 'Uruma Shun 🌠', 'Gojo Satoru 🌠', 'Kaneki Ken 🌠', 'Gojo Satoru ▫️ ▫️ 🌠', 'Koji 🌠', 'Ulquiorra 🌠', 'Kurumi Tokisaki 🌠', 'Gabimaru 🌠', 'Renji 🌠', 'Grimmjow 🌠', 'Megumi Fushiguro 🌠', 'Geto Suguru ▫️ 🌠', 'Rangiku Matsumoto 🌠', 'Shutara Senjumaru 🌠', 'Gojo Satoru ▫️ ▫️ ▫️ 🌠', 'Gorgon 🌠', 'Urahara Kisuke 🌠', 'Rukia Kuchiki 🌠', 'Inoue Orihime 🌠', 'Soifon 🌠', 'Urahara Kisuke ▫️ 🌠', 'Yagami Light ▫️ 🌠', 'Sukuna 🌠', 'Aizen Sosuke 🌠', 'Yuta Okkotsu ▫️ 🌠', 'Yuta Okkotsu 🌠', 'Kakashi Hatake 🌠', 'Seishiro Nagi 🌠', 'Mitsuri Kanroji 🌠', 'Rengoku Kyojuro ▫️ 🌠', 'Temari Nara 🌠', 'Yagami Light 🌠', 'Tengen Uzui ▫️ 🌠', 'Itachi Uchiha 🌠', 'Geto Suguru 🌠', 'Rengoku Kyojuro 🌠', 'Yami Sukehiro 🌠', 'Choso Kamo 🌠', 'Gojo Satoru ▫️ 🌠', 'Uchiha Madara 🌠', 'Shinobu Kocho 🌠', 'Toji Fushiguro 🌠', 'Tengen Uzui 🌠', 'Toji Fushiguro ▫️ 🌠'],  # Самый редкий уровень
+    #     'mythical': ['L 🌌', 'Juuzou Suzuya 🌌', 'Shinobu Kocho 🌌', 'Manjiro Sano 🌌', 'Eren Yeager ▫️ 🌌', 'Furina 🌌', 'Kurumi Tokisaki 🌌', 'Zenitsu Agatsuma 🌌', 'Apex girl 🌌', 'Mugetsu 🌌', 'Ichigo Kurosaki 🌌', 'Hokushin Mei 🌌', 'Delta 🌌', 'Scaramouche 🌌', 'Blade 🌌', 'Knave 🌌', 'Kazuha 🌌', 'Kaveh 🌌', 'Zhongli 🌌', 'Rei Ayanami 🌌', 'Ayato Kamisato 🌌', 'Sukuna 🌌', 'Makima ▫️ ▫️ 🌌', 'Yuta Okkotsu 🌌', 'Levi Ackerman ▫️ 🌌', 'Jean Kirstein 🌌', 'Mikasa Ackerman 🌌', 'Yuta Okkotsu ▫️ 🌌', 'Uruma Shun 🌌', 'Tanjiro Kamado ▫️ 🌌', 'Gojo Satoru 🌌', 'Guts 🌌', 'Akashi Seijuro 🌌', 'Yagami Light ▫️ 🌌', 'Garou 🌌', 'Urahara Kisuke 🌌', 'Itachi Uchiha 🌌', 'Yuta Okkotsu ▫️ ▫️ 🌌', 'Yato Noragami 🌌', 'Kaneki Ken ▫️ 🌌', 'Hisoka Morow 🌌', 'Kaneki Ken ▫️ ▫️ 🌌', 'Todoroki Shoto 🌌', 'Yagami Light 🌌', 'Makima ▫️ 🌌', 'Arima Kishou 🌌', 'Uchiha Madara 🌌', 'Kaneki Ken 🌌', 'Genos 🌌', '2B 🌌', 'Kokushibo 🌌', 'Power 🌌', 'Touya Todoroki 🌌', 'Makima 🌌', 'Ken Ryuguji 🌌', 'Kakashi Hatake ▫️ 🌌', 'Kakashi Hatake ▫️ ▫️ 🌌', 'Aki Hayakawa 🌌', 'Tanjiro Kamado 🌌', 'Eren Yeager 🌌', 'Kakashi Hatake 🌌', 'Levi Ackerman 🌌', 'Nobara Kugisaki 🌌'],
+    #     'legendary': ['Artoria pendragon 🌅', 'Ichigo Kurosaki 🌅', 'Bell Cranel 🌅', 'Yuta Okkotsu 🌅', 'Roronoa Zoro 🌅', 'Todoroki Shoto 🌅', 'Giyu Tomioka 🌅', 'Zenitsu Agatsuma 🌅', 'Artoria pendragon ▫️ ▫️ ▫️ 🌅', 'Kurama 🌅', 'Monkey D. Luffy ▫️▫️ 🌅', 'Artoria pendragon ▫️ 🌅', 'Artoria pendragon ▫️ ▫️ 🌅', 'Monkey D. Luffy 🌅', 'Sukuna 🌅', 'Itachi Uchiha 🌅', 'Sasuke Uchiha 🌅', 'Naruto Uzumaki 🌅', 'Son Jin Woo 🌅', 'Son Jin Woo ▫️ 🌅', 'Sanji 🌅', 'Mikasa Ackerman 🌅', 'Garou 🌅', 'Shanks 🌅', 'Monkey D. Luffy ▫️ 🌅', 'Zenitsu 🌅', 'Goku 🌅', 'Orachimaru 🌅'],
+    #     'epic': ['Yuta Okkotsu 🎆', 'Ichigo Kurosaki 🎆', 'Yamamoto Genryuusai 🎆', 'Yuta Okkotsu ▫️ 🎆', 'Bakugo Katsuki 🎆', 'Isagi Yoichi 🎆', 'Phantom x ? 🎆', 'Ichigo x Legion 🎆', 'SF x ? 🎆', 'Kiper x ? 🎆', 'Aizen x Juggernaut 🎆', 'Zoldyck x Storm 🎆', 'Visage x ? 🎆', 'Tusk x ? 🎆', 'Yamamoto x Ember 🎆', 'Kunkka x ? 🎆', 'Sukuna x BloodSeeker 🎆', 'Zeus x ? 🎆'],
+    #     'rare': ['Toshiro Hitsugaya 🎇', 'Kaneki Ken 🎇', 'Hyakkimaru 🎇', 'Uruma Shun 🎇', 'Makima 🎇', 'Crystal Maiden 🎇', 'Gojo x Visage 🎇', 'Arima x Druid 🎇', 'Void x ? 🎇', 'Sukuna x Techies 🎇', 'Gin x Ancient 🎇', 'Sukuna x Morphling 🎇', 'Spectre 🎇', 'Benimaru x Razor 🎇', 'Genos x Axe 🎇', 'Takizawa x Knight 🎇'],
+    #     'common': ['Yuta Okkotsu 🌁', 'Seishiro Nagi 🌁', 'Kaneki Ken 🌁', 'Uchiha Madara 🌁', 'Manjiro Sano 🌁', 'Itoshi Rin 🌁', 'Benimaru Shinmon 🌁', 'Aki Hayakawa ▫️ 🌁', 'Izuku Midoriya 🌁', 'Deku 🌁', 'Sukuna 🌁', 'Eren Yeager 🌁', 'Aki Hayakawa 🌁', 'Juuzou Suzuya 🌁', 'Toji Fushiguro 🌁', 'Gojo Satoru 🌁', 'Makima 🌁', 'Unohana Retsu 🌁', 'Toshiro Hitsugaya 🌁', 'Arima Kishou 🌁', 'Hyakkimaru 🌁', 'Levi Ackerman 🌁'],
+    # },
 }
 
 
-def common_gacha():
-    rand_num = random.random()
-    if rand_num < 0.0003:  # 0.03% шанс
-        return 'divine'
-    elif rand_num < 0.003:  # 0.3% шанс
-        return 'mythical'
-    elif rand_num < 0.024:  # 2.4% шанс
-        return 'legendary'
-    elif rand_num < 0.07:  # 7% шанс
-        return 'epic'
-    elif rand_num < 0.16:  # 16% шанс
-        return 'rare'
-    else:  # 74.77% шанс
-        return 'common'
+# def common_gacha():
+#     rand_num = random.random()
+#     if rand_num < 0.001:  # 0.1% — divine
+#         return 'divine'
+#     elif rand_num < 0.005:  # 0.4% — mythical
+#         return 'mythical'
+#     elif rand_num < 0.025:  # 2% — legendary
+#         return 'legendary'
+#     elif rand_num < 0.085:  # 6% — epic
+#         return 'epic'
+#     elif rand_num < 0.22:  # 13.5% — rare
+#         return 'rare'
+#     else:  # 78.0% — common
+#         return 'common'
+#
+#
+# def golden_gacha():
+#     rand_num = random.random()
+#     if rand_num < 0.005:  # 0.5% — divine
+#         return 'divine'
+#     elif rand_num < 0.015:  # 1.0% — mythical
+#         return 'mythical'
+#     elif rand_num < 0.13:  # 11.5% — legendary
+#         return 'legendary'
+#     elif rand_num < 0.37:  # 24% — epic
+#         return 'epic'
+#     elif rand_num < 0.70:  # 33% — rare
+#         return 'rare'
+#     else:  # 30% — common (если допустимо, иначе убери common вообще)
+#         return 'common'
+#
+#
+# def sacred_gacha():
+#     rand_num = random.random()
+#     if rand_num < 0.25:  # 25% шанс
+#         return 'divine'
+#     elif rand_num < 0.35:  # 35% шанс
+#         return 'mythical'
+#     else:  # 40% шанс
+#         return 'legendary'
 
+
+def roll(weighted):
+    """weighted: список [('название', вероятность)] с суммой = 1.0"""
+    r, acc = random.random(), 0.0
+    for name, p in weighted:
+        acc += p
+        if r < acc:
+            return name
+    return weighted[-1][0]  # защита от float
+
+def common_gacha():
+    weights = [
+        ('divine',    0.001),   # 0.1%
+        ('mythical',  0.004),   # 0.4%
+        ('legendary', 0.020),   # 2.0%
+        ('epic',      0.060),   # 6.0%
+        ('rare',      0.135),   # 13.5%
+        ('common',    0.780),   # 78.0%
+    ]
+    return roll(weights)
 
 def golden_gacha():
-    rand_num = random.random()
-    if rand_num < 0.001:  # 0.1% шанс
-        return 'divine'
-    elif rand_num < 0.006:  # 0.6% шанс
-        return 'mythical'
-    elif rand_num < 0.11:  # 11% шанс
-        return 'legendary'
-    elif rand_num < 0.23:  # 23% шанс
-        return 'epic'
-    else:  # 65.3% шанс
-        return 'rare'
-
+    weights = [
+        ('divine',    0.005),   # 0.5%
+        ('mythical',  0.010),   # 1.0%
+        ('legendary', 0.115),   # 11.5%
+        ('epic',      0.240),   # 24%
+        ('rare',      0.330),   # 33%
+        ('common',    0.300),   # 30%
+    ]
+    return roll(weights)
 
 def sacred_gacha():
-    rand_num = random.random()
-    if rand_num < 0.25:  # 25% шанс
-        return 'divine'
-    elif rand_num < 0.35:  # 35% шанс
-        return 'mythical'
-    else:  # 40% шанс
-        return 'legendary'
+    weights = [
+        ('divine',    0.10),    # 10%
+        ('mythical',  0.25),    # 25%
+        ('legendary', 0.65),    # 65%
+    ]
+    return roll(weights)
 
 
 async def card_gacha(user_id, callback):
@@ -132,7 +611,7 @@ async def card_gacha(user_id, callback):
     elif callback.data == "golden_key":
         if account['inventory']['items']['tickets']['keys'] < 1:
             await callback.answer(
-                text="❖ 📌 У вас нет  🧧 священнего билета. Приобретите его в рынке!",
+                text="❖ 📌 У вас нет  🧧 священнего билета. Приобретите его в 🏮 рынке!",
                 show_alert=True
             )
             return
@@ -143,7 +622,7 @@ async def card_gacha(user_id, callback):
     elif callback.data == "golden":
         if account['inventory']['items']['tickets']['golden'] < 1:
             await callback.answer(
-                text="❖ 📌 У вас нет  🎫 золотого билета. Приобретите его в рынке!",
+                text="❖ 📌 У вас нет  🎫 золотого билета. Приобретите его в 🏮 рынке!",
                 show_alert=True
             )
             return
@@ -154,7 +633,7 @@ async def card_gacha(user_id, callback):
     else:
         if account['inventory']['items']['tickets']['common'] < 1:
             await callback.answer(
-                text="❖ 📌 У вас нет  🎟 обычного билета. Приобретите его в рынке!",
+                text="❖ 📌 У вас нет  🎟 обычного билета. Приобретите его в 🏮 рынке!",
                 show_alert=True
             )
             return
@@ -220,10 +699,10 @@ async def card_gacha(user_id, callback):
             power = character_photo.get_stats(universe, character, 'arena')['power']
             message = (f"\n❖ ✨ Редкость: {rarity}"
                        f"\n❖ 🗺 Вселенная: {ch_universe}"
-                       f"\n\n   ✊🏻 Сила: {strength}"
-                       f"\n   👣 Ловкость: {agility}"
-                       f"\n   🧠 Интелект: {intelligence}"
-                       f"\n   ⚜️ Мощь: {power}")
+                       f"\n • ✊🏻 Сила: {strength}"
+                       f"\n • 👣 Ловкость: {agility}"
+                       f"\n • 🧠 Интелект: {intelligence}"
+                       f"\n • ⚜️ Мощь: {power}")
             buttons = ["🎴 Навыки", " 🔙 ", f"{icon}"]
             calls = [Ability(action="ability", universe=universe,
                      character=character, back='banner'), "banner", f"{button}"]
@@ -234,9 +713,9 @@ async def card_gacha(user_id, callback):
 
     pattern = dict(
         caption=f"\n ── •✧✧• ────────────"
-                f"\n  🎴  〢 <tg-spoiler>{character}</tg-spoiler>"
+                f"\n 🎴 〢 <tg-spoiler>{character}</tg-spoiler>"
                 f"\n ── •✧✧• ────────────"
-                f"{message}"
+                f"<blockquote>{message}</blockquote>"
                 f"\n──❀*̥˚──◌──◌──❀*̥˚────"
                 f"\n<i> + {fragments}🧩 Осколков </i>",
         reply_markup=inline_builder(
@@ -320,16 +799,16 @@ async def first_summon(callback, universe):
         power = character_photo.get_stats(universe, character, 'arena')['power']
         msg = (f"\n❖ ✨ Редкость: {rarity}"
                f"\n❖ 🗺 Вселенная: {ch_universe}"
-               f"\n\n   ✊🏻 Сила: {strength}"
-               f"\n   👣 Ловкость: {agility}"
-               f"\n   🧠 Интелект: {intelligence}"
-               f"\n   ⚜️ Мощь: {power}")
+               f"\n • ✊🏻 Сила: {strength}"
+               f"\n • 👣 Ловкость: {agility}"
+               f"\n • 🧠 Интелект: {intelligence}"
+               f"\n • ⚜️ Мощь: {power}")
 
     pattern = dict(
         caption=f"\n ── •✧✧• ────────────"
-                f"\n  🎴  〢 <tg-spoiler>{character}</tg-spoiler>"
+                f"\n 🎴 〢 <tg-spoiler>{character}</tg-spoiler>"
                 f"\n ── •✧✧• ────────────"
-                f"{msg}"
+                f"<blockquote>{msg}</blockquote>"
                 f"\n──❀*̥˚──◌──◌──❀*̥˚────",
         reply_markup=success(),
         parse_mode=ParseMode.HTML
@@ -432,10 +911,10 @@ async def campaign_rank(message: Message):
                         agility = character_photo.get_stats(universe, character, 'arena')['agility']
                         intelligence = character_photo.get_stats(universe, character, 'arena')['intelligence']
                         msg = (f"\n❖ ✨ Редкость: {rarity}"
-                               f"\n\n   🗺 Вселенная: {ch_universe}"
-                               f"\n\n   ✊🏻 Сила: {strength}"
-                               f"\n   👣 Ловкость: {agility}"
-                               f"\n   🧠 Интелект: {intelligence}")
+                               f"\n❖ 🗺 Вселенная: {ch_universe}"
+                               f"\n • ✊🏻 Сила: {strength}"
+                               f"\n • 👣 Ловкость: {agility}"
+                               f"\n • 🧠 Интелект: {intelligence}")
                         buttons = ["🎴 Навыки"]
                         calls = [Ability(action="ability", universe=universe,
                                          character=character, back='banner')]
@@ -446,13 +925,13 @@ async def campaign_rank(message: Message):
 
                 pattern = dict(
                     caption=f"\n ── •✧✧• ────────────"
-                            f"\n  🎴  〢 <tg-spoiler>{character}</tg-spoiler>"
+                            f"\n 🎴 〢 <tg-spoiler>{character}</tg-spoiler>"
                             f"\n ── •✧✧• ────────────"
-                            f"{msg}"
+                            f"<blockquote>{msg}</blockquote>"
                             f"\n──❀*̥˚──◌──◌──❀*̥˚────"
                             f"\n<i> + {fragments}🧩 Осколков </i>",
-                    reply_markup=inline_builder(buttons, calls,
-                                                row_width=[1]),
+                    # reply_markup=inline_builder(buttons, calls,
+                    #                             row_width=[1]),
                     parse_mode=ParseMode.HTML
                 )
 
