@@ -16,25 +16,19 @@ async def banner(callback: CallbackQuery | Message):
     account = await mongodb.get_user(user_id)
 
     pattern = dict(
-        caption=f"❖  🎐  <b>Баннеры</b>"
+        caption=f"🎐 <b><i>Текущие баннеры:</i></b>"
                 f"\n── •✧✧• ────────────"
-                f"\n❇️ <b><i>Текущие баннеры:</i></b>"
                 # f"\n\n ☆ • 👻 <b>Хэллоуин</b>"
-                f"\n\n ☆ • 🔮 <b>Стандартный баннер</b>",
+                f"\n<blockquote> ☆ 🔮 <b>Стандартный баннер</b></blockquote>",
         parse_mode=ParseMode.HTML,
         reply_markup=inline_builder(
             ["🔮 Ст. баннер", " 🔙 Назад"],
-            ["standard", "tokio"],
+            ["standard", "main_page"],
             row_width=[1, 1, 1]
             )
     )
 
-    if account['universe'] == "Bleach":
-        media_id = "CgACAgIAAx0CfstymgACCxZl5FxQpuMBOz7tFM8BU88VOEvMXgACtjwAAkLSIEtSvf16OnsuwTQE"
-    elif account['universe'] == "Naruto":
-        media_id = "CgACAgIAAxkBAAKu-2bfz0QjhL_TZCnL-Zha1vsprdVLAAKCUQACzJcBS3N7PqOXSE2qNgQ"
-    else:
-        media_id = "CgACAgIAAx0CfstymgACEnpmnUiYllQQPMNY7B3y44Okelr6UgACsVEAApQD6UhAS-MzjVWVxTUE"
+    media_id = "CgACAgIAAx0CfstymgACPnlna-1cMqyMz6QaXP9vAcL_PlGkPAACJGMAArowYUvHL8VjyDqLszYE"
     media = InputMediaAnimation(media=media_id)
     if isinstance(callback, CallbackQuery):
         inline_id = callback.inline_message_id
@@ -127,17 +121,21 @@ async def standard(callback: CallbackQuery):
     common = ticket_data['common']
 
     pattern = dict(
-        caption=f"❖ 🔮 <b>Стандартный баннер</b>"
-                f"\n── •✧✧• ────────────"
-                f"\n❖ <b><i>Категории 🃏 карт:</i></b>"
-                f"\n── •✧✧• ────────────"
-                f"\n☆  🌠 <b>Божественные карты 🂡</b>"
-                f"\n☆  🌌 <b>Мифические карты 🂡</b>"
-                f"\n☆  🌅 <b>Легендарные карты 🂡</b>"
-                f"\n☆  🎆 <b>Эпические карты 🂡</b>"
-                f"\n☆  🎇 <b>Редкие карты 🂡</b>"
-                f"\n☆  🌁 <b>Обычные карты 🂡</b>"
-                f"\n── •✧✧• ────────────"
+        caption=f"\n❖ ✨ <b><i>Шансы дропа 🂡</i></b>"
+                f"\n┅┅━─━┅┄ ⟛ ┄┅━─━┅┅"
+                "\n<blockquote>╭┈๋જ‌›<b>Divine cards</b> "
+                "\n🌠┄🎟⋗ 0.1% 🎫⋗ 0.5% 🧧⋗ 10%"
+                "\n╭┈๋જ‌›<b>Mythical cards</b> "
+                "\n🌌┄🎟⋗ 0.4% 🎫⋗ 1% 🧧⋗ 25%"
+                "\n╭┈๋જ‌›Legendary cards"
+                "\n🌅┄🎟⋗ 2% 🎫⋗ 11.5% 🧧⋗ 65%"
+                "\n╭┈๋જ‌›Epic cards"
+                "\n🎆┄🎟⋗ 6.0% 🎫⋗ 24%"
+                "\n╭┈๋જ‌›Rare cards"
+                "\n🎇┄🎟⋗ 13.5% 🎫⋗ 33%"
+                "\n╭┈๋જ‌›Common cards"
+                "\n🌁┄🎟⋗ 78% 🎫⋗ 30%"
+                "\n╰──────────────╯</blockquote>"
                 f"\n❃  🧧 ⋗ <b>{keys}</b>   🎫 ⋗ <b>{golden}</b>   🎟 ⋗ <b>{common}</b>",
         parse_mode=ParseMode.HTML,
         reply_markup=inline_builder(
@@ -147,7 +145,7 @@ async def standard(callback: CallbackQuery):
             )
     )
 
-    media_id = "CgACAgIAAx0CfstymgACBallzDJIAALy9W358H_8M540_3wQqAAC2T4AAsywYUqtJ3fOrELTrjQE"
+    media_id = "CgACAgIAAx0CfstymgACPnlna-1cMqyMz6QaXP9vAcL_PlGkPAACJGMAArowYUvHL8VjyDqLszYE"
     media = InputMediaAnimation(media=media_id)
     await callback.message.edit_media(media, inline_id)
     await callback.message.edit_caption(inline_id, **pattern)
